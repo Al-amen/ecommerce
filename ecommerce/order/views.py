@@ -18,7 +18,7 @@ def add_to_cart(request,pk):
             size = request.POST.get('size')
             quantiy = request.POST.get('quantity')
             if quantiy:
-                order_item[0].quantity += quantiy
+                order_item[0].quantity += int(quantiy)
             else:
                order_item[0].quantity += 1
 
@@ -40,3 +40,19 @@ def add_to_cart(request,pk):
         order.save()
         order.order_items(order_item[0])
         return redirect('store:index')
+
+
+def cart_view(request):
+    carts = Cart.objects.filter(user=request.user,purchased=False)
+    orders = Order.objects.filter(user=request.user,ordered=False)
+
+    if carts.exists() and orders.exists():
+        order = orders[0]
+
+        context= {
+            'carts':carts,
+            'order':order
+        }
+
+        return render(request, 'store/cart.html', context=context)
+  
