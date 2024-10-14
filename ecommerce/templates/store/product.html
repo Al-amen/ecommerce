@@ -83,35 +83,43 @@
 
                                     <div class="product-content">
                                         <p>{{item.preview_des}}</p>
+                                    
+                                         
+                                          {% if color_variations %}      
+                                      
+                                            <div class="details-filter-row details-row-size">
+                                                <label for="size">Color:</label>
+                                                <div class="select-custom">
+                                                    <select name="size" id="size" class="form-control">
+                                                        <option value="#" selected="selected">Select a color</option>
+                                                        {% for variation in color_variations %}
+                                                            <option value="{{ variation.name }}">{{ variation.name }}</option>
+                                                           
+                                                        {% endfor %}
+                                                    </select>
+                                                </div><!-- End .select-custom -->
 
-                                    <div class="details-filter-row details-row-size">
-                                        <label>Color:</label>
+                                                {% comment %} <a href="#" class="size-guide"><i class="icon-th-list"></i>size guide</a> {% endcomment %}
+                                            </div><!-- End .details-filter-row -->
+                                        {% endif %}
 
-                                        <div class="product-nav product-nav-thumbs">
-                                            <a href="#" class="active">
-                                                <img src="{% static 'assets/images/products/single/1-thumb.jpg' %}" alt="product desc">
-                                            </a>
-                                            <a href="#">
-                                                <img src="{% static 'assets/images/products/single/2-thumb.jpg' %}" alt="product desc">
-                                            </a>
-                                        </div><!-- End .product-nav -->
-                                    </div><!-- End .details-filter-row -->
+                                        {% if size_variations %}      
+                                      
+                                        <div class="details-filter-row details-row-size">
+                                            <label for="size">Size:</label>
+                                            <div class="select-custom">
+                                                <select name="size" id="size" class="form-control">
+                                                    <option value="#" selected="selected">Select a size</option>
+                                                    {% for variation in size_variations %}
+                                                        <option value="{{ variation.name }}">{{ variation.name }}</option>
+                                                       
+                                                    {% endfor %}
+                                                </select>
+                                            </div><!-- End .select-custom -->
 
-                                    <div class="details-filter-row details-row-size">
-                                        <label for="size">Size:</label>
-                                        <div class="select-custom">
-                                            <select name="size" id="size" class="form-control">
-                                                <option value="#" selected="selected">Select a size</option>
-                                                <option value="s">Small</option>
-                                                <option value="m">Medium</option>
-                                                <option value="l">Large</option>
-                                                <option value="xl">Extra Large</option>
-                                            </select>
-                                        </div><!-- End .select-custom -->
-
-                                        <a href="#" class="size-guide"><i class="icon-th-list"></i>size guide</a>
-                                    </div><!-- End .details-filter-row -->
-
+                                            {% comment %} <a href="#" class="size-guide"><i class="icon-th-list"></i>size guide</a> {% endcomment %}
+                                        </div><!-- End .details-filter-row -->
+                                    {% endif %}
                                     <div class="details-filter-row details-row-size">
                                         <label for="qty">Qty:</label>
                                         <div class="product-details-quantity">
