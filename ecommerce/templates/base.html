@@ -167,6 +167,7 @@
                                 <div class="dropdown-cart-products">
                                    
                                     {% if request.user.is_authenticated %}
+                                      {% if request.user|cart_view %}
                                         {% for cart in request.user|cart_view %}
                                             <div class="product">
                                                 <div class="product-cart-details">
@@ -187,7 +188,9 @@
                                                 </figure>
                                                 <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
                                             </div>
-                                        {% endfor %}<!-- End .product -->
+
+                                         {% endfor %}<!-- End .product -->
+                                        {% endif %}
                                     {% endif %}
                                 </div><!-- End .cart-product -->
 
@@ -222,33 +225,7 @@
 
 
 
-                            {% comment %} <div class="dropdown-menu">
-                                <nav class="side-nav">
-                                    <ul class="menu-vertical sf-arrows">
-                                        <li class="item-lead"><a href="#">Daily offers</a></li>
-                                        <li class="item-lead"><a href="#">Gift Ideas</a></li>
-                                        {% for cat in request.user|category %}
-
-                                            {% if not cat.children.all %}
-                                            <li><a href="#">{{cat.name}}</a></li>
-                                        
-                                            {% else %}
-                                            <li><a href="#">{{cat.name}}</a></li>
-                                             <ul>
-                                                {% for subcategory in cat.children.all %}
-                                                <li>
-                                                    <a href="#">{{ subcategory.name }}</a>
-                                                    <p>{{ subcategory }}</p> 
-                                                </li>
-                                                {% endfor %}
-                                             </ul>
-                                              
-                                            {% endif %}
-                                       
-                                        {% endfor %}
-                                    </ul><!-- End .menu-vertical -->
-                                </nav><!-- End .side-nav -->
-                            </div><!-- End .dropdown-menu --> {% endcomment %}
+                  
 
                             <div class="dropdown-menu">
                                 <nav class="side-nav">

@@ -64,7 +64,7 @@
                                                 </div><!-- End .cart-product-quantity -->                                 
                                             </td>
 											<td class="total-col">${{cart.get_total}}</td>
-											<td class="remove-col"><button class="btn-remove"><i class="icon-close"></i></button></td>
+											<td class="remove-col"><a href="{% url "order:remove-item" pk=cart.item.pk %}"><button class="btn-remove"><i class="icon-close"></i></button></a></td>
 										</tr>
                                         {% endfor %}
 									</tbody>
