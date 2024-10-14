@@ -67,11 +67,17 @@
 
                                     <div class="product-price">
                                         ${{item.price}}
+                                     
                                     </div>
-                                    {% if old_price %}
-                                    
-                                    <del> ${{item.price}}</del>
+                                    {% if item.old_price %}
+                                    <div class="product-price">
+                                              
+                                      <del> ${{item.old_price}}</del>
+                                     
+                                    </div>
+                             
                                     {% endif %}
+                                    
                              
                                     <!-- End .product-price -->
 
@@ -83,10 +89,10 @@
 
                                         <div class="product-nav product-nav-thumbs">
                                             <a href="#" class="active">
-                                                <img src="assets/images/products/single/1-thumb.jpg" alt="product desc">
+                                                <img src="{% static 'assets/images/products/single/1-thumb.jpg' %}" alt="product desc">
                                             </a>
                                             <a href="#">
-                                                <img src="assets/images/products/single/2-thumb.jpg" alt="product desc">
+                                                <img src="{% static 'assets/images/products/single/2-thumb.jpg' %}" alt="product desc">
                                             </a>
                                         </div><!-- End .product-nav -->
                                     </div><!-- End .details-filter-row -->
@@ -114,7 +120,7 @@
                                     </div><!-- End .details-filter-row -->
 
                                     <div class="product-details-action">
-                                        <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                                        <a href="{% url "order:add_to_cart" pk=item.pk %}" class="btn-product btn-cart"><span>add to cart</span></a>
 
                                         <div class="details-action-wrapper">
                                             <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>

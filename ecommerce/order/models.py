@@ -1,7 +1,13 @@
+#order app / models.py
+
 from django.db import models
 from django.contrib.auth.models import User
 from store.models import Product
 
+
+
+
+#cart model
 class Cart(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,related_name='cart')
     item = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -22,6 +28,7 @@ class Cart(models.Model):
         return float_total
 
 
+#order model
 class Order(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     order_items = models.ManyToManyField(Cart)
@@ -32,7 +39,7 @@ class Order(models.Model):
 
     def get_totals(self):
         total = 0
-        for order_item in self.order_items:
+        for order_item in self.order_items.all():
             total += float(order_item.get_total())
         
         return total
