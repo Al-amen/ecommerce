@@ -91,6 +91,11 @@ class Order(models.Model):
     def get_totals(self):
         total = 0
         for order_item in self.order_items.all():
-            total += float(order_item.get_total())
+            if order_item.variation_total():
+                total += float(order_item.variation_total())
+            elif order_item.variation_single_price():
+                total += float(order_item.variation_single_price())
+            else:
+                total += float(order_item.get_total())
         
         return total
