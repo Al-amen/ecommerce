@@ -109,3 +109,5 @@ def decrease_cart(request,pk):
             return redirect('store:index')
     else:
         return redirect('store:index')
+
+

@@ -2,7 +2,7 @@
 
 from django.db import models
 from django.contrib.auth.models import User
-from store.models import Product
+from store.models import Product,VariationValue
 
 
 
@@ -28,6 +28,55 @@ class Cart(models.Model):
         float_total = format(total,'0.2f')
 
         return float_total
+    
+    def variation_single_price(self):
+        sizes = VariationValue.objects.filter(variation='size', product=self.item)
+        colors = VariationValue.objects.filter(variation='color', product=self.item)
+        
+        for size in sizes:
+            if colors.exists():
+                for color in colors:
+                    if color.name == self.color:
+                        c_price = color.price
+                    
+                if size.name == self.size:
+                    total = size.price + c_price
+                    net_total = total
+                    float_total = format(net_total,'.2f')
+                    return float_total
+            else:
+                if size.name == self.size:
+                    total = size.price
+                    float_total = format(total,'.2f')
+                    return float_total
+
+    def variation_total(self):
+        sizes = VariationValue.objects.filter(variation='size', product=self.item)
+        colors = VariationValue.objects.filter(variation='color', product=self.item)
+
+        for size in sizes:
+           if colors.exists():
+               for color in colors:
+                   if color.name == self.color:
+                    c_price = color.price
+                    color_quantity_price = c_price * self.quantity
+                
+               if size.name == self.size:
+                   total = size.price * self.quantity
+                   net_total = total + color_quantity_price
+                   float_total = format(net_total,'0.2f')
+                   return float_total
+           else:
+               if size.name == self.size:
+                   total = size.price * self.quantity
+                   float_total = format(total,'0.2f')
+                   return float_total
+
+
+
+
+
+
 
 
 #order model

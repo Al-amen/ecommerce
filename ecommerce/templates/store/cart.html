@@ -57,7 +57,13 @@
 											</td>
 											<td class="price-col">{{cart.size}}</td>
                                             <td class="price-col">{{cart.color}}</td>
-                                            <td class="price-col">${{cart.item.price}}</td>
+											<td class="price-col">
+												{% if cart.variation_single_price %}
+													${{cart.variation_single_price }}
+												{% else %}
+												    ${{cart.item.price}}
+												{% endif %}
+										   </td>
 											<td class="quantity-col">
                                                 <div class="cart-product-quantity">
 													
@@ -66,7 +72,14 @@
 													 <a class="mr-2" href="{% url "order:increase" pk=cart.item.pk %}"><span class="badge badge-light"><i class="las la-plus"></i></span></a>
                                                 </div><!-- End .cart-product-quantity -->                                 
                                             </td>
-											<td class="total-col">${{cart.get_total}}</td>
+											<td class="total-col">
+												{% if cart.variation_total %}
+													${{cart.variation_total}}
+												{% else %}
+												    ${{cart.get_total}}
+												{% endif %}
+												
+											</td>
 											<td class="remove-col"><a href="{% url "order:remove-item" pk=cart.item.pk %}"><button class="btn-remove"><i class="icon-close"></i></button></a></td>
 										</tr>
                                         {% endfor %}
