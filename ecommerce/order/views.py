@@ -2,6 +2,10 @@ from django.shortcuts import render,get_object_or_404,redirect
 
 from store.models import Product
 from order.models import Cart,Order
+from coupon.models import Coupon
+from coupon.forms import CouponCodeForm
+from django.utils import timezone
+
 # Create your views here.
 
 
@@ -42,20 +46,101 @@ def add_to_cart(request,pk):
         return redirect('store:index')
 
 
-def cart_view(request):
+
+
+'''def cart_view(request):
     carts = Cart.objects.filter(user=request.user,purchased=False)
     orders = Order.objects.filter(user=request.user,ordered=False)
 
     if carts.exists() and orders.exists():
         order = orders[0]
+        coupon_form = CouponCodeForm(request.POST)
 
+        if coupon_form.is_valid():
+            current_time = timezone.now()
+            code = coupon_form.cleaned_data.get('code')
+            coupon_obj = Coupon.objects.get(code=code,active=True)
+
+            if coupon_obj.valid_to >= current_time:
+                get_discount = (coupon_obj.discount / 100) * order.get_totals()
+                total_price_after_discount = order.get_totals() - get_discount
+                request.session['discount_total'] = total_price_after_discount 
+                request.session['coupon_code'] = code
+                return redirect('order:cart')
+            
+            else:
+                coupon_obj.active = False
+                coupon_obj.save()
+        total_price_after_discount = request.session.get('discount_total')
+        coupon_code = request.session.get('coupon_code')
         context= {
             'carts':carts,
-            'order':order
+            'order':order,
+            'coupon_form':coupon_form,
+            'coupon_code':coupon_code,
+            'total_price_after_discount':total_price_after_discount,
         }
 
         return render(request, 'store/cart.html', context=context)
-  
+'''
+
+
+def cart_view(request):
+    carts = Cart.objects.filter(user=request.user, purchased=False)
+    orders = Order.objects.filter(user=request.user, ordered=False)
+
+    coupon_code = None
+    total_price_after_discount = None
+
+    if carts.exists() and orders.exists():
+        order = orders[0]
+        coupon_form = CouponCodeForm(request.POST or None)  # Allow empty form for GET request
+
+        if coupon_form.is_valid():
+            current_time = timezone.now()
+            code = coupon_form.cleaned_data.get('code')
+
+            try:
+                coupon_obj = Coupon.objects.get(code=code, active=True)
+
+                # Check if the coupon is valid within the specified time range
+                if coupon_obj.valid_from <= current_time <= coupon_obj.valid_to:
+                    # Calculate discount
+                    get_discount = (coupon_obj.discount / 100) * order.get_totals()
+                    total_price_after_discount = order.get_totals() - get_discount
+                    request.session['discount_total'] = total_price_after_discount 
+                    request.session['coupon_code'] = code
+
+                    coupon_code = code  # Store the valid coupon code to show in the template
+                else:
+                    # Mark coupon as inactive if it's not in the valid time range
+                    coupon_obj.active = False
+                    coupon_obj.save()
+                    coupon_code = None  # Reset coupon code if not valid
+            except Coupon.DoesNotExist:
+                # Handle the case where the coupon doesn't exist or is inactive
+                coupon_code = None
+
+    # Get the current discount total from session if it exists
+    if 'discount_total' in request.session:
+        total_price_after_discount = request.session['discount_total']
+        coupon_code = request.session.get('coupon_code')
+    print("Current coupons in database:")
+    for coupon in Coupon.objects.all():
+      print(coupon.code, coupon.valid_from, coupon.valid_to, coupon.active)
+
+    context = {
+        'carts': carts,
+        'order': order,
+        'coupon_form': coupon_form,
+        'coupon_code': coupon_code,
+        'total_price_after_discount': total_price_after_discount,
+    }
+
+    return render(request, 'store/cart.html', context)  # Replace with your actual template path
+
+
+
 def remove_item_from_cart(request,pk):
     item = get_object_or_404(Product,pk=pk)
     orders = Order.objects.filter(user=request.user, ordered=False)
@@ -70,6 +155,8 @@ def remove_item_from_cart(request,pk):
             return redirect('order:cart')
     else:
         return redirect('order:cart')
+
+
 
 def increase_cart(request,pk):
     item = get_object_or_404(Product,pk=pk)
@@ -88,6 +175,8 @@ def increase_cart(request,pk):
     else :
         return redirect('store:index')
     
+
+
 
 def decrease_cart(request,pk):
     item = get_object_or_404(Product,pk=pk)

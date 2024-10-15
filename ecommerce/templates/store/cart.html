@@ -1,6 +1,8 @@
 
 {% extends "base.html" %}
 {% load static %}
+{% load crispy_forms_tags %}
+
 
 {% block body %}
      
@@ -88,9 +90,17 @@
 
 	                			<div class="cart-bottom">
 			            			<div class="cart-discount">
-			            				<form action="#">
+										{% if coupon_code %}
+										  <h6>Coupon Code: {{ coupon_code }}</h6>
+									   {% else %}
+										  <h6>No valid coupon applied.</h6>
+									   {% endif %}
+			            				<form action="" method="POST">
+										
 			            					<div class="input-group">
-				        						<input type="text" class="form-control" required placeholder="coupon code">
+												
+												{% csrf_token %}
+				        						{{ coupon_form.code}}
 				        						<div class="input-group-append">
 													<button class="btn btn-outline-primary-2" type="submit"><i class="icon-long-arrow-right"></i></button>
 												</div><!-- .End .input-group-append -->
@@ -153,7 +163,14 @@
 
 	                						<tr class="summary-total">
 	                							<td>Total:</td>
-	                							<td>$160.00</td>
+												<td>
+													{% if total_price_after_discount %}
+												    	${{total_price_after_discount}}
+													{% else %}
+													    ${{order.get_totals}}
+													{% endif %}
+											    </td>
+	                							
 	                						</tr><!-- End .summary-total -->
 	                					</tbody>
 	                				</table><!-- End .table table-summary -->
