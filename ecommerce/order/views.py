@@ -8,7 +8,7 @@ from django.utils import timezone
 
 # Create your views here.
 
-
+''''
 def add_to_cart(request,pk):
     
     item = get_object_or_404(Product,pk=pk)
@@ -44,7 +44,54 @@ def add_to_cart(request,pk):
         order.save()
         order.order_items(order_item[0])
         return redirect('store:index')
+'''
 
+def add_to_cart(request, pk):
+    item = get_object_or_404(Product, pk=pk)
+    
+    # Get or create the cart item (for the current user and item)
+    order_item, created = Cart.objects.get_or_create(item=item, user=request.user, purchased=False)
+    
+    # Check if there's an active order for the user
+    order_qs = Order.objects.filter(user=request.user, ordered=False)
+
+    if order_qs.exists():
+        order = order_qs[0]
+
+        # Check if the item is already in the cart
+        if order.order_items.filter(item=item).exists():
+            color = request.POST.get('color')
+            size = request.POST.get('size')
+            quantity = request.POST.get('quantity')
+            
+            # Update quantity if provided, otherwise increment by 1
+            if quantity:
+                order_item.quantity += int(quantity)
+            else:
+                order_item.quantity += 1
+
+            # Update color and size
+            order_item.color = color
+            order_item.size = size
+            order_item.save()
+
+            return redirect("store:index")
+        else:
+            # Add the item to the order if it's not already there
+            color = request.POST.get('color')
+            size = request.POST.get('size')
+
+            order_item.color = color
+            order_item.size = size
+            order_item.save()  # Save the order item first
+
+            order.order_items.add(order_item)  # Add the order item to the ManyToMany field
+            return redirect('store:index')
+    else:
+        # Handle the case where no active order exists (you can create an order here if necessary)
+        new_order = Order.objects.create(user=request.user)
+        new_order.order_items.add(order_item)  # Add the order item to the new order
+        return redirect('store:index')
 
 
 
@@ -85,12 +132,16 @@ def add_to_cart(request,pk):
 '''
 
 
+
+
 def cart_view(request):
     carts = Cart.objects.filter(user=request.user, purchased=False)
     orders = Order.objects.filter(user=request.user, ordered=False)
 
     coupon_code = None
     total_price_after_discount = None
+    order = None  # Initialize 'order' to avoid unbound errors
+    coupon_form = None  # Initialize 'coupon_form' in case no orders exist
 
     if carts.exists() and orders.exists():
         order = orders[0]
@@ -125,19 +176,25 @@ def cart_view(request):
     if 'discount_total' in request.session:
         total_price_after_discount = request.session['discount_total']
         coupon_code = request.session.get('coupon_code')
+
     print("Current coupons in database:")
     for coupon in Coupon.objects.all():
-      print(coupon.code, coupon.valid_from, coupon.valid_to, coupon.active)
+        print(coupon.code, coupon.valid_from, coupon.valid_to, coupon.active)
 
+    # Ensure order and coupon_form are passed to the context only if they exist
     context = {
         'carts': carts,
-        'order': order,
-        'coupon_form': coupon_form,
+        'order': order,  # Only pass order if it exists
+        'coupon_form': coupon_form,  # Only pass the form if orders exist
         'coupon_code': coupon_code,
         'total_price_after_discount': total_price_after_discount,
     }
 
-    return render(request, 'store/cart.html', context)  # Replace with your actual template path
+    return render(request, 'store/cart.html', context) 
+
+
+
+
 
 
 

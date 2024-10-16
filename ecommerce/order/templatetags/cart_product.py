@@ -9,9 +9,8 @@ def cart_view(user):
     if cart.exists():
      return cart
     
-    else: return("You haven't an active cart!")
-
-
+    else: cart
+    
 @register.filter
 def cart_total(user):
     order = Order.objects.filter(user=user, ordered=False)
