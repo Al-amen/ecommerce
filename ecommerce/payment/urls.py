@@ -6,5 +6,6 @@ app_name = 'payment'
 urlpatterns = [
     #  path('ok/', views.billingaddress, name='baku'),
     path('checkout/', views.CheckBillingAddressView.as_view(),name='checkout'),
+    path('paypal/',views.paypalPaymentMethod,name='paypal_payment'),
 ]
 

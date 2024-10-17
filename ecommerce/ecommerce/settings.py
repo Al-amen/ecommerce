@@ -34,6 +34,7 @@ INSTALLED_APPS = [
      'order',
      'coupon',
      'payment',
+    
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
@@ -48,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'ecommerce.urls'
@@ -103,6 +105,9 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -128,3 +133,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+PAYPAL_CLIENT_ID = "AdM4NaJNZRLWC2JcPhoVa2GAd2sKYhfB4HruwejmLW3TmtkAZ-1JV5yLV7Pm_4emBha3y5_4PoFalIaz"
+PAYPAL_CLIENT_SECRET = "EEASkz36yUXjS33UOiEodYtY58-I4m3pVDRo7T_jPFDcQqbs-JKHZiHe8oSdPOP6ZPOoUhlPyj4NA_7M"

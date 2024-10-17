@@ -134,9 +134,22 @@
 
 		                				<div class="accordion-summary" id="accordion-payment">
 										    <div class="card">
+												{% if pay_meth %}
+												<div class="" id="paypal-button-container"></div>
+												{% else %}
 												{{ payment_method.as_p}}
+												{% endif %}
+												
+												<br>
+												
+											
+											
+											
+												
 											</div>
 										       <br> 
+											   
+											
 										</div><!-- End .accordion -->
 
 		                				<button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">
@@ -154,3 +167,160 @@
         </main><!-- End .main -->
 
      {% endblock body %}
+
+
+{% comment %} 
+{% block paypal %}
+
+<script
+ src="https://www.paypal.com/sdk/js?client-id={{paypal_client_id}}"
+	data-sdk-integration-source="developer-studio">
+
+</script>
+
+
+
+<script>
+
+	function getCookie(name) {
+		let cookieValue = null;
+		if (document.cookie && document.cookie !== '') {
+			const cookies = document.cookie.split(';');
+			for (let i = 0; i < cookies.length; i++) {
+				const cookie = cookies[i].trim();
+				if (cookie.substring(0, name.length + 1) === (name + '=')) {
+					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+					break;
+				}
+			}
+		}
+		return cookieValue;
+	}
+	
+	const csrftoken = getCookie('csrftoken');
+
+	var url = {% url "payment:paypal_payment" %};
+
+	paypal.Buttons({
+		createOrder: function(data, actions) {
+			return actions.order.create({
+				purchase_units: [{
+					amount: {
+						value: '{{order_total}}' // Replace with the actual amount
+					}
+				}]
+			});
+		},
+		onApprove: function(data, actions) {
+			return actions.order.capture().then(function(details) {
+				//alert('Transaction completed by ' + details.payer.name.given_name);
+				 console.log(details)
+				 sendData()
+				 function sendData(){
+					fetch(url,{
+
+						method: "POST",
+						headers : {
+							'Content-type':"application/json",
+							'X-CSRFToken': csrftoken,
+						  },
+						body: JSON.stringify({
+								'order_id': details.id,
+								'payment_id': details.payer.payer_id,
+								'status': details.status,
+							}),
+						
+					})
+				 }
+				 window.location.href = {% url "store:index" %};
+					
+			});
+		}
+	}).render('#paypal-button-container');
+</script>
+
+
+{% endblock paypal %} {% endcomment %}
+
+
+{% block paypal %}
+
+    <!-- PayPal SDK Script -->
+    <script
+        src="https://www.paypal.com/sdk/js?client-id={{paypal_client_id}}"
+        data-sdk-integration-source="developer-studio">
+    </script>
+
+    <script>
+        // Function to get CSRF token from the cookie
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        const csrftoken = getCookie('csrftoken');  // Fetch CSRF token from cookie
+        const paymentUrl = "{% url 'payment:paypal_payment' %}";  // URL for backend handling of payment
+        const orderTotal = '{{ order_total }}';  // Dynamic order total
+
+        // PayPal Buttons integration
+        paypal.Buttons({
+            createOrder: function(data, actions) {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: orderTotal  // Replace with the actual amount dynamically from template
+                        }
+                    }]
+                });
+            },
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(details) {
+                    console.log('Transaction completed by:', details.payer.name.given_name);
+
+                    // Send payment details to the Django backend
+                    fetch(paymentUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrftoken  // Ensure CSRF token is sent for protection
+                        },
+                        body: JSON.stringify({
+                            'order_id': details.id,
+                            'payment_id': details.payer.payer_id,
+                            'status': details.status
+                        })
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            window.location.href = "{% url 'store:index' %}";  // Redirect after successful payment
+                        } else {
+                            return response.json().then(data => {
+                                console.error('Payment processing error:', data);
+                                alert('There was an error processing your payment.');
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Fetch error:', error);
+                        alert('Network or server error occurred.');
+                    });
+                });
+            },
+            onError: function(err) {
+                console.error('PayPal button error:', err);
+                alert('An error occurred during the PayPal transaction.');
+            }
+        }).render('#paypal-button-container');  // Render PayPal button
+    </script>
+
+{% endblock paypal %}
