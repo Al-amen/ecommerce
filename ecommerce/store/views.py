@@ -10,7 +10,11 @@ class HomeListView(ListView):
     model = models.Product
     template_name = 'store/index.html'
     context_object_name = "products"
-
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["banners"] = models.Banner.objects.filter(is_active=True).order_by('-id')[0:3]
+        return context
+    
 
 class ProductDetailView(DetailView):
     model = models.Product
