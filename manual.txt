@@ -1,0 +1,6 @@
+if you want to create virtualenv at specific python version
+---------------------------------------------------------
+
+py -3.11 -m pip install virtualenv
+py -3.11 -m virtualenv --version
+py -3.11 -m virtualenv myenv

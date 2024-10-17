@@ -10,5 +10,6 @@ urlpatterns = [
     path('increase<int:pk>/',views.increase_cart, name='increase'),
     path('decrease/<int:pk>/',views.decrease_cart, name='decrease'),
 
+
     
 ]

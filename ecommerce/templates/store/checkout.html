@@ -61,6 +61,12 @@
 											<div class="col-lg-12">
 												<!-- Last Name Field -->
 												<div class="form-group">
+													{{ billing_address.city|as_crispy_field }}
+												</div>
+											</div>
+											<div class="col-lg-12">
+												<!-- Last Name Field -->
+												<div class="form-group">
 													{{ billing_address.address1|as_crispy_field }}
 												</div>
 											</div>
@@ -242,7 +248,7 @@
 
 {% endblock paypal %} {% endcomment %}
 
-
+{% comment %} 
 {% block paypal %}
 
     <!-- PayPal SDK Script -->
@@ -269,7 +275,7 @@
         }
         
         const csrftoken = getCookie('csrftoken');  // Fetch CSRF token from cookie
-        const paymentUrl = "{% url 'payment:paypal_payment' %}";  // URL for backend handling of payment
+        //const paymentUrl = "{% url 'payment:paypal_payment' %}";  // URL for backend handling of payment
         const orderTotal = '{{ order_total }}';  // Dynamic order total
 
         // PayPal Buttons integration
@@ -323,4 +329,4 @@
         }).render('#paypal-button-container');  // Render PayPal button
     </script>
 
-{% endblock paypal %}
+{% endblock paypal %} {% endcomment %}

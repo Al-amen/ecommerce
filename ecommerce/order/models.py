@@ -84,7 +84,7 @@ class Order(models.Model):
     PAYMENT_METHOD = {
         ('Cash on Delivery','Cash on Delivery'),
         ('PayPal', 'PayPal'),
-        ('SSLcommercez', 'SSLcommercez'),
+        ('SSLcommerz', 'SSLcommerz'),
     }
 
     user = models.ForeignKey(User,on_delete=models.CASCADE)

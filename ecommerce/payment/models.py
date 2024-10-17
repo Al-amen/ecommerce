@@ -8,6 +8,7 @@ class BillingAddress(models.Model):
     first_name = models.CharField(max_length=20, blank=True,null=True)
     last_name = models.CharField(max_length=20, blank=True,null=True)
     country_name = models.CharField(max_length=100, blank=True,null=True)
+    city = models.CharField(max_length=200,blank=True,null=True)
     address1 = models.TextField(max_length=200,blank=True,null=True)
     address2 = models.TextField(max_length=200,blank=True,null=True)
     zipcode = models.CharField(max_length=15,blank=True,null=True)

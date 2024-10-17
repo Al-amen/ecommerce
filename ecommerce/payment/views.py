@@ -60,6 +60,10 @@ from payment.models import BillingAddress
 from payment.forms import BillingAddressForm, PaymentMethodForm
 from order.models import Cart, Order
 from django.views.generic import TemplateView
+from django.views.decorators.csrf import csrf_exempt
+
+from pysslcmz.payment import SSLCSession
+from decimal import Decimal
 
 
 class CheckBillingAddressView(TemplateView):
@@ -124,9 +128,42 @@ class CheckBillingAddressView(TemplateView):
                 print('order summited successfully')
                 return redirect('store:index')
             
-            if pay_method.payment_method == "PayPal":
-                return redirect(reverse('payment:checkout') + "?pay_meth=" + str(pay_method.payment_method))
+            # if pay_method.payment_method == "PayPal":
+            #     return redirect(reverse('payment:checkout') + "?pay_meth=" + str(pay_method.payment_method))
             
+            #ssl commerce
+            if pay_method.payment_method == "SSLcommerz":
+                print("hello im ssl")
+                store_id = settings.SSL_STORE_ID 
+                store_pass = settings.SSL_PASS   
+                mypayment = SSLCSession(sslc_is_sandbox=True, sslc_store_id=store_id, sslc_store_pass=store_pass) 
+
+                status_url = request.build_absolute_uri(reverse('payment:status'))
+                mypayment.set_urls(success_url=status_url, fail_url=status_url, cancel_url=status_url, ipn_url=status_url) 
+
+                order_qs = Order.objects.filter(user=request.user, ordered=False)
+                order_items = order_qs[0].order_items.all()
+                order_item_count = order_qs[0].order_items.count()
+                order_total = order_qs[0].get_totals()
+                mypayment.set_product_integration(total_amount=Decimal(order_total), currency='BDT', product_category='clothing', product_name=order_items, num_of_item=order_item_count, shipping_method='Courier', product_profile='None')
+
+
+                current_user = request.user
+                mypayment.set_customer_info(name=current_user.profile.full_name, email=current_user.profile.email, address1=current_user.profile.address, address2=current_user.profile.address, city=current_user.profile.city, postcode=current_user.profile.zipcode, country=current_user.profile.country, phone=current_user.profile.phone)
+
+
+                billing_address = BillingAddress.objects.filter(user=request.user)[0]
+                mypayment.set_shipping_info(shipping_to=billing_address.address1, address=billing_address.address2, city=billing_address.city, postcode=billing_address.zipcode, country=billing_address.country_name)
+
+                
+                response_data = mypayment.init_payment()
+                print("==============================")
+                print(response_data)
+                print("================================")
+                return redirect(response_data['GatewayPageURL'])
+
+            return redirect('payment:checkout')
+
                 
         # If forms are not valid, render the page with errors
         context = {
@@ -138,7 +175,36 @@ class CheckBillingAddressView(TemplateView):
         return render(request, self.template_name, context)
     
 
+@csrf_exempt
+def sslc_status(request):
+    
+    if request.method == 'POST' or request.method == 'post':
+        payment_data = request.POST
+        status = payment_data['status']
+        val_id = payment_data['val_id']
+        tran_id = payment_data['tran_id']
+        print("++++++++++++++++++++++")
+        print(payment_data)
+        print("+++++++++++++++++++++++++++")
+        return HttpResponseRedirect(reverse('payment:sslc_complete',kwargs={'val_id':val_id, 'tran_id':tran_id}))
+        
+        
+    return render(request, 'status.html')
 
+def sslc_complete(request,val_id,tran_id):
+    
+    Order_qs = Order.objects.filter(user=request.user,ordered=False)
+    order=Order_qs[0]
+    order.ordered=True
+    order.order_id=val_id
+    order.payment_id=tran_id
+    order.save()
+    car_items = Cart.objects.filter(user=request.user,purchased=False)
+    for item in car_items:
+        item.purchased=True
+        item.save()
+
+    return redirect('store:index')
 
 
 
@@ -173,39 +239,32 @@ from django.shortcuts import redirect
 def paypalPaymentMethod(request):
     if request.method == "POST":
         try:
-            # Parse the JSON data from the request body
+           
             data = json.loads(request.body)
             order_id = data.get('order_id')
             payment_id = data.get('payment_id')
             status = data.get('status')
-
-            # Ensure all necessary fields are provided
             if not order_id or not payment_id or not status:
                 return JsonResponse({'error': 'Missing required payment data.'}, status=400)
 
-            # Proceed only if payment status is "COMPLETED"
             if status == "COMPLETED":
                 if request.user.is_authenticated:
-                    # Retrieve the user's active order that hasn't been marked as ordered
+                  
                     order_qs = Order.objects.filter(user=request.user, ordered=False)
-
-                    # Ensure there's an active order
                     if order_qs.exists():
-                        order = order_qs.first()  # Safely get the first order
-
-                        # Update the order with payment details and mark it as ordered
+                        order = order_qs.first()
                         order.ordered = True
                         order.order_id = order_id
                         order.payment_id = payment_id
                         order.save()
 
-                        # Mark the user's cart items as purchased
+                      
                         cart_items = Cart.objects.filter(user=request.user, purchased=False)
                         for item in cart_items:
                             item.purchased = True
                             item.save()
 
-                        # Redirect to store index after successful payment
+                        
                         return redirect('store:index')
 
                     else:
@@ -213,7 +272,7 @@ def paypalPaymentMethod(request):
                 else:
                     return JsonResponse({'error': 'User not authenticated.'}, status=401)
 
-            # Return error if payment was not completed successfully
+           
             return JsonResponse({'error': 'Payment not completed.'}, status=400)
 
         except json.JSONDecodeError:
