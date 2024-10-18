@@ -17,9 +17,9 @@
     <meta name="description" content="Molla - Bootstrap eCommerce Template">
     <meta name="author" content="p-themes">
     <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ request.user|favicon }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ request.user|favicon }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ request.user|favicon }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ request|favicon }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ request|favicon }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ request|favicon }}">
     <link rel="manifest" href="{% static 'assets/images/icons/site.html' %}">
     <link rel="mask-icon" href="{% static 'assets/images/icons/safari-pinned-tab.svg' %}" color="#666666">
     <link rel="shortcut icon" href="{{ request.user|favicon }}">
@@ -101,8 +101,8 @@
                             <i class="icon-bars"></i>
                         </button>
                         
-                        <a href="index.html" class="logo">
-                            <img src="{{request.user|logo}}" alt="E-Shop Logo" width="105" height="25">
+                        <a href="{% url "store:index" %}" class="logo">
+                            <img src="{{request|logo}}" alt="E-Shop Logo" width="105" height="25">
                         </a>
                     </div><!-- End .header-left -->
 

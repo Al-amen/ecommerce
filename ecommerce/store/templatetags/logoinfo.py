@@ -6,22 +6,24 @@ register = template.Library()
 
 
 @register.filter
-def logo(user):
-    if user.is_authenticated:
-        logo = MyLogo.objects.filter(user=user,is_active=True).order_by('-id').first()
-        return logo.image.url
-    else:
-         logo = MyLogo.objects.filter(usis_active=True).order_by('-id').first()
-         return logo.image.url
+def logo(request):
+  
+        logo = MyLogo.objects.filter(is_active=True).order_by('-id').first()
+        if logo and logo.image:
+             
+          return logo.image.url
+        else:
+            return '/static/assets/images/logo.png' 
 
+    
 
+  
 
 
 @register.filter
-def favicon(user):
-    if user.is_authenticated:
-        favicon = MyFavicon.objects.filter(user=user,is_active=True).order_by('-id').first()
+def favicon(request):
+    favicon = MyFavicon.objects.filter(is_active=True).order_by('-id').first()
+    if favicon and favicon.image:
         return favicon.image.url
-    else:
-         favicon = MyFavicon.objects.filter(user=user,is_active=True).order_by('-id').first()
-         return favicon.image.url
+    else:   
+        return '/static/assets/images/favicon_defualt.png' 

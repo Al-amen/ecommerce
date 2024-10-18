@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from account.forms import RegistrationForm
+from account.forms import RegistrationForm,ProfileForm
 from django.http import HttpResponse
 
 #authentication function
@@ -8,6 +8,7 @@ from order.models import Cart, Order
 from payment.models import BillingAddress
 from account.models import Profile
 from payment.forms import BillingAddressForm
+
 
 from django.views.generic import TemplateView
 
@@ -54,15 +55,28 @@ def Customerlogin(request):
     return render(request, 'login.html')
 
 
+
+def logout_view(request):
+    if request.user.is_authenticated:
+        logout(request)
+        return redirect('store:index')
+    else:
+        return redirect("account:login")
+    
+
+
 class ProfileView(TemplateView):
     def get(self, request, *args, **kwargs):
        orders = Order.objects.filter(user=request.user, ordered = True)
        billingaddress = BillingAddress.objects.get(user=request.user)
        billingaddress_form = BillingAddressForm(instance=billingaddress)
+       profile_obj = Profile.objects.get(user=request.user)
+       profileForm = ProfileForm(instance=profile_obj)
        context = {
            
           'orders' : orders,
            'billingaddress': billingaddress_form ,
+           'profileForm':profileForm ,
 
        }
 
@@ -71,11 +85,14 @@ class ProfileView(TemplateView):
     def post(self, request, *args, **kwargs):
         if request.method == 'POST' or request.method == 'post':
              billingaddress = BillingAddress.objects.get(user=request.user)
-
              billingaddress_form = BillingAddressForm(request.POST,instance=billingaddress)
-            
-             if billingaddress_form.is_valid():
+
+             profile_obj = Profile.objects.get(user=request.user)
+             profileForm = ProfileForm(request.POST,instance=profile_obj)
+
+             if billingaddress_form.is_valid() or profileForm.is_valid():
                 billingaddress_form.save()
+                profileForm.save()
                 return redirect('account:profile')
 
                
