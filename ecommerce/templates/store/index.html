@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% block title %}Home || E-SHOP {% endblock title %}
 {% load static %}
 {% block body %}
 
@@ -186,7 +187,7 @@
                                     <div class="product product-2">
                                         <figure class="product-media">
                                             <span class="product-label label-circle label-top">Top</span>
-                                            <a href="product.html">
+                                            <a href=" {% url "store:product_detail" product.slug %} ">
                                                 <img src="{{product.image.url}}" alt="Product image" class="product-image">
                                             </a>
 

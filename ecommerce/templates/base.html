@@ -6,23 +6,25 @@
 <head>
     {% load category %}
     {% load cart_product %}
+    {% load logoinfo %}
+    
     {% load static %}
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Molla - Bootstrap eCommerce Template</title>
+    <title>{% block title %} {% endblock title %}</title>
     <meta name="keywords" content="HTML5 Template">
     <meta name="description" content="Molla - Bootstrap eCommerce Template">
     <meta name="author" content="p-themes">
     <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'assets/images/icons/apple-touch-icon.png' %}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'assets/images/icons/favicon-32x32.png' %}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'assets/images/icons/favicon-16x16.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ request.user|favicon }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ request.user|favicon }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ request.user|favicon }}">
     <link rel="manifest" href="{% static 'assets/images/icons/site.html' %}">
     <link rel="mask-icon" href="{% static 'assets/images/icons/safari-pinned-tab.svg' %}" color="#666666">
-    <link rel="shortcut icon" href="{% static 'assets/images/icons/favicon.ico' %}">
-    <meta name="apple-mobile-web-app-title" content="Molla">
-    <meta name="application-name" content="Molla">
+    <link rel="shortcut icon" href="{{ request.user|favicon }}">
+    <meta name="apple-mobile-web-app-title" content="E-Shop">
+    <meta name="application-name" content="E-Shop">
     <meta name="msapplication-TileColor" content="#cc9966">
     <meta name="msapplication-config" content="{% static 'assets/images/icons/browserconfig.xml' %}">
     <meta name="theme-color" content="#ffffff">
@@ -100,18 +102,19 @@
                         </button>
                         
                         <a href="index.html" class="logo">
-                            <img src="{% static 'assets/images/demos/demo-4/logo.png' %}" alt="Molla Logo" width="105" height="25">
+                            <img src="{{request.user|logo}}" alt="E-Shop Logo" width="105" height="25">
                         </a>
                     </div><!-- End .header-left -->
 
                     <div class="header-center">
                         <div class="header-search header-search-extended header-search-visible d-none d-lg-block">
                             <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
-                            <form action="#" method="get">
+                            <form action="{% url 'store:search_results' %}" method="POST">
+                                {% csrf_token %}
                                 <div class="header-search-wrapper search-wrapper-wide">
                                     <label for="q" class="sr-only">Search</label>
                                     <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
-                                    <input type="search" class="form-control" name="q" id="q" placeholder="Search product ..." required>
+                                    <input type="search" class="form-control" name="search_product" id="q" placeholder="Search product ..." required>
                                 </div><!-- End .header-search-wrapper -->
                             </form>
                         </div><!-- End .header-search -->
@@ -159,11 +162,12 @@
                             <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
                                 <div class="icon">
                                     <i class="icon-shopping-cart"></i>
-                                    {% if request.user.is_authenticated %}
+                                    {% comment %} {% if request.user.is_authenticated %}
                                          <span class="cart-count">{{request.user|cart_count}}</span>
                                     {% else %}
                                          <span class="cart-count">{{request.user|cart_count}}</span>
-                                    {% endif %}
+                                    {% endif %} {% endcomment %}
+                                    <span class="cart-count">{{ request.user|cart_count }}</span>
                                   
                                 </div>
                                 <p>Cart</p>
@@ -243,7 +247,7 @@
                                         <li class="item-lead"><a href="#">Daily offers</a></li>
                                         <li class="item-lead"><a href="#">Gift Ideas</a></li>
                             
-                                        {% for cat in request.user|category %}
+                                        {% comment %} {% for cat in request.user|category %}
                                             <li>
                                                 <!-- Display the parent category name -->
                                                 <a href="#">{{ cat.name }}</a>
@@ -262,7 +266,32 @@
                                                     </ul>
                                                 {% endif %}
                                             </li>
+                                        {% endfor %} {% endcomment %}
+
+                                        {% if request.user|category %}
+                                        {% for cat in request.user|category %}
+                                            <li>
+                                                <!-- Display the parent category name -->
+                                                <a href="#">{{ cat.name }}</a>
+                                                
+                                                <!-- Check if the category has children -->
+                                                {% if cat.children.exists %}
+                                                    <ul>
+                                                        <!-- Loop through the subcategories (children) -->
+                                                        {% for subcategory in cat.children.all %}
+                                                            <li>
+                                                                <a href="#">{{ subcategory.name }}</a>
+                                                            </li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                {% endif %}
+                                            </li>
                                         {% endfor %}
+                                        {% endif %}
+
+
+
+
                                     </ul><!-- End .menu-vertical -->
                                 </nav><!-- End .side-nav -->
                             </div><!-- End .dropdown-menu -->

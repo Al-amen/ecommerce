@@ -5,7 +5,7 @@
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.urls import reverse
-
+from django.contrib.auth import get_user_model
 
 
 
@@ -113,3 +113,26 @@ class Banner(models.Model):
     def __str__(self):
         return self.product.name
     
+
+
+User = get_user_model()
+
+class MyLogo(models.Model):
+   user = models.ForeignKey(User,on_delete=models.CASCADE)
+   image = models.ImageField(unique='logo')
+   is_active=models.BooleanField(default=True)
+   is_created = models.DateTimeField(auto_now_add=True)
+
+   def __str__(self):
+       return str(self.image)
+
+
+
+class MyFavicon(models.Model):
+   user = models.ForeignKey(User,on_delete=models.CASCADE)
+   image=models.ImageField(upload_to='favicon')
+   is_active = models.BooleanField(default=False)
+   is_created = models.DateTimeField(auto_now_add=True)
+
+   def __str__(self):
+       return str(self.image)

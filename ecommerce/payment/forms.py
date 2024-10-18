@@ -6,8 +6,9 @@ from order.models import Order
 class BillingAddressForm(forms.ModelForm):
     class Meta:
         model = BillingAddress
-        fields = ['first_name', 'last_name', 'country_name','city', 'address1','address2', 'zipcode', 'phone_number']
-    
+        #fields = ['first_name', 'last_name', 'country_name','city', 'address1','address2', 'zipcode', 'phone_number']
+        fields = '__all__'
+        exclude = ('user',)
     
 
 class PaymentMethodForm(forms.ModelForm):
