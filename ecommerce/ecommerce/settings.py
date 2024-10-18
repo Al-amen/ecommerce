@@ -18,6 +18,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL ='account.User'
+AUTHENTICATION_BACKENDS = ['account.backend.UsernameOrEmailBackend']
 
 # Application definition
 

@@ -4,13 +4,19 @@ from django.db.models.signals import post_save
 from django.contrib.auth.models import BaseUserManager,AbstractBaseUser,PermissionsMixin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
-
+from django.core.exceptions import ValidationError
 
 class CustomManager(BaseUserManager):
     def create_user(self,email,user_name, password, **extra_fields):
         if not email:
             raise ValueError('Email address is required')
         email = self.normalize_email(email)
+         # Check if a user with this email already exists
+        if self.model.objects.filter(email=email).exists():
+            raise ValidationError(f"A user with this email '{email}' already exists.")
+        if self.model.objects.filter(user_name=user_name).exists():
+            raise ValidationError(f"A user with this username '{user_name}' already exists.")
+        
         user = self.model(email=email, user_name=user_name, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
