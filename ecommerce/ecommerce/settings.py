@@ -37,6 +37,7 @@ INSTALLED_APPS = [
      'coupon',
      'payment',
      'django_cleanup.apps.CleanupConfig',
+     'notification',
     
 ]
 
