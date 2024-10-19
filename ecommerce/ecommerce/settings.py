@@ -18,7 +18,11 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL ='account.User'
-AUTHENTICATION_BACKENDS = ['account.backend.UsernameOrEmailBackend']
+# AUTHENTICATION_BACKENDS = ['account.backend.UsernameOrEmailBackend']
+AUTHENTICATION_BACKENDS = [
+    'account.backend.UsernameOrEmailBackend',  # Correct path to the custom backend
+    'django.contrib.auth.backends.ModelBackend',  # Default Django authentication backend
+]
 
 # Application definition
 
@@ -143,3 +147,13 @@ PAYPAL_CLIENT_SECRET = "EEASkz36yUXjS33UOiEodYtY58-I4m3pVDRo7T_jPFDcQqbs-JKHZiHe
 
 SSL_STORE_ID = "pstu67116a930985c"
 SSL_PASS = "pstu67116a930985c@ssl"
+
+
+
+#email access
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'cleavercode@gmail.com'
+EMAIL_HOST_PASSWORD = 'heleplsosoyjarrj'

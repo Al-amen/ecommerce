@@ -17,7 +17,7 @@ class UserObj(models.Model):
         return f"{self.user.email} notification objects"
     
     @receiver(post_save, sender=User)
-    def  create_notification_object(sender, instance, created , **kwargs):
+    def  create_notification_object(sender, instance, created ,  **kwargs):
 
         if created:
             UserObj.objects.create(user=instance)

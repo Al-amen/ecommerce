@@ -1,28 +1,23 @@
-from django.contrib.auth import get_user,get_user_model
 from django.contrib.auth.backends import ModelBackend
 from django.db.models import Q
-from django.db.models.base import Model
+from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-
 class UsernameOrEmailBackend(ModelBackend):
-    """
-    Custom authentication backend that allows users to log in with either their email or username.
-    """
-
     def authenticate(self, request, username=None, password=None, **kwargs):
+        print(f"Authenticating user: {username}")  # Debugging info
         try:
-            # Check if user is logging in with email or username
             user = User.objects.get(Q(user_name__iexact=username) | Q(email__iexact=username))
         except User.DoesNotExist:
-            User().set_password(password)
-            return
-        
+            print("User not found")  # Debugging info
+            return None
         except User.MultipleObjectsReturned:
-            user = User.objects.filter(Q(user_name__iexact=username) | Q(email__iexact=username)).order_by('id').first()
+            user = User.objects.filter(Q(user_name__iexact=username) | Q(email__iexact=username)).first()
 
-        # Check the password
         if user.check_password(password) and self.user_can_authenticate(user):
+            print("Authentication successful")  # Debugging info
             return user
-      
+        else:
+            print("Password incorrect or user can't authenticate")  # Debugging info
+            return None

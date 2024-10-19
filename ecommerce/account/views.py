@@ -21,8 +21,10 @@ def register(request):
         if request.method == "post" or request.method == "POST":
              form = RegistrationForm(request.POST)
              if form.is_valid():
-                 form.save()
-                 return HttpResponse("your account has been created")
+                  user = form.save(commit=False)
+                  user.is_active = True 
+                  user.save()
+                  return HttpResponse("your account has been created")
      
 
         context = {
@@ -36,22 +38,32 @@ def register(request):
 def Customerlogin(request):
     
     if request.user.is_authenticated:
-        return HttpResponse("you are already logined")
-    
-    else:
-        if request.method == 'post' or request.method == 'POST':
-            username = request.POST.get('username')
-            password = request.POST.get('password')
-            customer = authenticate(request,username=username,password=password)
-            print(username)
-            print(password)
-            print(customer)
-            if customer is not None:
-                login(request,customer)
-                return HttpResponse("sucessfully logined!")
+        return HttpResponse("You are already logged in")
+
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        print(f"Login attempt with username: {username} and password: {password}")
+
+        # Authenticate using the custom backend
+        customer = authenticate(request, username=username, password=password)
+
+        if customer is None:
+            print(f"Failed to authenticate user: {username}")
+        else:
+            print(f"User {customer} authenticated successfully")
+
+        if customer is not None:
+            if customer.is_active:
+                login(request, customer)
+                return HttpResponse("Successfully logged in!")
             else:
-                return HttpResponse("404")
-    
+                return HttpResponse("User is inactive or not verified.")
+        else:
+            return HttpResponse("Invalid username or password.")
+
+    # Handle GET requests or any other method
     return render(request, 'login.html')
 
 

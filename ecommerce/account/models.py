@@ -7,20 +7,24 @@ from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 
 class CustomManager(BaseUserManager):
-    def create_user(self,email,user_name, password, **extra_fields):
+    def create_user(self, email, user_name, password, **extra_fields):
         if not email:
             raise ValueError('Email address is required')
         email = self.normalize_email(email)
-         # Check if a user with this email already exists
+        
+        # Check if a user with this email or username already exists
         if self.model.objects.filter(email=email).exists():
             raise ValidationError(f"A user with this email '{email}' already exists.")
         if self.model.objects.filter(user_name=user_name).exists():
             raise ValidationError(f"A user with this username '{user_name}' already exists.")
         
-        user = self.model(email=email, user_name=user_name, **extra_fields)
+        extra_fields.setdefault('is_active', True)
+        # Create the user and set is_active to True
+        user = self.model(email=email, user_name=user_name,  **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
+
 
     def create_superuser(self,email,user_name,password,**extra_fields):
         extra_fields.setdefault('is_staff', True)
@@ -48,8 +52,8 @@ class User(AbstractBaseUser,PermissionsMixin):
     )
     email = models.EmailField(unique=True)
     user_name = models.CharField(max_length=100,unique=True)
-    REQUIRED_FIELDS = ['user_name']
     USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['user_name']
     user_type = models.CharField(max_length=100, choices=USER_TYPE,default=USER_TYPE[0])
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)

@@ -11,6 +11,7 @@ urlpatterns = [
     path('order/',include('order.urls')),
     # path('coupon/',include('coupon.urls')),
     path('payment/',include('payment.urls')),
+    path('notification',include('notification.urls')),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
