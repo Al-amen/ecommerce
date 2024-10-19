@@ -42,6 +42,7 @@ INSTALLED_APPS = [
      'payment',
      'django_cleanup.apps.CleanupConfig',
      'notification',
+     'dashboard',
     
 ]
 
