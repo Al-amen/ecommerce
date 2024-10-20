@@ -107,3 +107,18 @@ class Order(models.Model):
                 total += float(order_item.get_total())
         
         return total
+    
+
+
+    # WishList model
+class WishList(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='wishlist')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='wishlists')
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.user_name} - {self.product.name}"
+
+    class Meta:
+        unique_together = ('user', 'product')  # Ensure the same product isn't added multiple times by the same user.
+        ordering = ['-added_at']

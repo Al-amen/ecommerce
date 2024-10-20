@@ -57,7 +57,7 @@ def Customerlogin(request):
         if customer is not None:
             if customer.is_active:
                 login(request, customer)
-                return HttpResponse("Successfully logged in!")
+                return  redirect('store:index')
             else:
                 return HttpResponse("User is inactive or not verified.")
         else:

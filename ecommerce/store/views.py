@@ -19,16 +19,7 @@ class HomemplateView(TemplateView):
         
         return render(request,'store/index.html',context=context)
     
-    # def post(self, request, *args, **kwargs):
-    #       if request.method == 'POST' or request.method == "post":
-    #           search_product = request.POST.get('search_product')
-    #           products = Product.objects.filter(name__icontains=search_product).order_by('id')
-
-    #           context = {
-    #                 'products':products
-    #           }
-    #           return render(request,'store/index.html',context=context)
-
+   
 
 class SearchResultsView(TemplateView):
     def post(self, request, *args, **kwargs):

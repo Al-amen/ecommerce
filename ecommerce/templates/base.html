@@ -54,45 +54,9 @@
         <header class="header header-intro-clearance header-4">
             <div class="header-top">
                 <div class="container">
-                    <div class="header-left">
-                        <a href="tel:#"><i class="icon-phone"></i>Call: +0123 456 789</a>
-                    </div><!-- End .header-left -->
+               
 
-                    <div class="header-right">
-
-                        <ul class="top-menu">
-                            <li>
-                                <a href="#">Links</a>
-                                <ul>
-                                    <li>
-                                        <div class="header-dropdown">
-                                            <a href="#">USD</a>
-                                            <div class="header-menu">
-                                                <ul>
-                                                    <li><a href="#">Eur</a></li>
-                                                    <li><a href="#">Usd</a></li>
-                                                </ul>
-                                            </div><!-- End .header-menu -->
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="header-dropdown">
-                                            <a href="#">English</a>
-                                            <div class="header-menu">
-                                                <ul>
-                                                    <li><a href="#">English</a></li>
-                                                    <li><a href="#">French</a></li>
-                                                    <li><a href="#">Spanish</a></li>
-                                                </ul>
-                                            </div><!-- End .header-menu -->
-                                        </div>
-                                    </li>
-                                    <li><a href="#signin-modal" data-toggle="modal">Sign in / Sign up</a></li>
-                                </ul>
-                            </li>
-                        </ul><!-- End .top-menu -->
-                    </div><!-- End .header-right -->
-
+                
                 </div><!-- End .container -->
             </div><!-- End .header-top -->
 
@@ -128,159 +92,135 @@
 
 
                     <div class="header-right">
-                        <div class="dropdown compare-dropdown">
-                            <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static" title="Compare Products" aria-label="Compare Products">
-                                <div class="icon">
-                                    <i class="icon-random"></i>
-                                </div>
-                                <p>Compare</p>
-                            </a>
-
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <ul class="compare-products">
-                                    <li class="compare-product">
-                                        <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                                        <h4 class="compare-product-title"><a href="product.html">Blue Night Dress</a></h4>
-                                    </li>
-                                    <li class="compare-product">
-                                        <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                                        <h4 class="compare-product-title"><a href="product.html">White Long Skirt</a></h4>
-                                    </li>
-                                </ul>
-
-                                <div class="compare-actions">
-                                    <a href="#" class="action-link">Clear All</a>
-                                    <a href="#" class="btn btn-outline-primary-2"><span>Compare</span><i class="icon-long-arrow-right"></i></a>
-                                </div>
-                            </div><!-- End .dropdown-menu -->
-                        </div><!-- End .compare-dropdown -->
-
+                        <!-- Wishlist Section -->
                         <div class="wishlist">
-                            <a href="wishlist.html" title="Wishlist">
+                            <a href="{% url 'order:view_wishlist' %}" title="Wishlist">
                                 <div class="icon">
                                     <i class="icon-heart-o"></i>
-                                    <span class="wishlist-count badge">3</span>
+                                    <span class="wishlist-count badge">{{ request.user|wishlist_count }}</span>
                                 </div>
                                 <p>Wishlist</p>
                             </a>
-                        </div><!-- End .compare-dropdown -->
-
+                        </div>
+                    
+                        <!-- Cart Dropdown -->
                         <div class="dropdown cart-dropdown">
                             <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
                                 <div class="icon">
                                     <i class="icon-shopping-cart"></i>
-                                    {% comment %} {% if request.user.is_authenticated %}
-                                         <span class="cart-count">{{request.user|cart_count}}</span>
-                                    {% else %}
-                                         <span class="cart-count">{{request.user|cart_count}}</span>
-                                    {% endif %} {% endcomment %}
                                     <span class="cart-count">{{ request.user|cart_count }}</span>
-                                  
                                 </div>
                                 <p>Cart</p>
                             </a>
-                        
-
+                    
                             <div class="dropdown-menu dropdown-menu-right">
                                 <div class="dropdown-cart-products">
-                                   
                                     {% if request.user.is_authenticated %}
-                                      {% if request.user|cart_view %}
                                         {% for cart in request.user|cart_view %}
-                                             {% if cart.quantity %}
+                                            {% if cart.quantity %}
                                                 <div class="product">
                                                     <div class="product-cart-details">
                                                         <h4 class="product-title">
                                                             <a href="product.html">{{cart.item.name}}</a>
                                                         </h4>
-
                                                         <span class="cart-product-info">
                                                             <span class="cart-product-qty">{{cart.quantity}}</span>
                                                             x ${{cart.get_total}}
                                                         </span>
-                                                    </div><!-- End .product-cart-details -->
-                                                
-                                                        <figure class="product-image-container">
-                                                            
-                                                            <a href="product.html" class="product-image">
-                                                                <img src="{{cart.item.image.url}}" alt="product">
-                                                            </a>
-                                                        </figure>
-                                                
+                                                    </div>
+                                                    <figure class="product-image-container">
+                                                        <a href="product.html" class="product-image">
+                                                            <img src="{{cart.item.image.url}}" alt="product">
+                                                        </a>
+                                                    </figure>
                                                     <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
                                                 </div>
                                             {% endif %}
-
-                                         {% endfor %}<!-- End .product -->
-                                        {% endif %}
+                                        {% endfor %}
                                     {% endif %}
-                                </div><!-- End .cart-product -->
-
-
+                                </div>
+                    
                                 <div class="dropdown-cart-total">
                                     <span>Total</span>
-                                   {% if request.user.is_authenticated %}
-                                      <span class="cart-total-price">${{request.user|cart_total}}</span>
-                                   {% else %}
-                                       <span class="cart-total-price">${{request.user|cart_total}}</span>
-                                   {% endif %}
-                                    
-                                </div><!-- End .dropdown-cart-total -->
-
+                                    <span class="cart-total-price">${{request.user|cart_total}}</span>
+                                </div>
+                    
                                 <div class="dropdown-cart-action">
                                     <a href="{% url 'order:cart' %}" class="btn btn-primary">View Cart</a>
-                                    <a href="{% url 'payment:checkout'  %}" class="btn btn-outline-primary-2"><span>Checkout</span><i class="icon-long-arrow-right"></i></a>
-                                </div><!-- End .dropdown-cart-total -->
-                            </div><!-- End .dropdown-menu -->
-                        </div><!-- End .cart-dropdown -->
-
-
-
-
-
+                                    <a href="{% url 'payment:checkout'  %}" class="btn btn-outline-primary-2">
+                                        <span>Checkout</span>
+                                        <i class="icon-long-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <!-- Notification Dropdown -->
                         <div class="dropdown cart-dropdown">
                             <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
                                 <div class="icon">
                                     <i class="fas fa-bell" style="color: #fa003f; font-size: 24px;"></i>
-                                    
-                                    {% if request.user.is_authenticated %}
-                                         <span class="cart-count">{{ request.user|notification_count }}</span>   
-                                        {% else %}
-                                        <span class="cart-count">{{ request.user|notification_count }}</span>   
-                                     {% endif %}
+                                    <span class="cart-count">{{ request.user|notification_count }}</span>
                                 </div>
-                                <p>Notifaction</p>
+                                <p>Notification</p>
                             </a>
-                        
-
+                    
                             <div class="dropdown-menu dropdown-menu-right">
                                 <div class="dropdown-cart-products">
-                                    
-                                            {% for notification in request.user|notification %}
-                                                <div class="product">
-                                                    <div class="product-cart-details">
-                                                        <h4 class="product-title">
-                                                            <a href="{% url "notification:is_read" notification.pk %}">{{notification.message}}</a>
-                                                        </h4>
-                                                        
-                                                    </div><!-- End .product-cart-details -->
-                                                
-                                                
-                                                    <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                                                </div>
-                                            {% endfor %}
-                                   
-                                </div><!-- End .cart-product -->
-                                
-
+                                    {% for notification in request.user|notification %}
+                                        <div class="product">
+                                            <div class="product-cart-details">
+                                                <h4 class="product-title">
+                                                    <a href="{% url "notification:is_read" notification.pk %}">{{notification.message}}</a>
+                                                </h4>
+                                            </div>
+                                            <a href="#" class="btn-remove" title="Remove Notification"><i class="icon-close"></i></a>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
                         </div>
+                        
 
-
-
-
-
-
-                    </div><!-- End .header-right -->
+                    {% if request.user.is_authenticated %}
+                        <!-- Profile Dropdown -->
+                        <div class="dropdown cart-dropdown">
+                            <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+                                
+                                <div class="icon">
+                                    <i class="fas fa-user" style="color: #000; font-size: 24px;"></i>
+                                </div>
+                                <p>Profile</p>
+                            </a>
+                    
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <ul class="list-unstyled">
+                                    <li>
+                                        <a href="#">Update Profile</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">Shipping Status</a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url "account:logout" %}">Logout</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="dropdown cart-dropdown">
+                            <a href="{% url 'account:login' %}" class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false" data-display="static">
+                                <div class="icon">
+                                    <i class="fas fa-user" style="color: #000; font-size: 24px;"></i>
+                                </div>
+                                <p>Login</p>
+                            </a>
+                        
+                        </div>
+                     {% endif %}
+                    
+                    </div>
+                    
                 </div><!-- End .container -->
             </div><!-- End .header-middle -->
 

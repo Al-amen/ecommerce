@@ -1,7 +1,7 @@
 from django.shortcuts import render,get_object_or_404,redirect
 
 from store.models import Product
-from order.models import Cart,Order
+from order.models import Cart,Order,WishList
 from coupon.models import Coupon
 from coupon.forms import CouponCodeForm
 from django.utils import timezone
@@ -9,43 +9,6 @@ from notification.notific import SendNotification
 
 # Create your views here.
 
-''''
-def add_to_cart(request,pk):
-    
-    item = get_object_or_404(Product,pk=pk)
-    order_item = Cart.objects.get_or_create(item=item,user=request.user, purchased=False)
-    order_qs = Order.objects.filter(user=request.user, ordered=False)
-
-    if order_qs.exists():
-        order = order_qs[0]
-        if order.order_items.filter(item=item).exists():
-            color = request.POST.get('color')
-            size = request.POST.get('size')
-            quantiy = request.POST.get('quantity')
-            if quantiy:
-                order_item[0].quantity += int(quantiy)
-            else:
-               order_item[0].quantity += 1
-
-            order_item[0].color = color
-            order_item[0].size = size
-            order_item[0].save()
-            return redirect("store:index")
-        else:
-            color = request.POST.get('color')
-            size = request.POST.get('size')
-            
-            order_item[0].color = color
-            order_item[0].size = size
-            order.order_items.add(order_item[0])
-            return redirect('store:index')
-
-    else:
-        order = Order(user=request.user)
-        order.save()
-        order.order_items(order_item[0])
-        return redirect('store:index')
-'''
 
 def add_to_cart(request, pk):
     if request.user.is_authenticated:
@@ -93,42 +56,6 @@ def add_to_cart(request, pk):
     else:
         return redirect('account:login')
 
-
-'''def cart_view(request):
-    carts = Cart.objects.filter(user=request.user,purchased=False)
-    orders = Order.objects.filter(user=request.user,ordered=False)
-
-    if carts.exists() and orders.exists():
-        order = orders[0]
-        coupon_form = CouponCodeForm(request.POST)
-
-        if coupon_form.is_valid():
-            current_time = timezone.now()
-            code = coupon_form.cleaned_data.get('code')
-            coupon_obj = Coupon.objects.get(code=code,active=True)
-
-            if coupon_obj.valid_to >= current_time:
-                get_discount = (coupon_obj.discount / 100) * order.get_totals()
-                total_price_after_discount = order.get_totals() - get_discount
-                request.session['discount_total'] = total_price_after_discount 
-                request.session['coupon_code'] = code
-                return redirect('order:cart')
-            
-            else:
-                coupon_obj.active = False
-                coupon_obj.save()
-        total_price_after_discount = request.session.get('discount_total')
-        coupon_code = request.session.get('coupon_code')
-        context= {
-            'carts':carts,
-            'order':order,
-            'coupon_form':coupon_form,
-            'coupon_code':coupon_code,
-            'total_price_after_discount':total_price_after_discount,
-        }
-
-        return render(request, 'store/cart.html', context=context)
-'''
 
 
 
@@ -256,3 +183,33 @@ def decrease_cart(request,pk):
         return redirect('store:index')
 
 
+
+def add_to_wishlist(request,pk):
+    product = get_object_or_404(Product, pk=pk)
+    wishlist_item, created = WishList.objects.get_or_create(user=request.user, product=product)
+    
+    if created:
+        # If the product was added to the wishlist
+        message = "Product added to wishlist."
+    else:
+        # If the product was already in the wishlist
+        message = "Product is already in your wishlist."
+    print(message)
+
+    return redirect('order:view_wishlist')
+
+
+def view_wishlist(request):
+    wishlist_items = WishList.objects.filter(user=request.user)
+    print(wishlist_items)
+    return render(request, 'store/wishlist.html', {'wishlist_items': wishlist_items})
+
+
+def remove_from_wishlist(request, pk):
+    if request.user.is_authenticated:
+        print(f"Trying to remove product with pk={pk} from wishlist for user {request.user}")
+        wishlist_item = get_object_or_404(WishList, product__pk=pk, user=request.user)
+        wishlist_item.delete()
+        return redirect('order:view_wishlist')
+    else:
+        return redirect('account:login')

@@ -1,5 +1,5 @@
 from django import template
-from order.models import Cart,Order
+from order.models import Cart,Order,WishList
 from django.contrib.auth.models import AnonymousUser
 
 register = template.Library()
@@ -57,3 +57,15 @@ def cart_count(user):
         return order[0].order_items.count()
     
     return 0
+
+
+
+@register.filter
+def wishlist_count(user):
+    # Ensure we are working with the actual User or AnonymousUser object
+    if not hasattr(user, 'is_authenticated') or not user.is_authenticated:
+        return 0
+    
+    # Query the WishList model
+    wishlist_items = WishList.objects.filter(user=user)
+    return wishlist_items.count()
