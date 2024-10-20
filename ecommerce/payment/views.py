@@ -149,7 +149,8 @@ class CheckBillingAddressView(TemplateView):
 
 
                 current_user = request.user
-                mypayment.set_customer_info(name=current_user.profile.full_name, email=current_user.profile.email, address1=current_user.profile.address, address2=current_user.profile.address, city=current_user.profile.city, postcode=current_user.profile.zipcode, country=current_user.profile.country, phone=current_user.profile.phone)
+                email = current_user.profile.email if current_user.profile.email else "defaultemail@example.com"
+                mypayment.set_customer_info(name=current_user.profile.full_name, email=email, address1=current_user.profile.address, address2=current_user.profile.address, city=current_user.profile.city, postcode=current_user.profile.zipcode, country=current_user.profile.country, phone=current_user.profile.phone)
 
 
                 billing_address = BillingAddress.objects.filter(user=request.user)[0]

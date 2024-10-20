@@ -11,6 +11,17 @@
             </ol>
         </div>
     </nav>
+      <!-- Add this block to show messages -->
+      {% if messages %}
+      <div id="message-container">
+          {% for message in messages %}
+          <div class="alert {{ message.tags }}">
+              {{ message }}
+          </div>
+          {% endfor %}
+      </div>
+      {% endif %}
+      <!-- End of messages block -->
 
     <div class="login-page bg-image" style="background-image: url({% static 'assets/images/backgrounds/login-bg.jpg' %})">
         <div class="container">
@@ -80,4 +91,15 @@
         </div><!-- End .container -->
     </div><!-- End .login-page section-bg -->
 </main><!-- End .main -->
+
+
+<!-- JavaScript to hide the message after 3 seconds -->
+<script>
+    setTimeout(function() {
+        const messageContainer = document.getElementById('message-container');
+        if (messageContainer) {
+            messageContainer.style.display = 'none';
+        }
+    }, 3000); // 3000 milliseconds = 3 seconds
+</script>
 {% endblock %}
