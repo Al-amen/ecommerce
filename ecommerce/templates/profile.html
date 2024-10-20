@@ -1,165 +1,267 @@
 {% extends "base.html" %}
-{% block title %}Profile||E-shop{% endblock title %}
+{% block title %}Profile | E-shop{% endblock title %}
 {% load static %}
 {% load crispy_forms_tags %}
 {% block body %}
 
+<main class="main">
+    <div class="page-header text-center" style="background-image: url('{% static "images/page-header-bg.jpg" %}')">
+        <div class="container">
+            <h1 class="page-title">My Account <span>Shop</span></h1>
+        </div>
+    </div><!-- End .page-header -->
 
-        <main class="main">
-        	<div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
-        		<div class="container">
-        			<h1 class="page-title">My Account<span>Shop</span></h1>
-        		</div><!-- End .container -->
-        	</div><!-- End .page-header -->
-            <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
-                <div class="container">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                        <li class="breadcrumb-item"><a href="#">Shop</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">My Account</li>
-                    </ol>
-                </div><!-- End .container -->
-            </nav><!-- End .breadcrumb-nav -->
+    <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
+        <div class="container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'store:index' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="#">Shop</a></li>
+                <li class="breadcrumb-item active" aria-current="page">My Account</li>
+            </ol>
+        </div><!-- End .container -->
+    </nav><!-- End .breadcrumb-nav -->
 
-            <div class="page-content">
-            	<div class="dashboard">
-	                <div class="container">
-	                	<div class="row">
-	                		<aside class="col-md-4 col-lg-3">
-	                			<ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
-								    <li class="nav-item">
-								        <a class="nav-link active" id="tab-dashboard-link" data-toggle="tab" href="#tab-dashboard" role="tab" aria-controls="tab-dashboard" aria-selected="true">Dashboard</a>
-								    </li>
-								    <li class="nav-item">
-								        <a class="nav-link" id="tab-orders-link" data-toggle="tab" href="#tab-orders" role="tab" aria-controls="tab-orders" aria-selected="false">Orders</a>
-								    </li>
-								    <li class="nav-item">
-								        <a class="nav-link" id="tab-downloads-link" data-toggle="tab" href="#tab-downloads" role="tab" aria-controls="tab-downloads" aria-selected="false">Downloads</a>
-								    </li>
-								    <li class="nav-item">
-								        <a class="nav-link" id="tab-address-link" data-toggle="tab" href="#tab-address" role="tab" aria-controls="tab-address" aria-selected="false">Adresses</a>
-								    </li>
-								    <li class="nav-item">
-								        <a class="nav-link" id="tab-account-link" data-toggle="tab" href="#tab-account" role="tab" aria-controls="tab-account" aria-selected="false">Account Details</a>
-								    </li>
-								    <li class="nav-item">
-								        <a class="nav-link" href="#">Reviews</a>
-								    </li>
-								</ul>
-	                		</aside><!-- End .col-lg-3 -->
+    <div class="page-content">
+        <div class="dashboard">
+            <div class="container">
+                <div class="row">
+                    <!-- Sidebar Navigation -->
+                    <aside class="col-md-4 col-lg-3">
+                        <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="tab-dashboard-link" data-toggle="tab" href="#tab-dashboard" role="tab" aria-controls="tab-dashboard" aria-selected="true">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tab-orders-link" data-toggle="tab" href="#tab-orders" role="tab" aria-controls="tab-orders" aria-selected="false">Orders</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tab-downloads-link" data-toggle="tab" href="#tab-downloads" role="tab" aria-controls="tab-downloads" aria-selected="false">Downloads</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tab-address-link" data-toggle="tab" href="#tab-address" role="tab" aria-controls="tab-address" aria-selected="false">Addresses</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tab-account-link" data-toggle="tab" href="#tab-account" role="tab" aria-controls="tab-account" aria-selected="false">Account Details</a>
+                            </li>
+                        </ul>
+                    </aside><!-- End .col-lg-3 -->
 
-	                		<div class="col-md-8 col-lg-9">
-	                			<div class="tab-content">
-								    <div class="tab-pane fade show active" id="tab-dashboard" role="tabpanel" aria-labelledby="tab-dashboard-link">
-								    	<p>Hello <span class="font-weight-normal text-dark">User</span> (not <span class="font-weight-normal text-dark">User</span>? <a href="#">Log out</a>) 
-								    	<br>
-								    	From your account dashboard you can view your <a href="#tab-orders" class="tab-trigger-link link-underline">recent orders</a>, manage your <a href="#tab-address" class="tab-trigger-link">shipping and billing addresses</a>, and <a href="#tab-account" class="tab-trigger-link">edit your password and account details</a>.</p>
-								    </div><!-- .End .tab-pane -->
+                    <div class="col-md-8 col-lg-9">
+                        <div class="tab-content">
+                            <!-- Dashboard Tab -->
+                            <div class="tab-pane fade show active" id="tab-dashboard" role="tabpanel" aria-labelledby="tab-dashboard-link">
+                                <p>Hello <span class="font-weight-normal text-dark">User</span> (not <span class="font-weight-normal text-dark">User</span>? <a href="#">Log out</a>)</p>
+                                <p>From your account dashboard, you can view your <a href="#tab-orders" class="tab-trigger-link link-underline">recent orders</a>, manage your <a href="#tab-address" class="tab-trigger-link">shipping and billing addresses</a>, and <a href="#tab-account" class="tab-trigger-link">edit your password and account details</a>.</p>
+                            </div><!-- End .tab-pane -->
 
-								    <div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
-								    	<p>No order has been made yet.</p>
+                            <!-- Orders Tab -->
+                            <div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
+                               
+                                {% if orders %}
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" class="px-3">ID</th>
+                                            <th scope="col">Products</th>
+                                            <th scope="col">Payment ID</th>
+                                            <th scope="col">Order ID</th>
+                                            <th scope="col">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for order in orders %}
+                                        <tr>
+                                            <th scope="row">{{ order.id }}</th>
+                                            <td>
+                                                {% for order_item in order.order_items.all %}
+                                                    {{ order_item }}
+                                                {% endfor %}
+                                            </td>
+                                            <td>{{ order.payment_id }}</td>
+                                            <td>{{ order.order_id }}</td>
+                                            <td>
+                                                {% for order_item in order.order_items.all %}
+                                                    <a href="{% url 'review:submit_review' product_id=order_item.item.id %}">
+                                                        Write a Review
+                                                    </a>
+                                                {% endfor %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+								{% else %}
+								<p>No order has been made yet.</p>
+							{% endif %}
+							
+                                <a href="#" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
+                            </div><!-- End .tab-pane -->
 
+                            <!-- Downloads Tab -->
+                            <div class="tab-pane fade" id="tab-downloads" role="tabpanel" aria-labelledby="tab-downloads-link">
+                                <p>No downloads available yet.</p>
+                                <a href="" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
+                            </div><!-- End .tab-pane -->
 
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th scope="col" class="px-3">ID</th>
-                                                    <th scope="col">Products</th>
-                                                    <th scope="col">Payment ID</th>
-                                                    <th scope="col">Order ID</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
+                            <!-- Addresses Tab -->
+                            <div class="tab-pane fade" id="tab-address" role="tabpanel" aria-labelledby="tab-address-link">
+                                <p>The following addresses will be used on the checkout page by default.</p>
 
-                                            {% for order in orders %}
-                                              <tr>
-                                                <th scope="row">{{order.id}}</th>
-                                                <td>
-                                                    {% for order_item in order.order_items.all %}
-                                                            {{order_item}}
-                                                    {% endfor %}
-                                                </td>
-                                                <td>{{order.payment_id}}</td>
-                                                <td>{{order.order_id}}</td>
-                                              </tr>
-                                            {% endfor %}
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="card card-dashboard">
+                                            {% comment %} <div class="card-body">
+                                                <h3 class="card-title">Billing Address</h3>
+                                                <form action="" method="post">
+                                                    {% csrf_token %}
+                                                    {{ billingaddress|crispy }}
+                                                    <button type="submit" class="btn btn-outline-primary-2">Save Address</button>
+                                                </form>
+                                                <a href="#">Edit <i class="icon-edit"></i></a>
+                                            </div><!-- End .card-body --> {% endcomment %}
+											<div class="billing-address-form">
+												<h3 class="card-title">Billing Address</h3>
+												<form action="" method="post" class="form fade-in">
+													{% csrf_token %}
+													{{ billingaddress|crispy }}
+													<button type="submit" class="btn btn-outline-primary-2">Save Address</button>
+												</form>
+											</div>
+                                        </div><!-- End .card-dashboard -->
+                                    </div><!-- End .col-lg-6 -->
 
-                                            </tbody>
-                                          </table>
+                                    <div class="col-lg-6">
+                                        <div class="card card-dashboard">
+                                            <div class="card-body">
+                                                <h3 class="card-title">Shipping Address</h3>
+                                                <p>You have not set up this type of address yet.<br>
+                                                    <a href="#">Edit <i class="icon-edit"></i></a>
+                                                </p>
+                                            </div><!-- End .card-body -->
+                                        </div><!-- End .card-dashboard -->
+                                    </div><!-- End .col-lg-6 -->
+                                </div><!-- End .row -->
+                            </div><!-- End .tab-pane -->
 
+                            <!-- Account Details Tab -->
+                            <div class="tab-pane fade" id="tab-account" role="tabpanel" aria-labelledby="tab-account-link">
+                                <form action="#" method="POST">
+                                    {% csrf_token %}
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            {{ profileForm|crispy }}
+                                        </div><!-- End .col-sm-6 -->
+                                    </div><!-- End .row -->
 
+                                    <button type="submit" class="btn btn-outline-primary-2">
+                                        <span>SAVE CHANGES</span>
+                                        <i class="icon-long-arrow-right"></i>
+                                    </button>
+                                </form>
+                            </div><!-- End .tab-pane -->
+                        </div><!-- End .tab-content -->
+                    </div><!-- End .col-lg-9 -->
+                </div><!-- End .row -->
+            </div><!-- End .container -->
+        </div><!-- End .dashboard -->
+    </div><!-- End .page-content -->
+</main><!-- End .main -->
 
+<style>
+    .table {
+        width: 100%;
+        margin-bottom: 1.5rem;
+        background-color: #7C7C7D;
+        border-collapse: collapse;
+    }
 
+    .table th, .table td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #dee2e6;
+    }
 
+    .table th {
+        background-color: #f2f3f5;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
 
-								    	<a href="category.html" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
-								    </div><!-- .End .tab-pane -->
+    .table tr:hover {
+        background-color: #f9f9f9;
+    }
 
-								    <div class="tab-pane fade" id="tab-downloads" role="tabpanel" aria-labelledby="tab-downloads-link">
-								    	<p>No downloads available yet.</p>
-								    	<a href="category.html" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
-								    </div><!-- .End .tab-pane -->
+    .table td {
+        font-size: 1.35rem;
+        color: #333;
+    }
 
-								    <div class="tab-pane fade" id="tab-address" role="tabpanel" aria-labelledby="tab-address-link">
-								    	<p>The following addresses will be used on the checkout page by default.</p>
+    .table td a {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: 500;
+    }
 
-								    	<div class="row">
-								    		<div class="col-lg-6">
-								    			<div class="card card-dashboard">
-								    				<div class="card-body">
-								    					<h3 class="card-title">Billing Address</h3><!-- End .card-title -->
+    .table td a:hover {
+        text-decoration: underline;
+        color: #0056b3;
+    }
 
-														   <form action="" method="post">
-                                                               {% csrf_token %}
-                                                               {{billingaddress}}
-                                                            <input type="submit" value="Save Address">
-                                                           </form>
-														<a href="#">Edit <i class="icon-edit"></i></a></p>
-								    				</div><!-- End .card-body -->
-								    			</div><!-- End .card-dashboard -->
-								    		</div><!-- End .col-lg-6 -->
+    .btn-outline-primary-2 {
+        border: 2px solid #007bff;
+        color: #007bff;
+        padding: 0.5rem 1rem;
+        display: inline-block;
+        text-transform: uppercase;
+        font-weight: 600;
+        letter-spacing: 0.05rem;
+        margin-top: 1.5rem;
+    }
 
-								    		<div class="col-lg-6">
-								    			<div class="card card-dashboard">
-								    				<div class="card-body">
-								    					<h3 class="card-title">Shipping Address</h3><!-- End .card-title -->
+    .btn-outline-primary-2:hover {
+        background-color: #007bff;
+        color: #fff;
+    }
+	.billing-address-form {
+		background-color: #010712;
+		border-radius: 0.5rem;
+		padding: 1.5rem;
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+		transition: opacity 0.5s ease-in-out;
+		opacity: 0;
+		animation: fadeIn 0.5s forwards;
+	}
+	
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+	
+	.card-title {
+		font-size: 1.5rem;
+		margin-bottom: 1rem;
+		font-weight: 600;
+		color: #89898A;
+	}
+	
+	.btn-outline-primary-2 {
+		margin-top: 1rem;
+		border: 2px solid #007bff;
+		color: #007bff;
+		padding: 0.5rem 1rem;
+		font-weight: 600;
+		letter-spacing: 0.05rem;
+	}
+	
+	.btn-outline-primary-2:hover {
+		background-color: #007bff;
+		color: #fff;
+	}
+	
+</style>
 
-														<p>You have not set up this type of address yet.<br>
-														<a href="#">Edit <i class="icon-edit"></i></a></p>
-								    				</div><!-- End .card-body -->
-								    			</div><!-- End .card-dashboard -->
-								    		</div><!-- End .col-lg-6 -->
-								    	</div><!-- End .row -->
-								    </div><!-- .End .tab-pane -->
-
-								    <div class="tab-pane fade" id="tab-account" role="tabpanel" aria-labelledby="tab-account-link">
-								    	<form action="#" method = 'POST'>
-											{% csrf_token %}
-			                				<div class="row">
-			                					<div class="col-sm-12">
-			                						{{profileForm|crispy}}
-			                					</div><!-- End .col-sm-6 -->
-
-			                					
-			                				</div><!-- End .row -->
-
-		            					
-
-		            						
-
-
-		                					<button type="submit" class="btn btn-outline-primary-2">
-			                					<span>SAVE CHANGES</span>
-			            						<i class="icon-long-arrow-right"></i>
-			                				</button>
-			                			</form>
-								    </div><!-- .End .tab-pane -->
-								</div>
-	                		</div><!-- End .col-lg-9 -->
-	                	</div><!-- End .row -->
-	                </div><!-- End .container -->
-                </div><!-- End .dashboard -->
-            </div><!-- End .page-content -->
-        </main><!-- End .main -->
-        
 {% endblock body %}

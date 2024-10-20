@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load static %}
+{% block body %}
+
+<div class="container">
+    <h2>Review {{ product.name }}</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Submit Review</button>
+    </form>
+</div>
+
+
+{% endblock body %}

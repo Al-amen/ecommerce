@@ -13,6 +13,7 @@ urlpatterns = [
     path('payment/',include('payment.urls')),
     path('notification',include('notification.urls')),
     path('dashboard/',include('dashboard.urls')),
+    path('review/',include('review.urls')),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
