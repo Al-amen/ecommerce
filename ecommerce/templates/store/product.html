@@ -60,10 +60,12 @@
                                     <h1 class="product-title">{{item.name}}</h1><!-- End .product-title -->
 
                                     <div class="ratings-container">
+                                       
                                         <div class="ratings">
-                                            <div class="ratings-val" style="width: 80%;"></div><!-- End .ratings-val -->
+                                            <div class="ratings-val" style="width: {{ average_rating|floatformat:0 }}0%;"></div>
                                         </div><!-- End .ratings -->
-                                        <a class="ratings-text" href="#product-review-link" id="review-link">( 2 Reviews )</a>
+                                        
+                                        <span><a class="ratings-text" href="#product-review-tab" id="review-link"><span>(  Reviews {{reviews.count}} )</span></a></span>
                                     </div><!-- End .rating-container -->
 
                                     <div class="product-price">
@@ -181,7 +183,7 @@
                                 <a class="nav-link" id="product-shipping-link" data-toggle="tab" href="#product-shipping-tab" role="tab" aria-controls="product-shipping-tab" aria-selected="false">Shipping & Returns</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" id="product-review-link" data-toggle="tab" href="#product-review-tab" role="tab" aria-controls="product-review-tab" aria-selected="false">Reviews (2)</a>
+                                <a class="nav-link" id="product-review-link" data-toggle="tab" href="#product-review-tab" role="tab" aria-controls="product-review-tab" aria-selected="false">Reviews ({{ reviews.count }})</a>
                             </li>
                         </ul>
                         <div class="tab-content">
@@ -205,63 +207,116 @@
                                     We hope you’ll love every purchase, but if you ever need to return an item you can do so within a month of receipt. For full details of how to make a return, please view our <a href="#">Returns information</a></p>
                                 </div><!-- End .product-desc-content -->
                             </div><!-- .End .tab-pane -->
-                            <div class="tab-pane fade" id="product-review-tab" role="tabpanel" aria-labelledby="product-review-link">
+
+                            
+
+                           {% comment %} <div class="tab-pane fade" id="product-review-tab" role="tabpanel" aria-labelledby="product-review-link">
                                 <div class="reviews">
-                                    <h3>Reviews (2)</h3>
+                                    <h3>Reviews ({{ reviews.count }})</h3>
+                            
+                                    {% for review in reviews %}
                                     <div class="review">
                                         <div class="row no-gutters">
                                             <div class="col-auto">
-                                                <h4><a href="#">Samanta J.</a></h4>
+                                                <h4><a href="#">{{ review.user.user_name }}</a></h4>
                                                 <div class="ratings-container">
                                                     <div class="ratings">
-                                                        <div class="ratings-val" style="width: 80%;"></div><!-- End .ratings-val -->
+                                                        <!-- Calculate the rating percentage -->
+                                                        <div class="ratings-val" style="width: {{ review.rating|floatformat:0 }}0%;"></div><!-- End .ratings-val -->
                                                     </div><!-- End .ratings -->
-                                                </div><!-- End .rating-container -->
-                                                <span class="review-date">6 days ago</span>
+                                                </div><!-- End .ratings-container -->
+                                                <span class="review-date">{{ review.created_at|timesince }} ago</span>
                                             </div><!-- End .col -->
                                             <div class="col">
-                                                <h4>Good, perfect size</h4>
-
+                                                <h4>{{ review.review_text|truncatewords:10 }}</h4>
+                            
                                                 <div class="review-content">
-                                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus cum dolores assumenda asperiores facilis porro reprehenderit animi culpa atque blanditiis commodi perspiciatis doloremque, possimus, explicabo, autem fugit beatae quae voluptas!</p>
+                                                    <p>{{ review.review_text }}</p>
                                                 </div><!-- End .review-content -->
-
-                                                <div class="review-action">
-                                                    <a href="#"><i class="icon-thumbs-up"></i>Helpful (2)</a>
-                                                    <a href="#"><i class="icon-thumbs-down"></i>Unhelpful (0)</a>
-                                                </div><!-- End .review-action -->
-                                            </div><!-- End .col-auto -->
-                                        </div><!-- End .row -->
-                                    </div><!-- End .review -->
-
-                                    <div class="review">
-                                        <div class="row no-gutters">
-                                            <div class="col-auto">
-                                                <h4><a href="#">John Doe</a></h4>
-                                                <div class="ratings-container">
-                                                    <div class="ratings">
-                                                        <div class="ratings-val" style="width: 100%;"></div><!-- End .ratings-val -->
-                                                    </div><!-- End .ratings -->
-                                                </div><!-- End .rating-container -->
-                                                <span class="review-date">5 days ago</span>
+                            
+                                                {% if review.images.all %}
+                                                <div class="review-images">
+                                                    <h5>Review Images:</h5>
+                                                    <div class="row">
+                                                        {% for image in review.images.all %}
+                                                        <div class="col-md-4">
+                                                            <img src="{{ image.image.url }}" alt="Review image" class="img-fluid">
+                                                        </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div><!-- End .review-images -->
+                                                {% endif %}
                                             </div><!-- End .col -->
-                                            <div class="col">
-                                                <h4>Very good</h4>
-
-                                                <div class="review-content">
-                                                    <p>Sed, molestias, tempore? Ex dolor esse iure hic veniam laborum blanditiis laudantium iste amet. Cum non voluptate eos enim, ab cumque nam, modi, quas iure illum repellendus, blanditiis perspiciatis beatae!</p>
-                                                </div><!-- End .review-content -->
-
-                                                <div class="review-action">
-                                                    <a href="#"><i class="icon-thumbs-up"></i>Helpful (0)</a>
-                                                    <a href="#"><i class="icon-thumbs-down"></i>Unhelpful (0)</a>
-                                                </div><!-- End .review-action -->
-                                            </div><!-- End .col-auto -->
                                         </div><!-- End .row -->
                                     </div><!-- End .review -->
+                                    {% empty %}
+                                    <p>No reviews yet. Be the first to review this product!</p>
+                                    {% endfor %}
+                            
                                 </div><!-- End .reviews -->
-                            </div><!-- .End .tab-pane -->
-                        </div><!-- End .tab-content -->
+                            </div> 
+                            
+
+
+                            
+                             
+
+
+                        </div><!-- End .tab-content --> {% endcomment %}
+
+
+                        <div class="tab-pane fade" id="product-review-tab" role="tabpanel" aria-labelledby="product-review-link">
+                            <div class="reviews">
+                                <h3>Reviews ({{ reviews.count }})</h3>
+                        
+                                <div class="ratings-container mb-4">
+                                    <div class="ratings">
+                                        <div class="ratings-val" style="width: {{ average_rating|floatformat:0 }}0%;"></div><!-- End .ratings-val -->
+                                    </div><!-- End .ratings -->
+                                    <span class="ratings-text">Average Rating: {{ average_rating|floatformat:1 }} / 5</span>
+                                </div><!-- End .ratings-container -->
+                                
+                                {% for review in reviews %}
+                                <div class="review mb-4">
+                                    <div class="row no-gutters">
+                                        <div class="col-auto">
+                                            <h4><a href="#">{{ review.user.user_name }}</a></h4>
+                                            <div class="ratings-container">
+                                                <div class="ratings">
+                                                    <div class="ratings-val" style="width: {{ review.rating|floatformat:0 }}0%;"></div><!-- End .ratings-val -->
+                                                </div><!-- End .ratings -->
+                                            </div><!-- End .ratings-container -->
+                                            <span class="review-date">{{ review.created_at|timesince }} ago</span>
+                                        </div><!-- End .col -->
+                                        <div class="col">
+                                            <h4>{{ review.review_text|truncatewords:10 }}</h4>
+                        
+                                            <div class="review-content">
+                                                <p>{{ review.review_text }}</p>
+                                            </div><!-- End .review-content -->
+                        
+                                            {% if review.images.all %}
+                                            <div class="review-images">
+                                                <h5>Review Images:</h5>
+                                                <div class="row">
+                                                    {% for image in review.images.all %}
+                                                    <div class="col-6 col-md-4 mb-2">
+                                                        <img src="{{ image.image.url }}" alt="Review image" class="img-fluid" style="max-height: 150px; object-fit: cover;">
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div><!-- End .review-images -->
+                                            {% endif %}
+                                        </div><!-- End .col -->
+                                    </div><!-- End .row -->
+                                </div><!-- End .review -->
+                                {% empty %}
+                                <p>No reviews yet. Be the first to review this product!</p>
+                                {% endfor %}
+                                
+                            </div><!-- End .reviews -->
+                        </div>
+                        
                     </div><!-- End .product-details-tab -->
 
                     <h2 class="title text-center mb-4">You May Also Like</h2><!-- End .title text-center -->
@@ -494,5 +549,16 @@
                 </div><!-- End .container -->
             </div><!-- End .page-content -->
         </main><!-- End .main -->
+        <style>
+            .review-images img {
+                border-radius: 5px; /* Slightly rounded corners */
+                transition: transform 0.2s; /* Animation on hover */
+            }
+            
+            .review-images img:hover {
+                transform: scale(1.05); /* Slight zoom effect on hover */
+            }
+            
+        </style>
 
 {% endblock body %}

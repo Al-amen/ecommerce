@@ -20,10 +20,10 @@ class Review(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"{self.user.username}'s review of {self.product.name}"
+        return f"{self.user.user_name}'s review of {self.product.name}"
 
 # ReviewImage model remains unchanged
 class ReviewImage(models.Model):
     review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name="images")
-    image = models.ImageField(upload_to="review_images/")
+    image = models.ImageField(upload_to="review_images/", blank=True,null=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
