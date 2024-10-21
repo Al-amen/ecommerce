@@ -9,5 +9,6 @@ urlpatterns = [
     #path('paypal/',views.paypalPaymentMethod,name='paypal_payment'),
     path("sslc/status/",views.sslc_status,name="status"),
     path("sslc/complete<val_id>/<tran_id>/",views.sslc_complete,name="sslc_complete"),
+    path('invoice/<str:order_id>/', views.generate_invoice, name='generate_invoice'),
 ]
 

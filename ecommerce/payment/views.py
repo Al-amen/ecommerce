@@ -53,7 +53,7 @@
 
 
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect,HttpResponse
 from django.conf import settings
 from django.urls import reverse
 from payment.models import BillingAddress
@@ -61,10 +61,21 @@ from payment.forms import BillingAddressForm, PaymentMethodForm
 from order.models import Cart, Order
 from django.views.generic import TemplateView
 from django.views.decorators.csrf import csrf_exempt
-
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from django.utils import timezone
+from django.conf import settings
+from io import BytesIO
+from django.core.mail import EmailMessage
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
+import logging
+import os
 from pysslcmz.payment import SSLCSession
 from decimal import Decimal
+from payment.models import Download
 
+logger = logging.getLogger(__name__)
 
 class CheckBillingAddressView(TemplateView):
     template_name = "store/checkout.html"
@@ -205,7 +216,177 @@ def sslc_complete(request,val_id,tran_id):
         item.purchased=True
         item.save()
 
-    return redirect('store:index')
+    #return redirect('store:index')
+    return redirect('payment:generate_invoice', order_id=order.order_id)
+
+
+# def generate_invoice(request, order_id):
+#     if not request.user.is_authenticated:
+#         return redirect('login')  # Redirect if user is not authenticated
+
+#     # Get the order details
+#     order = Order.objects.filter(user=request.user, order_id=order_id).first()
+#     if not order:
+#         return HttpResponse("Order not found.", status=404)
+
+#     # Create a response object and set the PDF content type
+#     response = HttpResponse(content_type='application/pdf')
+#     response['Content-Disposition'] = f'attachment; filename="invoice_{order_id}.pdf"'
+
+#     # Create a PDF object and add content
+#     p = canvas.Canvas(response, pagesize=letter)
+#     width, height = letter
+
+#     # Invoice Header
+#     p.drawString(100, height - 50, "Payment Summary")
+#     p.drawString(100, height - 70, f"Invoice number: {order.order_id}")
+#     p.drawString(100, height - 90, f"Date: {timezone.now().date()}")
+#     p.drawString(100, height - 110, "Please review the following detail for this transaction:")
+
+#     # Amount
+#     p.drawString(100, height - 140, f"Amount: {order.get_totals()}")  # Assuming get_totals() returns a formatted amount
+#     p.drawString(100, height - 160, f"Description: Products")
+
+#     # Finalize the PDF
+#     p.showPage()
+#     p.save()
+#     return response
+
+# def generate_invoice(request, order_id):
+#     if not request.user.is_authenticated:
+#         return redirect('login')  # Redirect if user is not authenticated
+
+#     # Get the order details
+#     order = get_object_or_404(Order, user=request.user, order_id=order_id)
+
+#     # Create a byte stream buffer to hold the PDF data
+#     buffer = BytesIO()
+
+#     # Create a PDF object and add content
+#     p = canvas.Canvas(buffer, pagesize=letter)
+#     width, height = letter
+
+#     # Invoice Header
+#     p.drawString(100, height - 50, "Payment Summary")
+#     p.drawString(100, height - 70, f"Invoice number: {order.order_id}")
+#     p.drawString(100, height - 90, f"Date: {timezone.now().date()}")
+#     p.drawString(100, height - 110, "Please review the following detail for this transaction:")
+
+#     # Amount
+#     p.drawString(100, height - 140, f"Amount: {order.get_totals()}")  # Assuming get_totals() returns a formatted amount
+#     p.drawString(100, height - 160, "Description: Products")
+
+#     # Finalize the PDF
+#     p.showPage()
+#     p.save()
+
+#     # Get the PDF from the buffer
+#     pdf_data = buffer.getvalue()
+#     buffer.close()
+
+#     # Create the path where the file will be saved
+#     invoice_dir = os.path.join(settings.MEDIA_ROOT, 'invoices')
+#     if not os.path.exists(invoice_dir):
+#         os.makedirs(invoice_dir)
+
+#     invoice_filename = f"invoice_{order_id}.pdf"
+#     invoice_path = os.path.join(invoice_dir, invoice_filename)
+
+#     # Save the PDF file to the invoices directory
+#     with open(invoice_path, 'wb') as f:
+#         f.write(pdf_data)
+
+#     # Store the download in the user's downloads section
+#     user = request.user
+#     download = Download.objects.create(user=user, order=order, file=f'invoices/{invoice_filename}')
+
+#     # Send the invoice via email
+#     subject = 'Your Invoice from E-shop'
+#     message = f"Dear {user.username},\n\nPlease find attached the invoice for your recent order (Order ID: {order.order_id}).\n\nThank you for shopping with us!"
+#     email = EmailMessage(
+#         subject,
+#         message,
+#         settings.DEFAULT_FROM_EMAIL,  # Sender's email address
+#         [user.email],  # Recipient's email address
+#     )
+
+#     # Attach the PDF file to the email
+#     email.attach(invoice_filename, pdf_data, 'application/pdf')
+
+#     # Send the email
+#     email.send()
+
+#     # Redirect to the index page after generating the invoice and sending the email
+#     return redirect(reverse('store:index'))
+
+
+def generate_invoice(request, order_id):
+    if not request.user.is_authenticated:
+        return redirect('login')  # Redirect if user is not authenticated
+
+    try:
+        # Get the order details
+        order = get_object_or_404(Order, user=request.user, order_id=order_id)
+
+        # Create a byte stream buffer to hold the PDF data
+        buffer = BytesIO()
+
+        # Create a PDF object and add content
+        p = canvas.Canvas(buffer, pagesize=letter)
+        width, height = letter
+
+        # Invoice Header
+        p.drawString(100, height - 50, "Payment Summary")
+        p.drawString(100, height - 70, f"Invoice number: {order.order_id}")
+        p.drawString(100, height - 90, f"Date: {timezone.now().date()}")
+        p.drawString(100, height - 110, "Please review the following detail for this transaction:")
+
+        # Amount
+        p.drawString(100, height - 140, f"Amount: {order.get_totals()}")  # Assuming get_totals() returns a formatted amount
+        p.drawString(100, height - 160, "Description: Products")
+
+        # Finalize the PDF
+        p.showPage()
+        p.save()
+
+        # Get the PDF from the buffer
+        pdf_data = buffer.getvalue()
+        buffer.close()
+
+        # Ensure the 'invoices' directory exists inside 'MEDIA_ROOT'
+        invoice_dir = os.path.join(settings.MEDIA_ROOT, 'invoices')
+        if not os.path.exists(invoice_dir):
+            os.makedirs(invoice_dir)  # Create the directory if it doesn't exist
+
+        # Create the path where the file will be saved
+        invoice_filename = f"invoice_{order_id}.pdf"
+        invoice_path = os.path.join(invoice_dir, invoice_filename)
+
+        # Write the PDF file to the invoices folder
+        with open(invoice_path, 'wb') as f:
+            f.write(pdf_data)
+
+        # Store the download in the user's downloads section (if applicable)
+        user = request.user
+        download = Download.objects.create(user=user, order=order, file=f'invoices/{invoice_filename}')
+
+        # Send the invoice via email synchronously
+        subject = 'Your Invoice from E-shop'
+        message = "Please find attached your invoice."
+        email = EmailMessage(subject, message, to=[user.email])
+        email.attach(invoice_filename, pdf_data, 'application/pdf')
+        email.send()
+
+        logger.info(f"Invoice {order_id} generated and email sent to {user.email}")
+
+    except Exception as e:
+        logger.error(f"Error generating invoice for order {order_id}: {e}")
+        return HttpResponse("An error occurred while generating the invoice.", status=500)
+
+    # Redirect to the index page after generating the invoice and sending the email
+    return redirect(reverse('store:index'))
+
+
 
 
 
