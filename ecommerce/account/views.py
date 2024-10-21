@@ -188,7 +188,7 @@ def logout_view(request):
 
 class ProfileView(TemplateView):
     def get(self, request, *args, **kwargs):
-       orders = Order.objects.filter(user=request.user, ordered = True)
+       orders = Order.objects.filter(user=request.user, ordered = True).order_by('-created')
        billingaddress = BillingAddress.objects.get(user=request.user)
        billingaddress_form = BillingAddressForm(instance=billingaddress)
        profile_obj = Profile.objects.get(user=request.user)

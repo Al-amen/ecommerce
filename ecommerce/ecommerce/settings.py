@@ -44,6 +44,7 @@ INSTALLED_APPS = [
      'notification',
      'dashboard',
      'review',
+     'invoice',
     
 ]
 
