@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Search Results</title>
 </head>
 
 <style>
@@ -94,9 +94,8 @@
             max-height: 200px; /* Smaller image for mobile */
         }
     }
-    
-
 </style>
+
 <body>
     <div class="container">
         <h2>Search Results for "{{ search_term }}"</h2>
@@ -109,14 +108,15 @@
                     <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
                     <div class="product-info">
                         <h3 class="product-name">{{ product.name }}</h3>
-                        <p class="product-price">${{ product.price }}</p>
+                        <p class="product-price">${{ product.price|floatformat:2 }}</p> <!-- Format price to 2 decimal places -->
                     </div>
                 </a>
             </div>
             {% endfor %}
         </div>
-        {% endif %}
+        {% else %}
         <p>No products found for "{{ search_term }}".</p>
+        {% endif %}
+    </div>
 </body>
 </html>
-

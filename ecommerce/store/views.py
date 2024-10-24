@@ -25,16 +25,26 @@ class HomemplateView(TemplateView):
         return render(request, self.template_name, context=context)
    
 
+from django.db.models import Q
+
 class SearchResultsView(TemplateView):
-    def post(self, request, *args, **kwargs):
-        search_product = request.POST.get('search_product')
-        products = Product.objects.filter(name__icontains=search_product).order_by('id')
+    template_name = 'store/search_results.html'  # Specify the template name
+
+    def get(self, request, *args, **kwargs):
+        search_product = request.GET.get('search_product')
+        
+        # Search by product name and category name (case-insensitive, partial search)
+        products = Product.objects.filter(
+            Q(name__icontains=search_product) | 
+            Q(category__name__icontains=search_product)
+        ).order_by('id')
 
         context = {
             'products': products,
             'search_term': search_product,
         }
-        return render(request, 'store/search_results.html', context)
+        return self.render_to_response(context)
+    
 
 class ProductDetailView(DetailView):
     model = Product
