@@ -1,701 +1,385 @@
-{% extends "base.html" %}
-{% block title %}Profile | E-shop{% endblock title %}
-{% load static %}
-{% load crispy_forms_tags %}
-{% block body %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    {% load form_tags %}
 
-<main class="main">
-    <div class="page-header text-center" style="background-image: url('{% static "images/page-header-bg.jpg" %}')">
-        <div class="container">
-            <h1 class="page-title">My Account <span>Shop</span></h1>
-        </div>
-    </div><!-- End .page-header -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'assets/css/profile.css' %}">
+    <style>
+        #sidebar {
+            width: 200px;
+            float: left;
+            margin-right: 20px;
+        }
+        #content {
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+<div id="sidebar">
+    <h2>User Dashboard</h2>
+    <a id="profile-link" href="#">Profile</a><br>
+    <a id="orders-link" href="#">Orders</a><br>
+    <a id="shipping-status-content-link" href="#">Shipping Status</a><br>
+    <a id="billing-address-form" href="#" onclick="toggleBillingAddressForm(event)">Billing Address</a>
+    <br><br><br><br>
 
-    <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
-        <div class="container">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{% url 'store:index' %}">Home</a></li>
-                <li class="breadcrumb-item"><a href="#">Shop</a></li>
-                <li class="breadcrumb-item active" aria-current="page">My Account</li>
-            </ol>
-        </div><!-- End .container -->
-    </nav><!-- End .breadcrumb-nav -->
+    <a href="{% url "store:index" %}"><span>Home</span></a>
+</div>
 
-    <div class="page-content">
-        <div class="dashboard">
-            <div class="container">
-                <div class="row">
-                    <!-- Sidebar Navigation -->
-                    <aside class="col-md-4 col-lg-3">
-                        <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link active" id="tab-dashboard-link" data-toggle="tab" href="#tab-dashboard" role="tab" aria-controls="tab-dashboard" aria-selected="true">Dashboard</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="tab-orders-link" data-toggle="tab" href="#tab-orders" role="tab" aria-controls="tab-orders" aria-selected="false">Orders</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="tab-downloads-link" data-toggle="tab" href="#tab-downloads" role="tab" aria-controls="tab-downloads" aria-selected="false">Shipping Status</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="tab-address-link" data-toggle="tab" href="#tab-address" role="tab" aria-controls="tab-address" aria-selected="false">Addresses</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="tab-account-link" data-toggle="tab" href="#tab-account" role="tab" aria-controls="tab-account" aria-selected="false">Account Details</a>
-                            </li>
-                        </ul>
-                    </aside><!-- End .col-lg-3 -->
+<div id="content">
+    <h1>Welcome back, {{ profile_obj.user.user_name }}!</h1>
+    <p>This is your Dashboard where you can manage your account, orders, settings, and more.</p>
+</div>
 
-                    <div class="col-md-8 col-lg-9">
-                        <div class="tab-content">
-                            <!-- Dashboard Tab -->
-                            <div class="tab-pane fade show active" id="tab-dashboard" role="tabpanel" aria-labelledby="tab-dashboard-link">
-                                <p>Hello <span class="font-weight-normal text-dark">User</span> (not <span class="font-weight-normal text-dark">User</span>? <a href="#">Log out</a>)</p>
-                                <p>From your account dashboard, you can view your <a href="#tab-orders" class="tab-trigger-link link-underline">recent orders</a>, manage your <a href="#tab-address" class="tab-trigger-link">shipping and billing addresses</a>, and <a href="#tab-account" class="tab-trigger-link">edit your password and account details</a>.</p>
-                            </div><!-- End .tab-pane -->
+<!-- Orders Content -->
+<!-- Orders Content -->
+<div id="orders-content" class="container-fluid" style="display: none;">
+    <h1>Your Orders</h1>
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Products</th>
+                    <th>Payment ID</th>
+                    <th>Order ID</th>
+                    <th>Total</th>
+                    <th>Delete</th>
+                    <th>Review</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <th scope="row">{{ order.id }}</th>
+                    <td>{% for order_item in order.order_items.all %} {{ order_item }} {% endfor %}</td>
+                    <td>{{ order.payment_id }}</td>
+                    <td>{{ order.order_id }}</td>
+                    <td>&#x9F3; {{ order.get_totals }}</td>
+                    <td>
+                        <form action="{% url 'account:delete_order' order.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
+                    <td>
+                        {% if order.shipping_status == "Delivered" %}
+                            {% for order_item in order.order_items.all %}
+                                <a href="{% url 'review:submit_review' product_id=order_item.item.id %}">Write a Review</a>
+                            {% endfor %}
+                        {% else %}
+                            <span>Order is not Delivered</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 
-                            <!-- Orders Tab -->
-                            <div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
-                               
-                                {% if orders %}
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col" class="px-3">ID</th>
-                                            <th scope="col">Products</th>
-                                            <th scope="col">Payment ID</th>
-                                            <th scope="col">Order ID</th>
-                                            <th scope="col">Total</th>
-                                            <th scope="col">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for order in orders %}
-                                        <tr>
-                                            <th scope="row">{{ order.id }}</th>
-                                            <td>
-                                                {% for order_item in order.order_items.all %}
-                                                    {{ order_item }}
-                                                {% endfor %}
-                                            </td>
-                                            <td>{{ order.payment_id }}</td>
-                                            <td>{{ order.order_id }}</td>
-                                            <td>&#x9F3; {{order.get_totals}}</td>
-                                            <td>
-                                                {% for order_item in order.order_items.all %}
-                                                    <a href="{% url 'review:submit_review' product_id=order_item.item.id %}">
-                                                        Write a Review
-                                                    </a>
-                                                {% endfor %}
-                                            </td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-								{% else %}
-								<p>No order has been made yet.</p>
-							{% endif %}
-							
-                                <a href="#" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
-                            </div><!-- End .tab-pane -->
-                             
-                            {% comment %} <div class="tab-pane fade" id="tab-downloads" role="tabpanel" aria-labelledby="tab-downloads-link">
-                                {% if orders %}
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Order ID</th>
-                                            <th scope="col">Shipping Status</th>
-                                            <th scope="col">Progress</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for order in orders %}
-                                        <tr>
-                                            <td>{{ order.order_id }}</td>
-                                            <td>{{ order.shipping_status }}</td>
-                                            <td>
-                                                <div class="progress">
-                                                    <div class="progress-bar" role="progressbar" style="width: {{ order.get_shipping_progress }}%;" aria-valuenow="{{ order.get_shipping_progress }}" aria-valuemin="0" aria-valuemax="100">
-                                                        {{ order.get_shipping_progress }}%
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                                {% else %}
-                                <p>No shipping information available yet.</p>
-                                {% endif %}
-                            </div>  {% endcomment %}
 
-                                                        <!-- Shipping Status Tab -->
-                            <!-- Shipping Status Tab -->
-                            {% comment %} <div class="tab-pane fade" id="tab-downloads" role="tabpanel" aria-labelledby="tab-downloads-link">
-                                {% if orders %}
-                                <div class="container">
-                                    <header class="card-header" style="text-align:center; font-size: 21px"> Shipping Status </header>
 
-                                    {% for order in orders %}
-                                    <article class="card">
-                                        <div class="card-body">
-                                            <ul class="row" style="margin-left:20px;margin-top:20px;">
-                                                <li class="col-md-4">
-                                                    <strong>Order ID:</strong> {{ order.order_id }}
-                                                </li>
-                                                <li class="col-md-4">
-                                                    <strong>Status:</strong><br>
-                                                    {% if order.shipping_status == 'Pending' %}
-                                                        <span class="label label-info" style="font-size: 12px; border-radius: 30px;">{{ order.shipping_status }}</span>
-                                                    {% elif order.shipping_status == 'Order Confirmed' %}
-                                                        <span class="label label-warning" style="font-size: 12px; border-radius: 30px;">{{ order.shipping_status }}</span>
-                                                    {% elif order.shipping_status == 'On the Way' %}
-                                                        <span class="label label-primary" style="font-size: 12px; border-radius: 30px;">{{ order.shipping_status }}</span>
-                                                    {% elif order.shipping_status == 'Delivered' %}
-                                                        <span class="label label-success" style="font-size: 12px; border-radius: 30px;">{{ order.shipping_status }}</span>
-                                                    {% endif %}
-                                                </li>
-                                            </ul>
-                                            <hr>
-                                            <div class="track">
-                                                {% if order.shipping_status == 'Pending' %}
-                                                    <div class="step active"><span class="icon"><i class="fa fa-spinner"></i></span><span class="text">Order Pending</span></div>
-                                                    <div class="step"><span class="icon"><i class="fa fa-check"></i></span><span class="text">Order Confirmed</span></div>
-                                                    <div class="step"><span class="icon"><i class="fa fa-truck"></i></span><span class="text">On the Way</span></div>
-                                                    <div class="step"><span class="icon"><i class="fa fa-home"></i></span><span class="text">Delivered</span></div>
-                                                {% elif order.shipping_status == 'Order Confirmed' %}
-                                                    <div class="step active"><span class="icon"><i class="fa fa-spinner"></i></span><span class="text">Order Pending</span></div>
-                                                    <div class="step active"><span class="icon"><i class="fa fa-check"></i></span><span class="text">Order Confirmed</span></div>
-                                                    <div class="step"><span class="icon"><i class="fa fa-truck"></i></span><span class="text">On the Way</span></div>
-                                                    <div class="step"><span class="icon"><i class="fa fa-home"></i></span><span class="text">Delivered</span></div>
-                                                {% elif order.shipping_status == 'On the Way' %}
-                                                    <div class="step active"><span class="icon"><i class="fa fa-spinner"></i></span><span class="text">Order Pending</span></div>
-                                                    <div class="step active"><span class="icon"><i class="fa fa-check"></i></span><span class="text">Order Confirmed</span></div>
-                                                    <div class="step active"><span class="icon"><i class="fa fa-truck"></i></span><span class="text">On the Way</span></div>
-                                                    <div class="step"><span class="icon"><i class="fa fa-home"></i></span><span class="text">Delivered</span></div>
-                                                {% elif order.shipping_status == 'Delivered' %}
-                                                    <div class="step active"><span class="icon"><i class="fa fa-spinner"></i></span><span class="text">Order Pending</span></div>
-                                                    <div class="step active"><span class="icon"><i class="fa fa-check"></i></span><span class="text">Order Confirmed</span></div>
-                                                    <div class="step active"><span class="icon"><i class="fa fa-truck"></i></span><span class="text">On the Way</span></div>
-                                                    <div class="step active"><span class="icon"><i class="fa fa-home"></i></span><span class="text">Delivered</span></div>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    </article>
-                                    {% endfor %}
-                                </div>
-                                {% else %}
-                                <p>No shipping information available yet.</p>
-                                {% endif %}
-                            </div> {% endcomment %}
-
-                           
-                            
-                            <div class="tab-pane fade" id="tab-downloads" role="tabpanel" aria-labelledby="tab-downloads-link">
-                                {% if orders %}
-                                <div class="container">
-                                    <header class="card-header" style="text-align:center; font-size: 21px;">Shipping Status</header>
-                            
-                                    {% for order in orders %}
-                                    <article class="card">
-                                        <div class="card-body">
-                                            <ul class="row" style="margin-left:20px; margin-top:20px;">
-                                                <li class="col-md-4">
-                                                    <strong>Order ID:</strong> {{ order.order_id }}
-                                                    
-                                                </li>
-                            
-                                                 {% comment %} <li class="col-md-4">
-                                                    <strong>Status:</strong><br>
-                                                    {% if order.shipping_status == 'Pending' %}
-                                                        <span class="label label-info" style="font-size: 12px; border-radius: 30px;">{{ order.shipping_status }}</span>
-                                                    {% elif order.shipping_status == 'Order Confirmed' %}
-                                                        <span class="label label-warning" style="font-size: 12px; border-radius: 30px;">{{ order.shipping_status }}</span>
-                                                    {% elif order.shipping_status == 'On the Way' %}
-                                                        <span class="label label-primary" style="font-size: 12px; border-radius: 30px;">{{ order.shipping_status }}</span>
-                                                    {% elif order.shipping_status == 'Delivered' %}
-                                                        <span class="label label-success" style="font-size: 12px; border-radius: 30px;">{{ order.shipping_status }}</span>
-                                                    {% endif %}
-                                                    
-                                                    
-                                                    <div style="padding-left:90px;margin-top:10px;">
-                                                        <form action="" method="POST" style="display: inline;">
-                                                            {% csrf_token %}
-                                                            <button type="submit" class="btn btn-danger" style="display: inline-block;" onclick="return confirm('Are you sure you want to delete this order?');">Delete</button>
-                                                        </form>
-                                                    </div>
-                                                </li>  {% endcomment %}
-                                                <li class="col-md-4" style="display: flex; align-items: center; justify-content: space-between;">
-                                                    <div>
-                                                        <strong>Status:</strong><br>
-                                                        {% if order.shipping_status == 'Pending' %}
-                                                            <span class="label label-info" style="font-size: 12px; border-radius: 30px;">{{ order.shipping_status }}</span>
-                                                        {% elif order.shipping_status == 'Order Confirmed' %}
-                                                            <span class="label label-warning" style="font-size: 12px; border-radius: 30px;">{{ order.shipping_status }}</span>
-                                                        {% elif order.shipping_status == 'On the Way' %}
-                                                            <span class="label label-primary" style="font-size: 12px; border-radius: 30px;">{{ order.shipping_status }}</span>
-                                                        {% elif order.shipping_status == 'Delivered' %}
-                                                            <span class="label label-success" style="font-size: 12px; border-radius: 30px;">{{ order.shipping_status }}</span>
-                                                        {% endif %}
-                                                    </div>
-                                                
-                                                    <!-- Delete Button -->
-                                                    <div style="margin-top:5px;"> 
-                                                        <form action="" method="POST" style="display: inline;">
-                                                            {% csrf_token %}
-                                                            <button type="submit" class="btn btn-danger rounded" style="display: inline-block;" onclick="return confirm('Are you sure you want to delete this order?');">Delete</button>
-                                                        </form>
-                                                    </div>
-                                                </li>
-                                                
-
-                                             
-                                                                                            
-                                            </ul>
-                            
-                                            <hr>
-                                            <div class="track">
-                                                {% if order.shipping_status == 'Pending' %}
-                                                    <div class="step active"><span class="icon"><i class="fa fa-spinner"></i></span><span class="text">Order Pending</span></div>
-                                                    <div class="step"><span class="icon"><i class="fa fa-check"></i></span><span class="text">Order Confirmed</span></div>
-                                                    <div class="step"><span class="icon"><i class="fa fa-truck"></i></span><span class="text">On the Way</span></div>
-                                                    <div class="step"><span class="icon"><i class="fa fa-home"></i></span><span class="text">Delivered</span></div>
-                                                {% elif order.shipping_status == 'Order Confirmed' %}
-                                                    <div class="step active"><span class="icon"><i class="fa fa-spinner"></i></span><span class="text">Order Pending</span></div>
-                                                    <div class="step active"><span class="icon"><i class="fa fa-check"></i></span><span class="text">Order Confirmed</span></div>
-                                                    <div class="step"><span class="icon"><i class="fa fa-truck"></i></span><span class="text">On the Way</span></div>
-                                                    <div class="step"><span class="icon"><i class="fa fa-home"></i></span><span class="text">Delivered</span></div>
-                                                {% elif order.shipping_status == 'On the Way' %}
-                                                    <div class="step active"><span class="icon"><i class="fa fa-spinner"></i></span><span class="text">Order Pending</span></div>
-                                                    <div class="step active"><span class="icon"><i class="fa fa-check"></i></span><span class="text">Order Confirmed</span></div>
-                                                    <div class="step active"><span class="icon"><i class="fa fa-truck"></i></span><span class="text">On the Way</span></div>
-                                                    <div class="step"><span class="icon"><i class="fa fa-home"></i></span><span class="text">Delivered</span></div>
-                                                {% elif order.shipping_status == 'Delivered' %}
-                                                    <div class="step active"><span class="icon"><i class="fa fa-spinner"></i></span><span class="text">Order Pending</span></div>
-                                                    <div class="step active"><span class="icon"><i class="fa fa-check"></i></span><span class="text">Order Confirmed</span></div>
-                                                    <div class="step active"><span class="icon"><i class="fa fa-truck"></i></span><span class="text">On the Way</span></div>
-                                                    <div class="step active"><span class="icon"><i class="fa fa-home"></i></span><span class="text">Delivered</span></div>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    </article>
-                                    {% endfor %}
-                                </div>
-                                {% else %}
-                                <p>No shipping information available yet.</p>
-                                {% endif %}
+<!-- Shipping Status Content -->
+<!-- Shipping Status Content -->
+<div id="shipping-status-content" style="display: none;">
+    <div class="container">
+        <header class="card-header text-center">Shipping Status</header>
+        {% if orders %}
+            {% for order in orders %}
+            <article class="card lg-10">
+                <div class="card-body">
+                    <ul class="row mx-3 mt-3">
+                        <li class="col-md-7"><strong>Order ID:</strong> {{ order.order_id }}</li>
+                        <li class="col-md-7 d-flex align-items-center justify-content-between">
+                            <div>
+                                <strong>Status:</strong><br>
+                                <span class="label {{ order.shipping_status }}">
+                                    {{ order.shipping_status }}
+                                </span>
                             </div>
-                            
-
-                                                        
-
-                            
-
-
-                            <!-- Addresses Tab -->
-                            <div class="tab-pane fade" id="tab-address" role="tabpanel" aria-labelledby="tab-address-link">
-                                <p>The following addresses will be used on the checkout page by default.</p>
-
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <div class="card card-dashboard">
-                                            {% comment %} <div class="card-body">
-                                                <h3 class="card-title">Billing Address</h3>
-                                                <form action="" method="post">
-                                                    {% csrf_token %}
-                                                    {{ billingaddress|crispy }}
-                                                    <button type="submit" class="btn btn-outline-primary-2">Save Address</button>
-                                                </form>
-                                                <a href="#">Edit <i class="icon-edit"></i></a>
-                                            </div><!-- End .card-body --> {% endcomment %}
-											<div class="billing-address-form">
-												<h3 class="card-title">Billing Address</h3>
-												<form action="" method="post" class="form fade-in">
-													{% csrf_token %}
-													{{ billingaddress|crispy }}
-													<button type="submit" class="btn btn-outline-primary-2">Save Address</button>
-												</form>
-											</div>
-                                        </div><!-- End .card-dashboard -->
-                                    </div><!-- End .col-lg-6 -->
-
-                                    <div class="col-lg-6">
-                                        <div class="card card-dashboard">
-                                            <div class="card-body">
-                                                <h3 class="card-title">Shipping Address</h3>
-                                                <p>You have not set up this type of address yet.<br>
-                                                    <a href="#">Edit <i class="icon-edit"></i></a>
-                                                </p>
-                                            </div><!-- End .card-body -->
-                                        </div><!-- End .card-dashboard -->
-                                    </div><!-- End .col-lg-6 -->
-                                </div><!-- End .row -->
-                            </div><!-- End .tab-pane -->
-
-                            <!-- Account Details Tab -->
-                            <div class="tab-pane fade" id="tab-account" role="tabpanel" aria-labelledby="tab-account-link">
-                                <form action="#" method="POST">
+                            <div style="margin-top: 5px;">
+                                <form action="" method="POST" style="display: inline;">
                                     {% csrf_token %}
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            {{ profileForm|crispy }}
-                                        </div><!-- End .col-sm-6 -->
-                                    </div><!-- End .row -->
-
-                                    <button type="submit" class="btn btn-outline-primary-2">
-                                        <span>SAVE CHANGES</span>
-                                        <i class="icon-long-arrow-right"></i>
-                                    </button>
+                                    <button type="submit" class="btn btn-danger rounded" onclick="return confirm('Are you sure you want to delete this order?');">Delete</button>
                                 </form>
-                            </div><!-- End .tab-pane -->
-                        </div><!-- End .tab-content -->
-                    </div><!-- End .col-lg-9 -->
-                </div><!-- End .row -->
-            </div><!-- End .container -->
-        </div><!-- End .dashboard -->
-    </div><!-- End .page-content -->
-</main><!-- End .main -->
+                            </div>
+                        </li>
+                    </ul>
+                    <hr>
+                    <div class="track">
+                        {% if order.shipping_status == 'Pending' %}
+                            <div class="step active"><span class="icon"><i class="fa fa-spinner"></i></span><span class="text">Order Pending</span></div>
+                            <div class="step"><span class="icon"><i class="fa fa-check"></i></span><span class="text">Order Confirmed</span></div>
+                            <div class="step"><span class="icon"><i class="fa fa-truck"></i></span><span class="text">On the Way</span></div>
+                            <div class="step"><span class="icon"><i class="fa fa-home"></i></span><span class="text">Delivered</span></div>
+                        {% elif order.shipping_status == 'Order Confirmed' %}
+                            <div class="step active"><span class="icon"><i class="fa fa-spinner"></i></span><span class="text">Order Pending</span></div>
+                            <div class="step active"><span class="icon"><i class="fa fa-check"></i></span><span class="text">Order Confirmed</span></div>
+                            <div class="step"><span class="icon"><i class="fa fa-truck"></i></span><span class="text">On the Way</span></div>
+                            <div class="step"><span class="icon"><i class="fa fa-home"></i></span><span class="text">Delivered</span></div>
+                        {% elif order.shipping_status == 'On the Way' %}
+                            <div class="step active"><span class="icon"><i class="fa fa-spinner"></i></span><span class="text">Order Pending</span></div>
+                            <div class="step active"><span class="icon"><i class="fa fa-check"></i></span><span class="text">Order Confirmed</span></div>
+                            <div class="step active"><span class="icon"><i class="fa fa-truck"></i></span><span class="text">On the Way</span></div>
+                            <div class="step"><span class="icon"><i class="fa fa-home"></i></span><span class="text">Delivered</span></div>
+                        {% elif order.shipping_status == 'Delivered' %}
+                            <div class="step active"><span class="icon"><i class="fa fa-spinner"></i></span><span class="text">Order Pending</span></div>
+                            <div class="step active"><span class="icon"><i class="fa fa-check"></i></span><span class="text">Order Confirmed</span></div>
+                            <div class="step active"><span class="icon"><i class="fa fa-truck"></i></span><span class="text">On the Way</span></div>
+                            <div class="step active"><span class="icon"><i class="fa fa-home"></i></span><span class="text">Delivered</span></div>
+                        {% endif %}
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        {% else %}
+            <p>No shipping information available yet.</p>
+        {% endif %}
+    </div>
+</div>
 
-{% comment %} <style>
-    .table {
-        width: 100%;
-        margin-bottom: 1.5rem;
-        background-color: #7C7C7D;
-        border-collapse: collapse;
-    }
+<!-- Billing Address Content -->
+{% comment %} <div id="billing-address-container" style="display: none;">
+    <form method="post" action="{% url 'account:profile' %}">
+        {% csrf_token %}
+        {{ billingaddress.as_p }}
+        <button type="submit">Save Billing Address</button>
+    </form>
+</div> {% endcomment %}
 
-    .table th, .table td {
-        padding: 1rem;
-        text-align: left;
-        border-bottom: 1px solid #dee2e6;
-    }
+<div id="billing-address-container" style="display: none;">
+    <form method="post" action="{% url 'account:profile' %}">
+        {% csrf_token %}
 
-    .table th {
-        background-color: #f2f3f5;
-        font-weight: 600;
-        text-transform: uppercase;
-    }
+        <div class="form-group">
+            <label for="id_first_name">First Name</label>
+            {{ billingaddress.first_name|add_class:"form-control" }}
+            {% if billingaddress.first_name.errors %}
+                <div class="error-message">{{ billingaddress.first_name.errors }}</div>
+            {% endif %}
+        </div>
 
-    .table tr:hover {
-        background-color: #f9f9f9;
-    }
+        <div class="form-group">
+            <label for="id_last_name">Last Name</label>
+            {{ billingaddress.last_name|add_class:"form-control" }}
+            {% if billingaddress.last_name.errors %}
+                <div class="error-message">{{ billingaddress.last_name.errors }}</div>
+            {% endif %}
+        </div>
 
-    .table td {
-        font-size: 1.35rem;
-        color: #333;
-    }
+        <div class="form-group">
+            <label for="id_country_name">Country</label>
+            {{ billingaddress.country_name|add_class:"form-control" }}
+            {% if billingaddress.country_name.errors %}
+                <div class="error-message">{{ billingaddress.country_name.errors }}</div>
+            {% endif %}
+        </div>
 
-    .table td a {
-        color: #007bff;
-        text-decoration: none;
-        font-weight: 500;
-    }
+        <div class="form-group">
+            <label for="id_city">City</label>
+            {{ billingaddress.city|add_class:"form-control" }}
+            {% if billingaddress.city.errors %}
+                <div class="error-message">{{ billingaddress.city.errors }}</div>
+            {% endif %}
+        </div>
 
-    .table td a:hover {
-        text-decoration: underline;
-        color: #0056b3;
-    }
+        <div class="form-group">
+            <label for="id_address1">Address Line 1</label>
+            {{ billingaddress.address1|add_class:"form-control" }}
+            {% if billingaddress.address1.errors %}
+                <div class="error-message">{{ billingaddress.address1.errors }}</div>
+            {% endif %}
+        </div>
 
-    .btn-outline-primary-2 {
-        border: 2px solid #007bff;
-        color: #007bff;
-        padding: 0.5rem 1rem;
-        display: inline-block;
-        text-transform: uppercase;
-        font-weight: 600;
-        letter-spacing: 0.05rem;
-        margin-top: 1.5rem;
-    }
+        <div class="form-group">
+            <label for="id_address2">Address Line 2</label>
+            {{ billingaddress.address2|add_class:"form-control" }}
+            {% if billingaddress.address2.errors %}
+                <div class="error-message">{{ billingaddress.address2.errors }}</div>
+            {% endif %}
+        </div>
 
-    .btn-outline-primary-2:hover {
-        background-color: #007bff;
-        color: #fff;
-    }
-	.billing-address-form {
-		background-color: #010712;
-		border-radius: 0.5rem;
-		padding: 1.5rem;
-		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-		transition: opacity 0.5s ease-in-out;
-		opacity: 0;
-		animation: fadeIn 0.5s forwards;
-	}
-	
-	@keyframes fadeIn {
-		from {
-			opacity: 0;
-		}
-		to {
-			opacity: 1;
-		}
-	}
-	
-	.card-title {
-		font-size: 1.5rem;
-		margin-bottom: 1rem;
-		font-weight: 600;
-		color: #89898A;
-	}
-	
-	.btn-outline-primary-2 {
-		margin-top: 1rem;
-		border: 2px solid #007bff;
-		color: #007bff;
-		padding: 0.5rem 1rem;
-		font-weight: 600;
-		letter-spacing: 0.05rem;
-	}
-	
-	.btn-outline-primary-2:hover {
-		background-color: #007bff;
-		color: #fff;
-	}
-	
-</style> {% endcomment %}
-{% comment %} 
-<style>
-    body {
-        background-color: #f7f7f7;
-    }
+        <div class="form-group">
+            <label for="id_zipcode">Zip Code</label>
+            {{ billingaddress.zipcode|add_class:"form-control" }}
+            {% if billingaddress.zipcode.errors %}
+                <div class="error-message">{{ billingaddress.zipcode.errors }}</div>
+            {% endif %}
+        </div>
 
-    .container {
-        margin-top: 0px;
-        margin-bottom: 0px;
-    }
+        <div class="form-group">
+            <label for="id_phone_number">Phone Number</label>
+            {{ billingaddress.phone_number|add_class:"form-control" }}
+            {% if billingaddress.phone_number.errors %}
+                <div class="error-message">{{ billingaddress.phone_number.errors }}</div>
+            {% endif %}
+        </div>
 
-    .card {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        min-width: 0;
-        word-wrap: break-word;
-        background-color: #fff;
-        background-clip: border-box;
-        border: 1px solid rgba(0, 0, 0, 0.1);
-        border-radius: 0.10rem;
-    }
-
-    .card-header {
-        padding: 0.75rem 1.25rem;
-        margin-bottom: 0;
-        background-color: #fff;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    }
-
-    .track {
-        position: relative;
-        background-color: #ddd;
-        height: 7px;
-        display: flex;
-        margin-bottom: 60px;
-        margin-top: 50px;
-    }
-
-    .track .step {
-        flex-grow: 1;
-        width: 25%;
-        margin-top: -18px;
-        text-align: center;
-        position: relative;
-    }
-
-    .track .step.active:before {
-        background: #05a134;
-    }
-
-    .track .step::before {
-        height: 7px;
-        position: absolute;
-        content: "";
-        width: 100%;
-        left: 0;
-        top: 18px;
-    }
-
-    .track .step.active .icon {
-        background: #038a2c;
-        color: #fff;
-    }
-
-    .track .icon {
-        display: inline-block;
-        width: 40px;
-        height: 40px;
-        line-height: 40px;
-        position: relative;
-        border-radius: 100%;
-        background: #ddd;
-    }
-
-    .track .step.active .text {
-        font-weight: 400;
-        color: #000;
-    }
-
-    .track .text {
-        display: block;
-        margin-top: 7px;
-    }
-
-    .btn-danger {
-        color: #ffffff;
-        background-color: #ee5435;
-        border-color: #ee5435;
-        border-radius: 1px;
-    }
-
-    .btn-danger:hover {
-        color: #ffffff;
-        background-color: #ff2b00;
-        border-color: #ff2b00;
-        border-radius: 1px;
-    }
-</style> {% endcomment %}
-
-<style>
-        /* Styles for the Shipping Status */
-    .container {
-        margin-top: 10px;
-        margin-bottom: 10px;
-    }
-
-    .card {
-        background-color: #fff;
-        border: 1px solid rgba(0, 0, 0, 0.1);
-        border-radius: 0.25rem;
-        margin-bottom: 20px;
-    }
-
-    .card-header {
-        padding: 0.75rem 1.25rem;
-        background-color: #fff;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-        font-size: 21px;
-    }
-
-    .track {
-        position: relative;
-        background-color: #ddd;
-        height: 7px;
-        display: flex;
-        margin-bottom: 40px;
-        margin-top: 40px;
-    }
-
-    .track .step {
-        flex-grow: 1;
-        width: 25%;
-        margin-top: -18px;
-        text-align: center;
-        position: relative;
-    }
-
-    .track .step.active:before {
-        background: #05a134;
-    }
-
-    .track .step::before {
-        height: 7px;
-        position: absolute;
-        content: "";
-        width: 100%;
-        left: 0;
-        top: 18px;
-        background: #ddd;
-    }
-
-    .track .icon {
-        display: inline-block;
-        width: 40px;
-        height: 40px;
-        line-height: 40px;
-        position: relative;
-        border-radius: 100%;
-        background: #ddd;
-    }
-
-    .track .step.active .icon {
-        background: #038a2c;
-        color: #fff;
-    }
-
-    .track .text {
-        display: block;
-        margin-top: 7px;
-    }
-
-    .track .step.active .text {
-        font-weight: 500;
-        color: #000;
-    }
-
-    /* Label Styles */
-    .label {
-        display: inline-block;
-        padding: 5px 10px;
-        font-size: 12px;
-        border-radius: 30px;
-        white-space: nowrap;
-    }
-
-    .label-info {
-        background-color: #5bc0de;
-        color: white;
-    }
-
-    .label-warning {
-        background-color: #f0ad4e;
-        color: white;
-    }
-
-    .label-primary {
-        background-color: #337ab7;
-        color: white;
-    }
-
-    .label-success {
-        background-color: #5cb85c;
-        color: white;
-    }
-
-    .tab-pane {
-        position: relative;
-        padding: 20px;
-        overflow: hidden; /* Ensure content stays inside */
-    }
-    
-    .label {
-        display: inline-block;
-        padding: 5px 10px;
-        font-size: 12px;
-        border-radius: 30px;
-        white-space: nowrap; /* Prevent the label from wrapping */
-    }
-    
-    .label-success {
-        background-color: #5cb85c;
-        color: white;
-    }
-    
-    .label-warning {
-        background-color: #f0ad4e;
-        color: white;
-    }
-    
-    .label-info {
-        background-color: #5bc0de;
-        color: white;
-    }
-    
-    .label-primary {
-        background-color: #337ab7;
-        color: white;
-    }
-    
-
-</style>
+        <button type="submit" class="btn btn-primary">Save Billing Address</button>
+    </form>
+</div>
 
 
 
-{% endblock body %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+<script>
+    const userProfile = {
+        fullName: "{{ profile_obj.full_name }}",
+        email: "{{ request.user.email }}",
+        phone: "{{ profile_obj.phone }}",
+        address: "{{ profile_obj.address }}",
+        country: "{{ profile_obj.country }}",
+        city: "{{ profile_obj.city }}",
+        zipcode: "{{ profile_obj.zipcode }}",
+        image: "{{ profile_image_url }}"
+    };
+
+    function loadProfile() {
+        const profileImage = userProfile.image 
+            ? `<img src="${userProfile.image}" alt="Profile Image" style="width: 100px; height: 100px;" />` 
+            : `<i class="fas fa-user" style="font-size: 100px;"></i>`;
+
+        document.getElementById("content").innerHTML = `
+            <h1>Profile Information</h1>
+            <div>${profileImage}</div>
+            <p><strong>Full Name:</strong> ${userProfile.fullName}</p>
+            <p><strong>Email:</strong> ${userProfile.email}</p>
+            <p><strong>Phone:</strong> ${userProfile.phone}</p>
+            <p><strong>Address:</strong> ${userProfile.address}</p>
+            <p><strong>Country:</strong> ${userProfile.country}</p>
+            <p><strong>City:</strong> ${userProfile.city}</p>
+            <p><strong>Zipcode:</strong> ${userProfile.zipcode}</p>
+            <button onclick="editProfile()">Edit Profile</button>
+        `;
+    }
+
+    function editProfile() {
+        document.getElementById("content").innerHTML = `
+            <h2>Edit Profile</h2>
+            <form id="profile-edit-form" enctype="multipart/form-data">
+                <label for="full-name">Full Name:</label>
+                <input type="text" id="full-name" value="${userProfile.fullName}" required />
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" value="${userProfile.email}" required />
+
+                <label for="address">Address:</label>
+                <input type="text" id="address" value="${userProfile.address}" required />
+
+                <label for="country">Country:</label>
+                <input type="text" id="country" value="${userProfile.country}" required />
+
+                <label for="city">City:</label>
+                <input type="text" id="city" value="${userProfile.city}" required />
+
+                <label for="zipcode">Zipcode:</label>
+                <input type="text" id="zipcode" value="${userProfile.zipcode}" required />
+
+                <label for="image">Profile Image:</label>
+                <input type="file" id="image" accept="image/*" />
+
+                <button type="submit">Save Changes</button>
+            </form>
+        `;
+
+        document.getElementById("profile-edit-form").onsubmit = function(event) {
+            event.preventDefault();
+
+            // Get updated values
+            userProfile.fullName = document.getElementById("full-name").value;
+            userProfile.email = document.getElementById("email").value;
+            userProfile.address = document.getElementById("address").value;
+            userProfile.country = document.getElementById("country").value;
+            userProfile.city = document.getElementById("city").value;
+            userProfile.zipcode = document.getElementById("zipcode").value;
+
+            // Here you can handle the image upload if necessary
+            const imageFile = document.getElementById("image").files[0];
+            if (imageFile) {
+                // Process the image upload (e.g., send it to the server)
+                // This part will depend on your backend implementation
+            }
+
+            // Simulate a successful save
+            alert("Profile updated!");
+            loadProfile(); // Reload profile information after saving
+        };
+    }
+
+    // Toggle Shipping Status Content
+    document.getElementById("shipping-status-content-link").onclick = function(event) {
+        event.preventDefault();
+        document.getElementById("content").style.display = 'none';
+        document.getElementById("orders-content").style.display = 'none';
+        document.getElementById("billing-address-container").style.display = 'none';
+        document.getElementById("shipping-status-content").style.display = 'block';
+    };
+
+    // Toggle Orders Content
+    document.getElementById("orders-link").onclick = function(event) {
+        event.preventDefault();
+        document.getElementById("content").style.display = 'none';
+        document.getElementById("shipping-status-content").style.display = 'none';
+        document.getElementById("billing-address-container").style.display = 'none';
+        document.getElementById("orders-content").style.display = 'block';
+    };
+
+    // Toggle Billing Address Form
+    function toggleBillingAddressForm(event) {
+        event.preventDefault();
+        const billingContainer = document.getElementById("billing-address-container");
+        if (billingContainer.style.display === "none" || billingContainer.style.display === "") {
+            billingContainer.style.display = "block";
+        } else {
+            billingContainer.style.display = "none";
+        }
+        document.getElementById("content").style.display = 'none';
+        document.getElementById("orders-content").style.display = 'none';
+        document.getElementById("shipping-status-content").style.display = 'none';
+    }
+
+    // Event listener for the profile link
+    document.getElementById("profile-link").onclick = function(event) {
+        event.preventDefault();
+        loadProfile();
+        document.getElementById("orders-content").style.display = 'none';
+        document.getElementById("shipping-status-content").style.display = 'none';
+        document.getElementById("billing-address-container").style.display = 'none';
+    };
+
+    // Initial load
+    loadProfile(); // Load the profile by default when the page first loads
+</script>
+</body>
+</html>

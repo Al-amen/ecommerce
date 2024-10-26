@@ -1,0 +1,262 @@
+/* Basic reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.main {
+    padding: 20px 0;
+    background-color: #f9f9f9;
+}
+
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+}
+
+.breadcrumb-item a {
+    color: #333;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.breadcrumb-item.active {
+    color: #999;
+}
+
+/* Product details top section */
+.product-details-top {
+    padding: 40px 0;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+}
+
+.product-gallery {
+    position: relative;
+    border-right: 1px solid #e5e5e5;
+    padding-right: 20px;
+}
+
+.product-main-image {
+    max-width: 100%;
+    height: auto;
+    overflow: hidden;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.product-main-image img {
+    max-height: 450px;
+    object-fit: cover;
+}
+
+.product-image-gallery {
+    display: flex;
+    justify-content: space-between;
+}
+
+.product-gallery-item {
+    width: 70px;
+    height: 70px;
+    border: 1px solid #e5e5e5;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.product-gallery-item img {
+    max-width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-gallery-item:hover,
+.product-gallery-item.active {
+    border-color: #333;
+}
+
+/* Product details */
+.product-details h1 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.product-details .ratings-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.ratings {
+    position: relative;
+    display: inline-block;
+    font-size: 14px;
+    /* color: #ffd700; */
+
+
+} 
+
+.ratings-val {
+    display: inline-block;
+    /* background-color: #ffd700; */
+    height: 20px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.product-price {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.product-price del {
+    color: #999;
+    font-size: 16px;
+    margin-left: 10px;
+}
+
+.product-content p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.select-custom select {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+.product-details-quantity input {
+    width: 70px;
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.product-details-action {
+    margin-top: 20px;
+}
+
+.btn-product {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #333;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: bold;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-product:hover {
+    background-color: #555;
+}
+
+.btn-product.btn-wishlist {
+    background-color: transparent;
+    color: #333;
+}
+
+.btn-product.btn-wishlist:hover {
+    color: #555;
+}
+
+.product-details-footer {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.social-icons a {
+    margin-right: 10px;
+    color: #333;
+    font-size: 18px;
+    transition: color 0.2s ease;
+}
+
+.social-icons a:hover {
+    color: #555;
+}
+
+/* Tabs */
+.product-details-tab {
+    margin-top: 50px;
+}
+
+.nav-pills .nav-link {
+    border: none;
+    color: #333;
+    background-color: #f9f9f9;
+    border-radius: 0;
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+.nav-pills .nav-link:hover,
+.nav-pills .nav-link.active {
+    color: #fff;
+    background-color: #333;
+}
+
+.tab-pane h3 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.tab-pane p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+/* Reviews */
+/* Reviews */
+.reviews {
+    margin-top: 30px;
+}
+
+.review {
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.review h4 {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.review-content {
+    margin-top: 10px;
+}
+
+.review-images {
+    margin-top: 15px;
+}
+
+.review-images img {
+    border-radius: 5px;
+    width: 100%;
+    max-width: 100px;
+    margin-right: 10px;
+}
+.ratings-text {
+    font-size: 14px;
+    color: #999;
+    margin-left: 10px;
+}
+
+.review-date{
+    font-weight: 200px;
+}

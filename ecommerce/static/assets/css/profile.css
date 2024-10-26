@@ -1,0 +1,303 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex; /* Use flexbox to align sidebar and content */
+  height: 100vh;
+}
+/* Sidebar and content styles omitted for brevity... */
+
+#sidebar {
+  width: 250px;
+  padding: 20px;
+  background-color: #e1e1e1;
+}
+
+#content {
+  flex-grow: 1;
+  padding: 20px;
+}
+
+#sidebar a {
+  color: #333;
+  display: block;
+  margin-bottom: 10px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  margin: 5px 0;
+}
+
+input {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+}
+
+button {
+  padding: 10px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.message {
+  color: green;
+  margin-top: 10px;
+}
+
+#orders-content {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+th {
+  background-color: #4CAF50; /* Green background */
+  color: white; /* White text */
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2; /* Light grey for even rows */
+}
+
+tr:hover {
+  background-color: #e2e2e2; /* Darker grey on hover */
+}
+
+button {
+  padding: 8px 12px;
+  background-color: #ff5733; /* Red color */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #e74c3c; /* Darker red on hover */
+}
+
+.message {
+  margin-top: 10px;
+  color: #ff5733; /* Red color for messages */
+}
+
+   /* Additional responsive adjustments */
+   @media (max-width: 768px) {
+    #orders-content h1 {
+        font-size: 1.5rem;
+    }
+    #orders-content .btn {
+        font-size: 0.85rem;
+        padding: 5px 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    #orders-content h1 {
+        font-size: 1.2rem;
+    }
+    #orders-content .btn {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+    }
+}
+
+
+/* Container and Card Styles */
+.container {
+  margin: 20px auto;
+  max-width: 1200px;
+}
+
+.card {
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0.25rem;
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+  padding: 1rem;
+}
+
+/* Status Label Styles */
+.label {
+  padding: 5px 10px;
+  font-size: 12px;
+  border-radius: 30px;
+  display: inline-block;
+  color: #fff;
+}
+
+.label.Pending {
+  background-color: #f0ad4e; /* Orange */
+}
+
+.label.Order_Confirmed {
+  background-color: #5bc0de; /* Light Blue */
+}
+
+.label.On_the_Way {
+  background-color: #5cb85c; /* Green */
+}
+
+.label.Delivered {
+  background-color: #337ab7; /* Blue */
+}
+
+/* Track and Step Styles */
+.track {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.step {
+  flex-grow: 1;
+  text-align: center;
+  position: relative;
+}
+
+.step.active .icon {
+  background: #28a745; /* Green */
+  color: #fff;
+}
+
+.step .icon {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  border-radius: 100%;
+  background: #ddd;
+  margin: 0 auto;
+}
+
+.step.active .text {
+  font-weight: bold;
+  color: #000;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .card-header {
+      font-size: 1.25rem; /* Smaller header font size */
+  }
+
+  .track {
+      flex-direction: column; /* Stack vertically on smaller screens */
+      align-items: center;
+  }
+
+  .step {
+      margin-bottom: 15px; /* Space between steps */
+  }
+
+  .icon {
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ /* Custom CSS for the Billing Address Form */
+ #billing-address-container {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.form-group label {
+  font-weight: bold;
+}
+
+/* Equal width for input fields */
+.form-control {
+  width: 100%; /* Full width */
+  max-width: 100%; /* Prevent overflow */
+  height: 40px; /* Set a uniform height for all inputs */
+  border-radius: 4px; /* Slightly rounded corners */
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+/* Style for error messages (if needed) */
+.error-message {
+  color: red;
+  font-size: 0.9em;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  #billing-address-container {
+      width: 100%;
+      padding: 15px;
+  }
+}

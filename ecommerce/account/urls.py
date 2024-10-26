@@ -7,5 +7,6 @@ urlpatterns = [
     path('login/',views.Customerlogin,name='login'),
     path('logout/',views.logout_view, name="logout"),
     path('profile/',views.ProfileView.as_view(),name='profile'),
-    path('account-verify/<str:token>/', views.account_verify, name='account_verify')
+    path('account-verify/<str:token>/', views.account_verify, name='account_verify'),
+    path('delete-order/<int:order_id>/', views.delete_order, name='delete_order'),
 ]

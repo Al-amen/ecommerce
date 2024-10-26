@@ -1,0 +1,168 @@
+
+
+  .header-top { background-color: #f8f9fa; }
+  .header-middle { background-color: #007bff; color: white; }
+  .header-bottom { background-color: #343a40; }
+  
+  .header-search input { width: 400px; }
+  .dropdown-menu { min-width: 250px; }
+  .dropdown-item { padding: 10px; }
+  .dropdown-footer { border-top: 1px solid #ddd; padding-top: 10px; }
+  .main-nav ul li a { font-weight: 500; }
+  .sticky-header { position: sticky; top: 0; z-index: 999; background: #fff; }
+  /* Category Dropdown Styles */
+  .dropdown-category {
+      background-color: #495057; /* Dark background for the dropdown */
+      border-radius: 5px; /* Rounded corners */
+      padding: 10px; /* Padding around the dropdown */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow effect */
+  }
+  
+  .category-item {
+      position: relative; /* Required for positioning the subcategory list */
+  }
+  
+  .category-link {
+      color: #ffffff; /* White color for main category links */
+      padding: 10px 15px; /* Padding for links */
+      display: block; /* Block display for easier click area */
+      text-decoration: none; /* Remove underline */
+      font-size: 18px; /* Increased font size for category links */
+  }
+  
+  .category-link:hover {
+      background-color: #6c757d; /* Lighten background on hover */
+  }
+  
+  .subcategory-list {
+      display: none; /* Hide subcategory list by default */
+      position: absolute; /* Position it relative to the category item */
+      top: 100%; /* Position below the category item */
+      left: 0; /* Align left */
+      background-color: #343a40; /* Same dark background */
+      border-radius: 5px; /* Rounded corners */
+      margin-top: 5px; /* Spacing above subcategory */
+      z-index: 1000; /* Ensure it appears above other elements */
+      padding: 10px; /* Padding around the subcategory */
+  }
+  
+  .category-item:hover .subcategory-list {
+      display: block; /* Show subcategory on hover of category */
+  }
+  
+  .subcategory-item {
+      margin: 0; /* Reset margin */
+  }
+  
+  .subcategory-link {
+      color: #ffffff; /* White color for subcategory links */
+      display: block; /* Block display for easier click area */
+      padding: 5px 15px; /* Padding for subcategory links */
+      text-decoration: none; /* Remove underline */
+      font-size: 16px; /* Increased font size for subcategory links */
+  }
+  
+  @media (max-width: 768px) {
+.category-link {
+  font-size: 16px; /* Smaller font size on mobile */
+}
+
+.subcategory-link {
+  font-size: 14px; /* Smaller font size on mobile */
+}
+}
+  
+.dropdown-cart-products .product {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.dropdown-cart-products .product h6 {
+    margin: 0;
+}
+
+.cart-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    padding: 5px 8px;
+    border-radius: 50%;
+    background-color: red;
+    color: white;
+    font-size: 12px;
+}
+
+.dropdown-menu-right {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+
+
+  a {
+      transition: color 0.3s ease;
+  }
+  
+  a:hover {
+      color: #0056b3; /* Darker blue on hover */
+  }
+  
+  .footer .social-icon {
+      font-size: 24px;
+      margin: 0 10px;
+      transition: color 0.3s;
+  }
+  
+  .footer .social-icon:hover {
+      color: #0056b3; /* Change color on hover */
+  }
+  /* Mobile Menu Styles */
+.mobile-menu-container {
+background-color: #ffffff; /* Light background for contrast */
+color: #333; /* Dark text for readability */
+}
+
+.mobile-menu-overlay {
+background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+}
+
+.mobile-menu-wrapper {
+padding: 20px; /* Padding around the menu */
+}
+
+/* Button Styles */
+.btn-primary {
+background-color: #007bff; /* Primary button color */
+color: #ffffff; /* Text color */
+border-radius: 4px; /* Rounded corners */
+}
+
+/* Form Styles */
+.mobile-search .form-control {
+border: 1px solid #007bff; /* Blue border for search input */
+border-radius: 4px; /* Rounded corners */
+}
+
+/* Modal Styles */
+.modal-content {
+border-radius: 8px; /* Rounded corners for the modal */
+}
+
+.modal-body {
+padding: 30px; /* Increased padding for the modal body */
+}
+
+/* Transition Effects */
+.mobile-menu-overlay,
+.modal {
+transition: all 0.3s ease; /* Smooth transitions */
+}
+
+.social-icons .social-icon {
+margin-right: 10px; /* Spacing between social icons */
+}
+
+/* Add hover effects */
+.social-icons .social-icon:hover {
+color: #007bff; /* Change color on hover */
+}

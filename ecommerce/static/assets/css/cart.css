@@ -1,0 +1,201 @@
+/* General Page Styles */
+.main {
+    padding: 60px 0;
+}
+
+.page-header {
+    padding: 60px 0;
+    background-size: cover;
+    background-position: center;
+}
+
+.breadcrumb-nav {
+    margin-bottom: 40px;
+}
+
+.cart {
+    padding: 30px 0;
+}
+
+/* Table Design */
+.table-cart {
+    background-color: #f9f9f9; /* Light background color for the table */
+    border-collapse: separate;
+    border-spacing: 0 15px; /* Spacing between rows for modern look */
+    width: 100%;
+}
+
+.table-cart th {
+    background-color: #343a40; /* Dark header background */
+    color: #fff; /* White text color for contrast */
+    padding: 15px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.table-cart td {
+    background-color: #fff; /* White background for rows */
+    padding: 15px;
+    border-bottom: 2px solid #f1f1f1; /* Add some border between rows */
+    text-align: center;
+    vertical-align: middle;
+}
+
+.table-cart .product-col {
+    text-align: left; /* Align product names to the left */
+}
+
+.table-cart img {
+    max-width: 100px;
+    border-radius: 5px; /* Rounded corners for product images */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Quantity buttons styling */
+.cart-product-quantity {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cart-product-quantity a {
+    background-color: #e0e0e0;
+    border-radius: 50%;
+    padding: 5px;
+    font-size: 1.2rem;
+    color: #6c757d;
+    transition: background-color 0.3s ease;
+}
+
+.cart-product-quantity a:hover {
+    background-color: #007bff; /* Blue hover effect */
+    color: #fff;
+}
+
+.cart-product-quantity span {
+    font-size: 1.1rem;
+    padding: 0 10px;
+}
+
+
+
+.custom-control-label {
+    font-size: 0.95rem;
+    color: #333;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 10px 15px;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+}
+
+.btn-outline-secondary {
+    border-color: #6c757d;
+    color: #6c757d;
+    font-size: 0.95rem;
+    padding: 10px 15px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .summary {
+        padding: 15px;
+    }
+    
+    .summary-title {
+        font-size: 1.3rem;
+    }
+    
+    .table-summary td {
+        font-size: 0.9rem;
+    }
+
+    .btn-primary,
+    .btn-outline-secondary {
+        font-size: 0.9rem;
+        padding: 8px 10px;
+    }
+}
+
+
+/* Buttons Styling */
+.btn-order {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    padding: 12px;
+    border-radius: 5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+.btn-order:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+    color: #fff;
+}
+
+.btn-outline-dark-2 {
+    border-color: #343a40;
+    color: #343a40;
+    transition: background-color 0.3s ease;
+}
+
+.btn-outline-dark-2:hover {
+    background-color: #343a40;
+    color: #fff;
+}
+
+/* Coupon Code Styling */
+.cart-discount {
+    margin-top: 20px;
+}
+
+.cart-discount h6 {
+    font-size: 1.1rem;
+    color: #007bff; /* Blue color for coupon title */
+    margin-bottom: 10px;
+}
+
+.cart-discount input {
+    border: 1px solid #ced4da;
+    padding: 8px;
+    border-radius: 5px;
+}
+
+.cart-discount .btn {
+    background-color: #007bff;
+    color: white;
+}
+
+.cart-discount .btn:hover {
+    background-color: #0056b3;
+}
+
+/* Responsive Styling */
+@media (max-width: 768px) {
+    .table-cart th, .table-cart td {
+        font-size: 0.9rem;
+        padding: 10px;
+    }
+    
+    .summary-cart {
+        margin-top: 20px;
+    }
+}

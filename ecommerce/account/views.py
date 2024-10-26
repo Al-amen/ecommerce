@@ -11,7 +11,7 @@ from payment.models import BillingAddress
 from account.models import Profile,Verification
 from payment.forms import BillingAddressForm
 from django.views.generic import TemplateView
-
+from django.contrib.auth.decorators import login_required
 import uuid
 
 
@@ -120,63 +120,6 @@ def Customerlogin(request):
 
 
 
-
-# def register(request):
-    
-#     if request.user.is_authenticated:
-#         return HttpResponse("Your are already authentiacted")
-#     else:
-#         form = RegistrationForm()
-#         if request.method == "post" or request.method == "POST":
-#              form = RegistrationForm(request.POST)
-#              if form.is_valid():
-#                   user = form.save(commit=False)
-#                   user.is_active = True 
-#                   user.save()
-#                   return HttpResponse("your account has been created")
-     
-
-#         context = {
-#          'form': form
-#        }
-
-
-#     return render(request, 'register.html', context=context)
-
-
-# def Customerlogin(request):
-    
-#     if request.user.is_authenticated:
-#         return HttpResponse("You are already logged in")
-
-#     if request.method == 'POST':
-#         username = request.POST.get('username')
-#         password = request.POST.get('password')
-
-#         print(f"Login attempt with username: {username} and password: {password}")
-
-#         # Authenticate using the custom backend
-#         customer = authenticate(request, username=username, password=password)
-
-#         if customer is None:
-#             print(f"Failed to authenticate user: {username}")
-#         else:
-#             print(f"User {customer} authenticated successfully")
-
-#         if customer is not None:
-#             if customer.is_active:
-#                 login(request, customer)
-#                 return  redirect('store:index')
-#             else:
-#                 return HttpResponse("User is inactive or not verified.")
-#         else:
-#             return HttpResponse("Invalid username or password.")
-
-#     # Handle GET requests or any other method
-#     return render(request, 'login.html')
-
-
-
 def logout_view(request):
     if request.user.is_authenticated:
         logout(request)
@@ -186,35 +129,144 @@ def logout_view(request):
     
 
 
-class ProfileView(TemplateView):
-    def get(self, request, *args, **kwargs):
-       orders = Order.objects.filter(user=request.user, ordered = True).order_by('-created')
-       billingaddress = BillingAddress.objects.get(user=request.user)
-       billingaddress_form = BillingAddressForm(instance=billingaddress)
-       profile_obj = Profile.objects.get(user=request.user)
-       profileForm = ProfileForm(instance=profile_obj)
-       context = {
+# class ProfileView(TemplateView):
+#     def get(self, request, *args, **kwargs):
+#        orders = Order.objects.filter(user=request.user, ordered = True).order_by('-created')
+#        billingaddress = BillingAddress.objects.get(user=request.user)
+#        billingaddress_form = BillingAddressForm(instance=billingaddress)
+#        profile_obj = Profile.objects.get(user=request.user)
+#        profileForm = ProfileForm(instance=profile_obj)
+#        context = {
            
-          'orders' : orders,
-           'billingaddress': billingaddress_form ,
-           'profileForm':profileForm ,
+#           'orders' : orders,
+#            'billingaddress': billingaddress_form ,
+#            'profileForm':profileForm ,
 
-       }
+#        }
 
-       return render(request,'profile.html',context=context)
+#        return render(request,'profile.html',context=context)
     
-    def post(self, request, *args, **kwargs):
-        if request.method == 'POST' or request.method == 'post':
-             billingaddress = BillingAddress.objects.get(user=request.user)
-             billingaddress_form = BillingAddressForm(request.POST,instance=billingaddress)
+#     def post(self, request, *args, **kwargs):
+#         if request.method == 'POST' or request.method == 'post':
+#              billingaddress = BillingAddress.objects.get(user=request.user)
+#              billingaddress_form = BillingAddressForm(request.POST,instance=billingaddress)
 
-             profile_obj = Profile.objects.get(user=request.user)
-             profileForm = ProfileForm(request.POST,instance=profile_obj)
+#              profile_obj = Profile.objects.get(user=request.user)
+#              profileForm = ProfileForm(request.POST,instance=profile_obj)
 
-             if billingaddress_form.is_valid() or profileForm.is_valid():
-                billingaddress_form.save()
-                profileForm.save()
-                return redirect('account:profile')
+#              if billingaddress_form.is_valid() or profileForm.is_valid():
+#                 billingaddress_form.save()
+#                 profileForm.save()
+#                 return redirect('account:profile')
 
                
-             
+# from django.shortcuts import get_object_or_404
+
+
+# class ProfileView(TemplateView):
+#     template_name = 'profile.html'
+
+#     def get(self, request, *args, **kwargs):
+#         orders = Order.objects.filter(user=request.user, ordered=True).order_by('-created')
+        
+#         # Try to get the BillingAddress, or create a new one if it doesn't exist
+#         billingaddress, created = BillingAddress.objects.get_or_create(user=request.user)
+#         billingaddress_form = BillingAddressForm(instance=billingaddress)
+
+#         # Get the user's profile
+#         profile_obj = get_object_or_404(Profile, user=request.user)
+#         profileForm = ProfileForm(instance=profile_obj)
+
+#         context = {
+#             'orders': orders,
+#             'billingaddress': billingaddress_form,
+#             'profileForm': profileForm,
+#         }
+
+#         return render(request, self.template_name, context=context)
+
+#     def post(self, request, *args, **kwargs):
+#         # Get or create BillingAddress
+#         billingaddress, created = BillingAddress.objects.get_or_create(user=request.user)
+#         billingaddress_form = BillingAddressForm(request.POST, instance=billingaddress)
+
+#         # Get the user's profile
+#         profile_obj = get_object_or_404(Profile, user=request.user)
+#         profileForm = ProfileForm(request.POST, instance=profile_obj)
+
+#         if billingaddress_form.is_valid() and profileForm.is_valid():
+#             billingaddress_form.save()
+#             profileForm.save()
+#             return redirect('account:profile')
+
+#         # If the forms are not valid, re-render the profile page with the forms
+#         context = {
+#             'orders': Order.objects.filter(user=request.user, ordered=True).order_by('-created'),
+#             'billingaddress': billingaddress_form,
+#             'profileForm': profileForm,
+#         }
+#         return render(request, self.template_name, context=context)
+
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+
+
+
+class ProfileView(TemplateView):
+    template_name = 'profile.html'
+
+    def get(self, request, *args, **kwargs):
+        orders = Order.objects.filter(user=request.user, ordered=True).order_by('-created')
+        
+        billingaddress, created = BillingAddress.objects.get_or_create(user=request.user)
+        billingaddress_form = BillingAddressForm(instance=billingaddress)
+        
+        profile_obj = get_object_or_404(Profile, user=request.user)
+        
+        profileForm = ProfileForm(instance=profile_obj)
+
+        context = {
+            'orders': orders,
+            'billingaddress': billingaddress_form,
+            'profileForm': profileForm,
+            'profile_obj': profile_obj,  # Pass the profile object to the context
+        }
+
+        return render(request, self.template_name, context=context)
+
+    def post(self, request, *args, **kwargs):
+        billingaddress, created = BillingAddress.objects.get_or_create(user=request.user)
+        billingaddress_form = BillingAddressForm(request.POST, instance=billingaddress)
+
+        profile_obj = get_object_or_404(Profile, user=request.user)
+        profileForm = ProfileForm(request.POST, request.FILES, instance=profile_obj)  # Ensure files are handled
+        profile_image_url = profile_obj.image.url if profile_obj.image else ''
+        if billingaddress_form.is_valid() and profileForm.is_valid():
+            billingaddress_form.save()
+            profileForm.save()
+            return redirect('account:profile')
+
+        context = {
+            'orders': Order.objects.filter(user=request.user, ordered=True).order_by('-created'),
+            'billingaddress': billingaddress_form,
+            'profileForm': profileForm,
+            'profile_obj': profile_obj,
+            'profile_image_url': profile_image_url,
+        }
+        return render(request, self.template_name, context=context)
+
+from django.http import JsonResponse
+
+
+@login_required
+def delete_order(request, order_id):
+    if request.method == "POST":
+        try:
+            order = Order.objects.get(id=order_id, user=request.user, ordered=True)
+            order.delete()
+            messages.success(request, "Order deleted successfully!")
+            return redirect('account:profile')
+        except Order.DoesNotExist:
+            messages.error(request, "Order not found or cannot be deleted.")
+            return redirect('account:profile')

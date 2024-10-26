@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.views.generic import ListView,DetailView,TemplateView
 from store.models import (Product,ProductImages,VariationValue,Banner)
 from review.models import Review,ReviewImage                         
-                       
+from store.models import Product,Category                     
 
 class HomemplateView(TemplateView):
     template_name = 'store/index.html'  # Specify your template here
@@ -32,19 +32,29 @@ class SearchResultsView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         search_product = request.GET.get('search_product')
-        
-        # Search by product name and category name (case-insensitive, partial search)
-        products = Product.objects.filter(
-            Q(name__icontains=search_product) | 
-            Q(category__name__icontains=search_product)
-        ).order_by('id')
+        category_id = request.GET.get('category')
+        subcategory_id = request.GET.get('subcategory')
+
+        products = Product.objects.all()
+
+        if search_product:
+            products = products.filter(
+                Q(name__icontains=search_product) | 
+                Q(category__name__icontains=search_product)
+            )
+
+        if category_id:
+            # Filter products by category
+            products = products.filter(category_id=category_id)
+        elif subcategory_id:
+            # Filter products by subcategory
+            products = products.filter(category_id=subcategory_id)
 
         context = {
-            'products': products,
+            'products': products.order_by('id'),
             'search_term': search_product,
         }
         return self.render_to_response(context)
-    
 
 class ProductDetailView(DetailView):
     model = Product

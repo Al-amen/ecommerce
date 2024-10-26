@@ -1,0 +1,1431 @@
+<header class="header header-intro-clearance header-4">
+            
+    <div class="header-top">
+        <div class="container">
+       
+
+        
+        </div><!-- End .container -->
+    </div><!-- End .header-top -->
+
+    <div class="header-middle">
+        <div class="container">
+            <div class="header-left">
+                <button class="mobile-menu-toggler">
+                    <span class="sr-only">Toggle mobile menu</span>
+                    <i class="icon-bars"></i>
+                </button>
+                
+                <a href="{% url "store:index" %}" class="logo">
+                    <img src="{{request|logo}}" alt="E-Shop Logo" width="105" height="25">
+                </a>
+            </div><!-- End .header-left -->
+
+
+
+            <div class="header-center">
+                <div class="header-search header-search-extended header-search-visible d-none d-lg-block">
+                    <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
+                    <form action="{% url 'store:search_results' %}" method="GET">
+                        <div class="header-search-wrapper search-wrapper-wide">
+                            <label for="q" class="sr-only">Search</label>
+                            <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
+                            <input type="search" class="form-control" name="search_product" id="q" placeholder="Search product ..." required>
+                        </div>
+                    </form>
+                </div><!-- End .header-search -->
+            </div>
+
+
+
+            <div class="header-right">
+                <!-- Wishlist Section -->
+                <div class="wishlist">
+                    <a href="{% url 'order:view_wishlist' %}" title="Wishlist">
+                        <div class="icon">
+                            <i class="icon-heart-o"></i>
+                            <span class="wishlist-count badge">{{ request.user|wishlist_count }}</span>
+                        </div>
+                        <p>Wishlist</p>
+                    </a>
+                </div>
+            
+                <!-- Cart Dropdown -->
+                <div class="dropdown cart-dropdown">
+                    <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+                        <div class="icon">
+                            <i class="icon-shopping-cart"></i>
+                            <span class="cart-count">{{ request.user|cart_count }}</span>
+                        </div>
+                        <p>Cart</p>
+                    </a>
+            
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <div class="dropdown-cart-products">
+                            {% if request.user.is_authenticated %}
+                                {% for cart in request.user|cart_view %}
+                                    {% if cart.quantity %}
+                                        <div class="product">
+                                            <div class="product-cart-details">
+                                                <h4 class="product-title">
+                                                    <a href="product.html">{{cart.item.name}}</a>
+                                                </h4>
+                                                <span class="cart-product-info">
+                                                    <span class="cart-product-qty">{{cart.quantity}}</span>
+                                                    x ${{cart.get_total}}
+                                                </span>
+                                            </div>
+                                            <figure class="product-image-container">
+                                                <a href="product.html" class="product-image">
+                                                    <img src="{{cart.item.image.url}}" alt="product">
+                                                </a>
+                                            </figure>
+                                            <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+            
+                        <div class="dropdown-cart-total">
+                            <span>Total</span>
+                            <span class="cart-total-price">${{request.user|cart_total}}</span>
+                        </div>
+            
+                        <div class="dropdown-cart-action">
+                            <a href="{% url 'order:cart' %}" class="btn btn-primary">View Cart</a>
+                            <a href="{% url 'payment:checkout'  %}" class="btn btn-outline-primary-2">
+                                <span>Checkout</span>
+                                <i class="icon-long-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            
+                <!-- Notification Dropdown -->
+                <div class="dropdown cart-dropdown">
+                    <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+                        <div class="icon">
+                            <i class="fas fa-bell" style="color: #fa003f; font-size: 24px;"></i>
+                            <span class="cart-count">{{ request.user|notification_count }}</span>
+                        </div>
+                        <p>Notification</p>
+                    </a>
+            
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <div class="dropdown-cart-products">
+                            {% for notification in request.user|notification %}
+                                <div class="product">
+                                    <div class="product-cart-details">
+                                        <h4 class="product-title">
+                                            <a href="{% url "notification:is_read" notification.pk %}">{{notification.message}}</a>
+                                        </h4>
+                                    </div>
+                                    {% comment %} <a href="#" class="btn-remove" title="Remove Notification"><i class="icon-close"></i></a> {% endcomment %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+
+            {% if request.user.is_authenticated %}
+                <!-- Profile Dropdown -->
+                <div class="dropdown cart-dropdown">
+                    <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+                        
+                        <div class="icon">
+                            <i class="fas fa-user" style="color: #000; font-size: 24px;"></i>
+                        </div>
+                        <p style="font-size:15px;">{{request.user.user_name}}</p>
+                    </a>
+            
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <ul class="list-unstyled">
+                            <li>
+                                <a href="{% url "account:profile" %}">Update Profile</a>
+                            </li>
+            
+                            <li>
+                                <a href="{% url "account:logout" %}">Logout</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            {% else %}
+                <div class="dropdown cart-dropdown">
+                    <a href="{% url 'account:login' %}" class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false" data-display="static">
+                        <div class="icon">
+                            <i class="fas fa-user" style="color: #000; font-size: 24px;"></i>
+                        </div>
+                        <p>Login</p>
+                    </a>
+                
+                </div>
+             {% endif %}
+            
+            </div>
+            
+        </div><!-- End .container -->
+    </div><!-- End .header-middle -->
+
+
+
+    <div class="header-bottom sticky-header">
+        <div class="container">
+            <div class="header-left">
+                <div class="dropdown category-dropdown">
+                    <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static" title="Browse Categories">
+                        Browse Categories <i class="icon-angle-down"></i>
+                    </a>
+
+
+
+
+          
+
+                    <div class="dropdown-menu">
+                        <nav class="side-nav">
+                            <ul class="menu-vertical sf-arrows">
+                                <li class="item-lead"><a href="#">Daily offers</a></li>
+                                <li class="item-lead"><a href="#">Gift Ideas</a></li>
+
+                                {% if request.user|category %}
+                                {% for cat in request.user|category %}
+                                    <li>
+                                        <!-- Display the parent category name -->
+                                        <a href="#">{{ cat.name }}</a>
+                                        
+                                        <!-- Check if the category has children -->
+                                        {% if cat.children.exists %}
+                                            <ul>
+                                                <!-- Loop through the subcategories (children) -->
+                                                {% for subcategory in cat.children.all %}
+                                                    <li>
+                                                        <a href="#">{{ subcategory.name }}</a>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
+                                {% endif %}
+
+
+
+
+                            </ul><!-- End .menu-vertical -->
+                        </nav><!-- End .side-nav -->
+                    </div><!-- End .dropdown-menu -->
+                    
+
+
+
+
+                </div><!-- End .category-dropdown -->
+            </div><!-- End .header-left -->
+
+
+
+            <div class="header-center">
+                <nav class="main-nav">
+                    <ul class="menu sf-arrows">
+                        <li class="megamenu-container active">
+                            <a href="index.html" class="sf-with-ul">Home</a>
+                        </li>
+                        <li>
+                          
+
+                            <div class="megamenu megamenu-md">
+                                <div class="row no-gutters">
+                                    <div class="col-md-8">
+                                        <div class="menu-col">
+                                            <div class="row">
+                                               
+                                                <div class="col-md-6">
+                                                    <div class="menu-title">Product Category</div><!-- End .menu-title -->
+                                                    <ul>
+                                                        <li><a href="product-category-boxed.html">Product Category Boxed</a></li>
+                                                        <li><a href="product-category-fullwidth.html"><span>Product Category Fullwidth<span class="tip tip-new">New</span></span></a></li>
+                                                    </ul>
+                                                    <div class="menu-title">Shop Pages</div><!-- End .menu-title -->
+                                                    <ul>
+                                                        <li><a href="cart.html">Cart</a></li>
+                                                        <li><a href="checkout.html">Checkout</a></li>
+                                                        <li><a href="wishlist.html">Wishlist</a></li>
+                                                        <li><a href="dashboard.html">My Account</a></li>
+                                                        <li><a href="#">Lookbook</a></li>
+                                                    </ul>
+                                                </div><!-- End .col-md-6 -->
+                                            </div><!-- End .row -->
+                                        </div><!-- End .menu-col -->
+                                    </div><!-- End .col-md-8 -->
+
+                                    <div class="col-md-4">
+                                        <div class="banner banner-overlay">
+                                            <a href="category.html" class="banner banner-menu">
+                                                <img src="{% static 'assets/images/menu/banner-1.jpg' %}" alt="Banner">
+
+                                                <div class="banner-content banner-content-top">
+                                                    <div class="banner-title text-white">Last <br>Chance<br><span><strong>Sale</strong></span></div><!-- End .banner-title -->
+                                                </div><!-- End .banner-content -->
+                                            </a>
+                                        </div><!-- End .banner banner-overlay -->
+                                    </div><!-- End .col-md-4 -->
+                                </div><!-- End .row -->
+                            </div><!-- End .megamenu megamenu-md -->
+                        </li>
+                        
+                     
+                    
+                       
+                    </ul><!-- End .menu -->
+                </nav><!-- End .main-nav -->
+            </div><!-- End .header-center -->
+        </div><!-- End .container -->
+    </div><!-- End .header-bottom -->
+</header>    
+<!-- End .header -->
+
+
+
+
+
+<div class="intro-slider-container mb-5">
+    <div class="intro-slider owl-carousel owl-theme owl-nav-inside owl-light" data-toggle="owl" 
+        data-owl-options='{
+            "dots": true,
+            "nav": false, 
+            "responsive": {
+                "1200": {
+                    "nav": true,
+                    "dots": false
+                }
+            }
+        }'>
+    
+    {% for banner in banners %}
+        <div class="intro-slide" style="background-image: url({{banner.image.url}});">
+            <div class="container intro-content">
+                <div class="row justify-content-end">
+                    <div class="col-auto col-sm-7 col-md-6 col-lg-5">
+                        <h3 class="intro-subtitle text-primary">New Arrival</h3><!-- End .h3 intro-subtitle -->
+                        <h1 class="intro-title">{{banner.product.name}}</h1><!-- End .intro-title -->
+
+                        <div class="intro-price">
+                            <sup>Today:</sup>
+                            <span class="text-primary">
+                               ${{banner.product.price}}
+                            </span>
+                        </div><!-- End .intro-price -->
+
+                        <a href="category.html" class="btn btn-primary btn-round">
+                            <span>Shop More</span>
+                            <i class="icon-long-arrow-right"></i>
+                        </a>
+                    </div><!-- End .col-md-6 offset-md-6 -->
+                </div><!-- End .row -->
+            </div><!-- End .intro-content -->
+        </div><!-- End .intro-slide -->
+    {% endfor %}
+    </div><!-- End .intro-slider owl-carousel owl-simple -->
+
+    <span class="slider-loader"></span><!-- End .slider-loader -->
+</div><!-- End .intro-slider-container -->
+
+
+
+<!-- produvt.html-->
+
+<main class="main">
+    <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
+        <div class="container d-flex align-items-center">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                <li class="breadcrumb-item"><a href="#">Products</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Default</li>
+            </ol>
+
+            <nav class="product-pager ml-auto" aria-label="Product">
+                <a class="product-pager-link product-pager-prev" href="#" aria-label="Previous" tabindex="-1">
+                    <i class="icon-angle-left"></i>
+                    <span>Prev</span>
+                </a>
+
+                <a class="product-pager-link product-pager-next" href="#" aria-label="Next" tabindex="-1">
+                    <span>Next</span>
+                    <i class="icon-angle-right"></i>
+                </a>
+            </nav><!-- End .pager-nav -->
+        </div><!-- End .container -->
+    </nav><!-- End .breadcrumb-nav -->
+
+    <div class="page-content">
+        <div class="container">
+            <div class="product-details-top">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="product-gallery product-gallery-vertical">
+                            <div class="row">
+                                <figure class="product-main-image">
+                                    <img id="product-zoom" src="{{item.image.url}}" data-zoom-image="{% static 'assets/images/products/single/1-big.jpg"' %}" alt="product image">
+
+                                    <a href="#" id="btn-product-gallery" class="btn-product-gallery">
+                                        <i class="icon-arrows"></i>
+                                    </a>
+                                </figure><!-- End .product-main-image -->
+
+                                <div id="product-zoom-gallery" class="product-image-gallery">
+
+                                    {% for product_image in product_images %}
+                                    <a class="product-gallery-item active" href="#" data-image="{{product_image.image.url}}" data-zoom-image="{{product_image.image.url}}">
+                                        <img src="{{product_image.image.url}}" alt="product side">
+                                    </a>
+                                    {% endfor %}
+                                  
+                                </div><!-- End .product-image-gallery -->
+                            </div><!-- End .row -->
+                        </div><!-- End .product-gallery -->
+                    </div><!-- End .col-md-6 -->
+
+                    <div class="col-md-6">
+                        <div class="product-details">
+                            <h1 class="product-title">{{item.name}}</h1><!-- End .product-title -->
+
+                            <div class="ratings-container">
+                               
+                                <div class="ratings">
+                                    <div class="ratings-val" style="width: {{ average_rating|floatformat:0 }}0%;"></div>
+                                </div><!-- End .ratings -->
+                                
+                                <span><a class="ratings-text" href="#product-review-tab" id="review-link"><span>(  Reviews {{reviews.count}} )</span></a></span>
+                            </div><!-- End .rating-container -->
+
+                            <div class="product-price">
+                                ${{item.price}}
+                             
+                            </div>
+                            {% if item.old_price %}
+                            <div class="product-price">
+                                      
+                              <del> ${{item.old_price}}</del>
+                             
+                            </div>
+                     
+                            {% endif %}
+                            
+                     
+                            <!-- End .product-price -->
+
+                            <div class="product-content">
+                                <p>{{item.preview_des}}</p>
+                            
+                                 
+                                <form action="{% url "order:add_to_cart" pk=item.pk %}" method="post">
+                                    {% csrf_token %}
+                                  {% if color_variations %}      
+                              
+                                    <div class="details-filter-row details-row-size">
+                                        <label for="size">Color:</label>
+                                        <div class="select-custom">
+                                            <select name="color" id="color" class="form-control">
+                                                <option value="#" selected="selected">Select a color</option>
+                                                {% for variation in color_variations %}
+                                                    <option value="{{ variation.name }}">{{ variation.name }}</option>
+                                                   
+                                                {% endfor %}
+                                            </select>
+                                        </div><!-- End .select-custom -->
+
+                                        {% comment %} <a href="#" class="size-guide"><i class="icon-th-list"></i>size guide</a> {% endcomment %}
+                                    </div><!-- End .details-filter-row -->
+                                {% endif %}
+
+                                {% if size_variations %}      
+                              
+                                <div class="details-filter-row details-row-size">
+                                    <label for="size">Size:</label>
+                                    <div class="select-custom">
+                                        <select name="size" id="size" class="form-control">
+                                            <option value="#" selected="selected">Select a size</option>
+                                            {% for variation in size_variations %}
+                                                <option value="{{ variation.name }}">{{ variation.name }}</option>
+                                               
+                                            {% endfor %}
+                                        </select>
+                                    </div><!-- End .select-custom -->
+
+                                    {% comment %} <a href="#" class="size-guide"><i class="icon-th-list"></i>size guide</a> {% endcomment %}
+                                </div><!-- End .details-filter-row -->
+                            {% endif %}
+                            <div class="details-filter-row details-row-size">
+                                <label for="qty">Qty:</label>
+                                <div class="product-details-quantity">
+                                    <input type="number" id="qty" class="form-control" name="quantity" value="1" min="1" max="10" step="1" data-decimals="0" required>
+                                </div><!-- End .product-details-quantity -->
+                            </div><!-- End .details-filter-row -->
+
+                            <div class="product-details-action">
+                                <button type="submit"  class="btn-product btn-cart">
+                                    <span>Add to cart</span></button>
+                                
+                                <div class="details-action-wrapper">
+                                    {% if request.user.is_authenticated %}
+                                       <a href="{% url 'order:add-to-wishlist' pk=item.pk  %}" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
+                                    {% else %}
+                                    <a href="{% url "account:login" %}" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
+                                    {% endif %}
+
+                                   
+
+                                    
+                                </div><!-- End .details-action-wrapper -->
+                            </div><!-- End .product-details-action -->
+                            
+                        </form>
+
+                            <div class="product-details-footer">
+                                <div class="product-cat">
+                                    <span>Category:</span>
+                                    <a href="#">{{item.category}}</a>,
+                                    
+                                </div><!-- End .product-cat -->
+
+                                <div class="social-icons social-icons-sm">
+                                    <span class="social-label">Share:</span>
+                                    <a href="#" class="social-icon" title="Facebook" target="_blank"><i class="icon-facebook-f"></i></a>
+                                    <a href="#" class="social-icon" title="Twitter" target="_blank"><i class="icon-twitter"></i></a>
+                                    <a href="#" class="social-icon" title="Instagram" target="_blank"><i class="icon-instagram"></i></a>
+                                    <a href="#" class="social-icon" title="Pinterest" target="_blank"><i class="icon-pinterest"></i></a>
+                                </div>
+                            </div><!-- End .product-details-footer -->
+                        </div><!-- End .product-details -->
+                    </div><!-- End .col-md-6 -->
+                </div><!-- End .row -->
+            </div><!-- End .product-details-top -->
+
+            <div class="product-details-tab">
+                <ul class="nav nav-pills justify-content-center" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="product-desc-link" data-toggle="tab" href="#product-desc-tab" role="tab" aria-controls="product-desc-tab" aria-selected="true">Description</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="product-info-link" data-toggle="tab" href="#product-info-tab" role="tab" aria-controls="product-info-tab" aria-selected="false">Additional information</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="product-shipping-link" data-toggle="tab" href="#product-shipping-tab" role="tab" aria-controls="product-shipping-tab" aria-selected="false">Shipping & Returns</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="product-review-link" data-toggle="tab" href="#product-review-tab" role="tab" aria-controls="product-review-tab" aria-selected="false">Reviews ({{ reviews.count }})</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="product-desc-tab" role="tabpanel" aria-labelledby="product-desc-link">
+                        <div class="product-desc-content">
+                            <h3>Product Information</h3>
+                            {{item.description}}
+                            
+                        </div><!-- End .product-desc-content -->
+                    </div><!-- .End .tab-pane -->
+                    <div class="tab-pane fade" id="product-info-tab" role="tabpanel" aria-labelledby="product-info-link">
+                        <div class="product-desc-content">
+                            <h3>Information</h3>
+                            {{item.preview_des}}
+                        </div><!-- End .product-desc-content -->
+                    </div><!-- .End .tab-pane -->
+                    <div class="tab-pane fade" id="product-shipping-tab" role="tabpanel" aria-labelledby="product-shipping-link">
+                        <div class="product-desc-content">
+                            <h3>Delivery & returns</h3>
+                            <p>We deliver to over 100 countries around the world. For full details of the delivery options we offer, please view our <a href="#">Delivery information</a><br>
+                            We hope you’ll love every purchase, but if you ever need to return an item you can do so within a month of receipt. For full details of how to make a return, please view our <a href="#">Returns information</a></p>
+                        </div><!-- End .product-desc-content -->
+                    </div><!-- .End .tab-pane -->
+
+
+
+
+                <div class="tab-pane fade" id="product-review-tab" role="tabpanel" aria-labelledby="product-review-link">
+                    <div class="reviews">
+                        <h3>Reviews ({{ reviews.count }})</h3>
+                
+                        <div class="ratings-container mb-4">
+                            <div class="ratings">
+                                <div class="ratings-val" style="width: {{ average_rating|floatformat:0 }}0%;"></div><!-- End .ratings-val -->
+                            </div><!-- End .ratings -->
+                            <span class="ratings-text">Average Rating: {{ average_rating|floatformat:1 }} / 5</span>
+                        </div><!-- End .ratings-container -->
+                        
+                        {% for review in reviews %}
+                        <div class="review mb-4">
+                            <div class="row no-gutters">
+                                <div class="col-auto">
+                                    <h4><a href="#">{{ review.user.user_name }}</a></h4>
+                                    <div class="ratings-container">
+                                        <div class="ratings">
+                                            <div class="ratings-val" style="width: {{ review.rating|floatformat:0 }}0%;"></div><!-- End .ratings-val -->
+                                        </div><!-- End .ratings -->
+                                    </div><!-- End .ratings-container -->
+                                    <span class="review-date">{{ review.created_at|timesince }} ago</span>
+                                </div><!-- End .col -->
+                                <div class="col">
+                                    <h4>{{ review.review_text|truncatewords:10 }}</h4>
+                
+                                    <div class="review-content">
+                                        <p>{{ review.review_text }}</p>
+                                    </div><!-- End .review-content -->
+                
+                                    {% if review.images.all %}
+                                    <div class="review-images">
+                                        <h5>Review Images:</h5>
+                                        <div class="row">
+                                            {% for image in review.images.all %}
+                                            <div class="col-6 col-md-4 mb-2">
+                                                <img src="{{ image.image.url }}" alt="Review image" class="img-fluid" style="max-height: 150px; object-fit: cover;">
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div><!-- End .review-images -->
+                                    {% endif %}
+                                </div><!-- End .col -->
+                            </div><!-- End .row -->
+                        </div><!-- End .review -->
+                        {% empty %}
+                        <p>No reviews yet. Be the first to review this product!</p>
+                        {% endfor %}
+                        
+                    </div><!-- End .reviews -->
+                </div>
+                
+            </div><!-- End .product-details-tab -->
+
+
+        </div><!-- End .container -->
+    </div><!-- End .page-content -->
+</main><!-- End .main -->
+
+
+
+
+
+
+
+
+
+<!--profile-->
+
+<main class="main">
+    <div class="page-header text-center" style="background-image: url('{% static "images/page-header-bg.jpg" %}')">
+        <div class="container">
+            <h1 class="page-title">My Account <span>Shop</span></h1>
+        </div>
+    </div><!-- End .page-header -->
+
+    <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
+        <div class="container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'store:index' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="#">Shop</a></li>
+                <li class="breadcrumb-item active" aria-current="page">My Account</li>
+            </ol>
+        </div><!-- End .container -->
+    </nav><!-- End .breadcrumb-nav -->
+
+    <div class="page-content">
+        <div class="dashboard">
+            <div class="container">
+                <div class="row">
+                    <!-- Sidebar Navigation -->
+                    <aside class="col-md-4 col-lg-3">
+                        <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="tab-dashboard-link" data-toggle="tab" href="#tab-dashboard" role="tab" aria-controls="tab-dashboard" aria-selected="true">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tab-orders-link" data-toggle="tab" href="#tab-orders" role="tab" aria-controls="tab-orders" aria-selected="false">Orders</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tab-downloads-link" data-toggle="tab" href="#tab-downloads" role="tab" aria-controls="tab-downloads" aria-selected="false">Shipping Status</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tab-address-link" data-toggle="tab" href="#tab-address" role="tab" aria-controls="tab-address" aria-selected="false">Addresses</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tab-account-link" data-toggle="tab" href="#tab-account" role="tab" aria-controls="tab-account" aria-selected="false">Account Details</a>
+                            </li>
+                        </ul>
+                    </aside><!-- End .col-lg-3 -->
+
+                    <div class="col-md-8 col-lg-9">
+                        <div class="tab-content">
+                            <!-- Dashboard Tab -->
+                            <div class="tab-pane fade show active" id="tab-dashboard" role="tabpanel" aria-labelledby="tab-dashboard-link">
+                                <p>Hello <span class="font-weight-normal text-dark">User</span> (not <span class="font-weight-normal text-dark">User</span>? <a href="#">Log out</a>)</p>
+                                <p>From your account dashboard, you can view your <a href="#tab-orders" class="tab-trigger-link link-underline">recent orders</a>, manage your <a href="#tab-address" class="tab-trigger-link">shipping and billing addresses</a>, and <a href="#tab-account" class="tab-trigger-link">edit your password and account details</a>.</p>
+                            </div><!-- End .tab-pane -->
+
+                            <!-- Orders Tab -->
+                            <div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
+                               
+                                {% if orders %}
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" class="px-3">ID</th>
+                                            <th scope="col">Products</th>
+                                            <th scope="col">Payment ID</th>
+                                            <th scope="col">Order ID</th>
+                                            <th scope="col">Total</th>
+                                            <th scope="col">Delete</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for order in orders %}
+                                        <tr>
+                                            <th scope="row">{{ order.id }}</th>
+                                            <td>
+                                                {% for order_item in order.order_items.all %}
+                                                    {{ order_item }}
+                                                {% endfor %}
+                                            </td>
+                                            <td>{{ order.payment_id }}</td>
+                                            <td>{{ order.order_id }}</td>
+                                            <td>&#x9F3; {{order.get_totals}}</td>
+                                            <td>
+                                                {% for order_item in order.order_items.all %}
+                                                    <a href="{% url 'review:submit_review' product_id=order_item.item.id %}">
+                                                        Write a Review
+                                                    </a>
+                                                {% endfor %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+								{% else %}
+								<p>No order has been made yet.</p>
+							{% endif %}
+							
+                                <a href="#" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
+                            </div><!-- End .tab-pane -->
+                             
+                       
+
+                           
+                            
+                            <div class="tab-pane fade" id="tab-downloads" role="tabpanel" aria-labelledby="tab-downloads-link">
+                                {% if orders %}
+                                <div class="container">
+                                    <header class="card-header" style="text-align:center; font-size: 21px;">Shipping Status</header>
+                            
+                                    {% for order in orders %}
+                                    <article class="card">
+                                        <div class="card-body">
+                                            <ul class="row" style="margin-left:20px; margin-top:20px;">
+                                                <li class="col-md-4">
+                                                    <strong>Order ID:</strong> {{ order.order_id }}
+                                                    
+                                                </li>
+                            
+                                                
+                                                <li class="col-md-4" style="display: flex; align-items: center; justify-content: space-between;">
+                                                    <div>
+                                                        <strong>Status:</strong><br>
+                                                        {% if order.shipping_status == 'Pending' %}
+                                                            <span class="label label-info" style="font-size: 12px; border-radius: 30px;">{{ order.shipping_status }}</span>
+                                                        {% elif order.shipping_status == 'Order Confirmed' %}
+                                                            <span class="label label-warning" style="font-size: 12px; border-radius: 30px;">{{ order.shipping_status }}</span>
+                                                        {% elif order.shipping_status == 'On the Way' %}
+                                                            <span class="label label-primary" style="font-size: 12px; border-radius: 30px;">{{ order.shipping_status }}</span>
+                                                        {% elif order.shipping_status == 'Delivered' %}
+                                                            <span class="label label-success" style="font-size: 12px; border-radius: 30px;">{{ order.shipping_status }}</span>
+                                                        {% endif %}
+                                                    </div>
+                                                
+                                                    <!-- Delete Button -->
+                                                    <div style="margin-top:5px;"> 
+                                                        <form action="" method="POST" style="display: inline;">
+                                                            {% csrf_token %}
+                                                            <button type="submit" class="btn btn-danger rounded" style="display: inline-block;" onclick="return confirm('Are you sure you want to delete this order?');">Delete</button>
+                                                        </form>
+                                                    </div>
+                                                </li>
+                                                
+
+                                             
+                                                                                            
+                                            </ul>
+                            
+                                            <hr>
+                                            <div class="track">
+                                                {% if order.shipping_status == 'Pending' %}
+                                                    <div class="step active"><span class="icon"><i class="fa fa-spinner"></i></span><span class="text">Order Pending</span></div>
+                                                    <div class="step"><span class="icon"><i class="fa fa-check"></i></span><span class="text">Order Confirmed</span></div>
+                                                    <div class="step"><span class="icon"><i class="fa fa-truck"></i></span><span class="text">On the Way</span></div>
+                                                    <div class="step"><span class="icon"><i class="fa fa-home"></i></span><span class="text">Delivered</span></div>
+                                                {% elif order.shipping_status == 'Order Confirmed' %}
+                                                    <div class="step active"><span class="icon"><i class="fa fa-spinner"></i></span><span class="text">Order Pending</span></div>
+                                                    <div class="step active"><span class="icon"><i class="fa fa-check"></i></span><span class="text">Order Confirmed</span></div>
+                                                    <div class="step"><span class="icon"><i class="fa fa-truck"></i></span><span class="text">On the Way</span></div>
+                                                    <div class="step"><span class="icon"><i class="fa fa-home"></i></span><span class="text">Delivered</span></div>
+                                                {% elif order.shipping_status == 'On the Way' %}
+                                                    <div class="step active"><span class="icon"><i class="fa fa-spinner"></i></span><span class="text">Order Pending</span></div>
+                                                    <div class="step active"><span class="icon"><i class="fa fa-check"></i></span><span class="text">Order Confirmed</span></div>
+                                                    <div class="step active"><span class="icon"><i class="fa fa-truck"></i></span><span class="text">On the Way</span></div>
+                                                    <div class="step"><span class="icon"><i class="fa fa-home"></i></span><span class="text">Delivered</span></div>
+                                                {% elif order.shipping_status == 'Delivered' %}
+                                                    <div class="step active"><span class="icon"><i class="fa fa-spinner"></i></span><span class="text">Order Pending</span></div>
+                                                    <div class="step active"><span class="icon"><i class="fa fa-check"></i></span><span class="text">Order Confirmed</span></div>
+                                                    <div class="step active"><span class="icon"><i class="fa fa-truck"></i></span><span class="text">On the Way</span></div>
+                                                    <div class="step active"><span class="icon"><i class="fa fa-home"></i></span><span class="text">Delivered</span></div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </article>
+                                    {% endfor %}
+                                </div>
+                                {% else %}
+                                <p>No shipping information available yet.</p>
+                                {% endif %}
+                            </div>
+                            
+
+                                                        
+
+                            
+
+
+                            <!-- Addresses Tab -->
+                            <div class="tab-pane fade" id="tab-address" role="tabpanel" aria-labelledby="tab-address-link">
+                                <p>The following addresses will be used on the checkout page by default.</p>
+
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="card card-dashboard">
+                                            {% comment %} <div class="card-body">
+                                                <h3 class="card-title">Billing Address</h3>
+                                                <form action="" method="post">
+                                                    {% csrf_token %}
+                                                    {{ billingaddress|crispy }}
+                                                    <button type="submit" class="btn btn-outline-primary-2">Save Address</button>
+                                                </form>
+                                                <a href="#">Edit <i class="icon-edit"></i></a>
+                                            </div><!-- End .card-body --> {% endcomment %}
+											<div class="billing-address-form">
+												<h3 class="card-title">Billing Address</h3>
+												<form action="" method="post" class="form fade-in">
+													{% csrf_token %}
+													{{ billingaddress|crispy }}
+													<button type="submit" class="btn btn-outline-primary-2">Save Address</button>
+												</form>
+											</div>
+                                        </div><!-- End .card-dashboard -->
+                                    </div><!-- End .col-lg-6 -->
+
+                                    <div class="col-lg-6">
+                                        <div class="card card-dashboard">
+                                            <div class="card-body">
+                                                <h3 class="card-title">Shipping Address</h3>
+                                                <p>You have not set up this type of address yet.<br>
+                                                    <a href="#">Edit <i class="icon-edit"></i></a>
+                                                </p>
+                                            </div><!-- End .card-body -->
+                                        </div><!-- End .card-dashboard -->
+                                    </div><!-- End .col-lg-6 -->
+                                </div><!-- End .row -->
+                            </div><!-- End .tab-pane -->
+
+                            <!-- Account Details Tab -->
+                            <div class="tab-pane fade" id="tab-account" role="tabpanel" aria-labelledby="tab-account-link">
+                                <form action="#" method="POST">
+                                    {% csrf_token %}
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            {{ profileForm|crispy }}
+                                        </div><!-- End .col-sm-6 -->
+                                    </div><!-- End .row -->
+
+                                    <button type="submit" class="btn btn-outline-primary-2">
+                                        <span>SAVE CHANGES</span>
+                                        <i class="icon-long-arrow-right"></i>
+                                    </button>
+                                </form>
+                            </div><!-- End .tab-pane -->
+                        </div><!-- End .tab-content -->
+                    </div><!-- End .col-lg-9 -->
+                </div><!-- End .row -->
+            </div><!-- End .container -->
+        </div><!-- End .dashboard -->
+    </div><!-- End .page-content -->
+</main><!-- End .main -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--shipping-->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <title>Document</title>
+
+
+    <style>
+        /* Add some basic CSS styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex; /* Use flexbox to align sidebar and content */
+            height: 100vh;
+        }
+        /* Sidebar and content styles omitted for brevity... */
+    
+        #sidebar {
+            width: 250px;
+            padding: 20px;
+            background-color: #e1e1e1;
+        }
+    
+        #content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+    
+        #sidebar a {
+            color: #333;
+            display: block;
+            margin-bottom: 10px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+    
+        label {
+            margin: 5px 0;
+        }
+    
+        input {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+        }
+    
+        button {
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    
+        .message {
+            color: green;
+            margin-top: 10px;
+        }
+    
+        #orders-content {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #4CAF50; /* Green background */
+            color: white; /* White text */
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f2f2f2; /* Light grey for even rows */
+        }
+        
+        tr:hover {
+            background-color: #e2e2e2; /* Darker grey on hover */
+        }
+        
+        button {
+            padding: 8px 12px;
+            background-color: #ff5733; /* Red color */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        button:hover {
+            background-color: #e74c3c; /* Darker red on hover */
+        }
+        
+        .message {
+            margin-top: 10px;
+            color: #ff5733; /* Red color for messages */
+        }
+    
+        
+    </style>
+    
+
+
+
+
+</head>
+<body>
+    
+
+
+
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+  {% endif %}
+
+    <div id="sidebar">
+        <h2>User Dashboard</h2>
+        <a id="profile-link" href="#">Profile</a>
+        <a id="orders-link" href="#">Orders</a>
+        <a id="shipping-status-content" href="onclick=loadShippingStatus()">Shipping Status</a>
+        <a id="settings-link" href="#">Settings</a>
+    </div>
+    <div id="content">
+        <h1>Welcome back, {{ profile_obj.user.user_name }}!</h1>
+        <p>This is your Dashboard where you can manage your account, orders, and settings and much more.</p>
+    </div>
+
+
+    <div id="orders-content" style="display: none;">
+        <h1>Your Orders</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Products</th>
+                    <th>Payment ID</th>
+                    <th>Order ID</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <th scope="row">{{ order.id }}</th>
+                    <td>
+                        {% for order_item in order.order_items.all %}
+                            {{ order_item }}
+                        {% endfor %}
+                    </td>
+                    <td>{{ order.payment_id }}</td>
+                    <td>{{ order.order_id }}</td>
+                    <td>&#x9F3; {{ order.get_totals }}</td>
+                    <td>
+                        <form action="{% url 'account:delete_order' order.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div id="order-delete-message" class="message"></div>
+    </div>
+
+
+
+    <div id="shipping-status-content" style="display: none;">
+        <div class="tab-pane fade" id="tab-downloads" role="tabpanel" aria-labelledby="tab-downloads-link">
+            {% if orders %}
+            <div class="container">
+                <header class="card-header" style="text-align:center; font-size: 21px;">Shipping Status</header>
+                {% for order in orders %}
+                <article class="card">
+                    <div class="card-body">
+                        <ul class="row" style="margin-left:20px; margin-top:20px;">
+                            <li class="col-md-4"><strong>Order ID:</strong> {{ order.order_id }}</li>
+                            <li class="col-md-4" style="display: flex; align-items: center; justify-content: space-between;">
+                                <div>
+                                    <strong>Status:</strong><br>
+                                    <span class="label" style="font-size: 12px; border-radius: 30px;">
+                                        {{ order.shipping_status }}
+                                    </span>
+                                </div>
+                                <div style="margin-top:5px;">
+                                    <form action="" method="POST" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger rounded" onclick="return confirm('Are you sure you want to delete this order?');">Delete</button>
+                                    </form>
+                                </div>
+                            </li>
+                        </ul>
+                        <hr>
+                        <div class="track">
+                            {% if order.shipping_status == 'Pending' %}
+                                <!-- Steps content here based on status -->
+                            {% endif %}
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p>No shipping information available yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+       
+
+  
+</div>
+
+                                
+    
+
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+
+
+    <script>
+        // Load profile with current data
+        const userProfile = {
+            fullName: "{{ profile_obj.full_name }}",
+            email: "{{ request.user.email }}",  // Assuming user has an email field
+            phone: "{{ profile_obj.phone }}",
+            address: "{{ profile_obj.address }}",
+            country: "{{ profile_obj.country }}",
+            city: "{{ profile_obj.city }}",
+            zipcode: "{{ profile_obj.zipcode }}",
+            image: "{{ profile_obj.image.url }}"  // Assuming image is a URL or null
+          };
+        
+          function loadProfile() {
+            const profileImage = userProfile.image 
+              ? `<img src="${userProfile.image}" alt="Profile Image" style="width: 100px; height: 100px;" />` 
+              : `<i class="fas fa-user" style="font-size: 100px;"></i>`;
+        
+            document.getElementById("content").innerHTML = `
+              <h1>Profile Information</h1>
+              <div>${profileImage}</div>
+              <p><strong>Full Name:</strong> ${userProfile.fullName}</p>
+              <p><strong>Email:</strong> ${userProfile.email}</p>
+              <p><strong>Phone:</strong> ${userProfile.phone}</p>
+              <p><strong>Address:</strong> ${userProfile.address}</p>
+              <p><strong>Country:</strong> ${userProfile.country}</p>
+              <p><strong>City:</strong> ${userProfile.city}</p>
+              <p><strong>Zipcode:</strong> ${userProfile.zipcode}</p>
+              <button onclick="editProfile()">Edit Profile</button>
+            `;
+          }
+
+        function editProfile() {
+            // Form to edit profile information
+            document.getElementById("content").innerHTML = `
+                <h2>Edit Profile</h2>
+                <form id="profile-edit-form" enctype="multipart/form-data">
+                    <label for="full-name">Full Name:</label>
+                    <input type="text" id="full-name" value="{{ profile_obj.full_name }}" required />
+
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" value="{{ request.user }}" required />
+
+                    <label for="phone">Phone:</label>
+                    <input type="text" id="phone" value="{{ profile_obj.phone }}" required />
+
+                    <label for="address">Address:</label>
+                    <input type="text" id="address" value="{{ profile_obj.address }}" required />
+
+                    <label for="country">Country:</label>
+                    <input type="text" id="country" value="{{ profile_obj.country }}" required />
+
+                    <label for="city">City:</label>
+                    <input type="text" id="city" value="{{ profile_obj.city }}" required />
+
+                    <label for="zipcode">Zipcode:</label>
+                    <input type="text" id="zipcode" value="{{ profile_obj.zipcode }}" required />
+
+                    <label for="image">Profile Image:</label>
+                    <input type="file" id="image" accept="image/*" />
+
+                    <button type="button" onclick="saveProfile()">Save</button>
+                </form>
+                <div id="profile-edit-message" class="message"></div>
+            `;
+        }
+
+        async function saveProfile() {
+            const fullName = document.getElementById("full-name").value;
+            const email = document.getElementById("email").value;
+            const phone = document.getElementById("phone").value;
+            const address = document.getElementById("address").value;
+            const country = document.getElementById("country").value;
+            const city = document.getElementById("city").value;
+            const zipcode = document.getElementById("zipcode").value;
+            const imageFile = document.getElementById("image").files[0];
+        
+            // Create a FormData object to send the form data
+            const formData = new FormData();
+            formData.append("full_name", fullName);
+            formData.append("email", email);
+            formData.append("phone", phone);
+            formData.append("address", address);
+            formData.append("country", country);
+            formData.append("city", city);
+            formData.append("zipcode", zipcode);
+            if (imageFile) {
+                formData.append("image", imageFile);
+            }
+        
+            try {
+                const response = await fetch("{% url 'account:profile' %}", { // Use Django template tag for URL
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "X-CSRFToken": getCookie("csrftoken"), // Include CSRF token for security
+                    },
+                });
+        
+                // Check if the response is OK
+                if (response.ok) {
+                    document.getElementById("profile-edit-message").textContent = "Profile updated successfully!";
+                    await loadProfile(); // Reload the profile information to show updated data
+                } else {
+                    document.getElementById("profile-edit-message").textContent = "Error updating profile.";
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById("profile-edit-message").textContent = "Error updating profile.";
+            }
+        }
+        
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== "") {
+                const cookies = document.cookie.split(";");
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === name + "=") {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Attach event listeners to links
+        document.getElementById("profile-link").addEventListener("click", loadProfile);
+
+        // Function to load orders
+function loadOrders() {
+    document.getElementById("content").innerHTML = document.getElementById("orders-content").innerHTML;
+}
+
+// Function to delete an order
+
+
+    // Event listener to load orders when "Orders" link is clicked
+    document.getElementById("orders-link").addEventListener("click", loadOrders);
+
+    document.getElementById("shipping-status-link").addEventListener("click", loadShippingStatus);
+
+    function loadShippingStatus() {
+        document.getElementById("content").innerHTML = document.getElementById("shipping-status-content").innerHTML;
+    }
+
+
+   
+
+
+
+
+
+
+
+
+       
+    </script>
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="tab-pane fade" id="tab-downloads" role="tabpanel" aria-labelledby="tab-downloads-link">
+    {% if orders %}
+    <div class="container">
+        <header class="card-header" style="text-align:center; font-size: 21px;">Shipping Status</header>
+
+        {% for order in orders %}
+        <article class="card">
+            <div class="card-body">
+                <ul class="row" style="margin-left:20px; margin-top:20px;">
+                    <li class="col-md-4">
+                        <strong>Order ID:</strong> {{ order.order_id }}
+                        
+                    </li>
+
+                    <li class="col-md-4" style="display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <strong>Status:</strong><br>
+                            {% if order.shipping_status == 'Pending' %}
+                                <span class="label label-info" style="font-size: 12px; border-radius: 30px;">{{ order.shipping_status }}</span>
+                            {% elif order.shipping_status == 'Order Confirmed' %}
+                                <span class="label label-warning" style="font-size: 12px; border-radius: 30px;">{{ order.shipping_status }}</span>
+                            {% elif order.shipping_status == 'On the Way' %}
+                                <span class="label label-primary" style="font-size: 12px; border-radius: 30px;">{{ order.shipping_status }}</span>
+                            {% elif order.shipping_status == 'Delivered' %}
+                                <span class="label label-success" style="font-size: 12px; border-radius: 30px;">{{ order.shipping_status }}</span>
+                            {% endif %}
+                        </div>
+                    
+                        <!-- Delete Button -->
+                        <div style="margin-top:5px;"> 
+                            <form action="" method="POST" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger rounded" style="display: inline-block;" onclick="return confirm('Are you sure you want to delete this order?');">Delete</button>
+                            </form>
+                        </div>
+                    </li>
+                    
+
+                 
+                                                                
+                </ul>
+
+                <hr>
+                <div class="track">
+                    {% if order.shipping_status == 'Pending' %}
+                        <div class="step active"><span class="icon"><i class="fa fa-spinner"></i></span><span class="text">Order Pending</span></div>
+                        <div class="step"><span class="icon"><i class="fa fa-check"></i></span><span class="text">Order Confirmed</span></div>
+                        <div class="step"><span class="icon"><i class="fa fa-truck"></i></span><span class="text">On the Way</span></div>
+                        <div class="step"><span class="icon"><i class="fa fa-home"></i></span><span class="text">Delivered</span></div>
+                    {% elif order.shipping_status == 'Order Confirmed' %}
+                        <div class="step active"><span class="icon"><i class="fa fa-spinner"></i></span><span class="text">Order Pending</span></div>
+                        <div class="step active"><span class="icon"><i class="fa fa-check"></i></span><span class="text">Order Confirmed</span></div>
+                        <div class="step"><span class="icon"><i class="fa fa-truck"></i></span><span class="text">On the Way</span></div>
+                        <div class="step"><span class="icon"><i class="fa fa-home"></i></span><span class="text">Delivered</span></div>
+                    {% elif order.shipping_status == 'On the Way' %}
+                        <div class="step active"><span class="icon"><i class="fa fa-spinner"></i></span><span class="text">Order Pending</span></div>
+                        <div class="step active"><span class="icon"><i class="fa fa-check"></i></span><span class="text">Order Confirmed</span></div>
+                        <div class="step active"><span class="icon"><i class="fa fa-truck"></i></span><span class="text">On the Way</span></div>
+                        <div class="step"><span class="icon"><i class="fa fa-home"></i></span><span class="text">Delivered</span></div>
+                    {% elif order.shipping_status == 'Delivered' %}
+                        <div class="step active"><span class="icon"><i class="fa fa-spinner"></i></span><span class="text">Order Pending</span></div>
+                        <div class="step active"><span class="icon"><i class="fa fa-check"></i></span><span class="text">Order Confirmed</span></div>
+                        <div class="step active"><span class="icon"><i class="fa fa-truck"></i></span><span class="text">On the Way</span></div>
+                        <div class="step active"><span class="icon"><i class="fa fa-home"></i></span><span class="text">Delivered</span></div>
+                    {% endif %}
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>No shipping information available yet.</p>
+    {% endif %}
+</div>
