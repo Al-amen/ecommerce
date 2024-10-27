@@ -3,20 +3,8 @@
 {% load static %}
  {% block body %}
         <main class="main">
-        	<div class="page-header text-center" style="background-image: url({% static 'assets/images/page-header-bg.jpg' %})">
-        		<div class="container">
-        			<h1 class="page-title">Wishlist<span>Shop</span></h1>
-        		</div><!-- End .container -->
-        	</div><!-- End .page-header -->
-            <nav aria-label="breadcrumb" class="breadcrumb-nav">
-                <div class="container">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                        <li class="breadcrumb-item"><a href="#">Shop</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Wishlist</li>
-                    </ol>
-                </div><!-- End .container -->
-            </nav><!-- End .breadcrumb-nav -->
+        	
+        
 
             <div class="page-content">
             	<div class="container">
@@ -51,9 +39,9 @@
 									</td>
 									<td class="price-col">{{item.product.price}}</td>
 									{% if item.product.is_stock %}
-									  <td class="stock-col"><span class="in-stock">In stock</span></td>
+									  <td class="stock-col"><span class="in-stock" style="color:green;">In stock</span></td>
 									  {% else %}
-									  <td class="stock-col"><span class="in-stock">stock Out</span></td>
+									  <td class="stock-col"><span class="in-stock" style="color:red;">stock Out</span></td>
 									{% endif %}
 									
 									<td class="action-col">
@@ -65,7 +53,7 @@
 										<form method="POST" action="{% url 'order:remove_from_wishlist' item.product.pk %}" onsubmit="return confirm('Are you sure you want to remove this item?');">
 											{% csrf_token %}
 											<button class="btn-remove" type="submit">
-												<i class="icon-close"></i>
+												<i class="icon-close" style="color:red;"></i>
 											</button>
 										</form>
 										
@@ -74,16 +62,7 @@
 							{% endfor %}
 						</tbody>
 					</table><!-- End .table table-wishlist -->
-	            	<div class="wishlist-share">
-	            		<div class="social-icons social-icons-sm mb-2">
-	            			<label class="social-label">Share on:</label>
-	    					<a href="#" class="social-icon" title="Facebook" target="_blank"><i class="icon-facebook-f"></i></a>
-	    					<a href="#" class="social-icon" title="Twitter" target="_blank"><i class="icon-twitter"></i></a>
-	    					<a href="#" class="social-icon" title="Instagram" target="_blank"><i class="icon-instagram"></i></a>
-	    					<a href="#" class="social-icon" title="Youtube" target="_blank"><i class="icon-youtube"></i></a>
-	    					<a href="#" class="social-icon" title="Pinterest" target="_blank"><i class="icon-pinterest"></i></a>
-	    				</div><!-- End .soial-icons -->
-	            	</div><!-- End .wishlist-share -->
+	            	
             	</div><!-- End .container -->
             </div><!-- End .page-content -->
         </main><!-- End .main -->

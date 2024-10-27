@@ -1,333 +1,119 @@
 {% extends "base.html" %}
 {% block title %}Checkout Page || E-SHOP {% endblock title %}
 {% load static %}
-{% block head %} 
+{% block css %} 
 <link rel="stylesheet" href="{% static 'assets/css/checkout.css' %}">
+{% endblock css %}
 
-
-{% endblock head %}
 {% load crispy_forms_tags %}
 {% block body %}
 
-        <main class="main">
-        	<div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
-        		<div class="container">
-        			<h1 class="page-title">Checkout<span>Shop</span></h1>
-        		</div><!-- End .container -->
-        	</div><!-- End .page-header -->
-            <nav aria-label="breadcrumb" class="breadcrumb-nav">
-                <div class="container">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                        <li class="breadcrumb-item"><a href="#">Shop</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Checkout</li>
-                    </ol>
-                </div><!-- End .container -->
-            </nav><!-- End .breadcrumb-nav -->
+<main class="main">
 
-            <div class="page-content">
-            	<div class="checkout">
-	                <div class="container">
-            			<div class="checkout-discount">
-            				<form action="#">
-        						<input type="text" class="form-control" required id="checkout-discount-input">
-            					<label for="checkout-discount-input" class="text-truncate">Have a coupon? <span>Click here to enter your code</span></label>
-            				</form>
-            			</div><!-- End .checkout-discount -->
-						
-            			<form action="" method = 'POST'>
-							{% csrf_token %}
-		                	<div class="row">
-		                		<div class="col-lg-9">
-		                			<h2 class="checkout-title">Billing Details</h2><!-- End .checkout-title -->
-		                				<div class="row">
-		                					<div class="col-sm-6">
-												<div class="form-group">
-													{{ billing_address.first_name|as_crispy_field }}
-												</div>
-		                						
-		                					</div><!-- End .col-sm-6 -->
-											<div class="col-sm-6">
-												<div class="form-group">
-													{{ billing_address.last_name|as_crispy_field }}
-												</div>
-		                						
-		                					</div><!-- End .col-sm-6 -->
-											<div class="col-lg-12">
-												<!-- Last Name Field -->
-												<div class="form-group">
-													{{ billing_address.country_name|as_crispy_field }}
-												</div>
-											</div>
-											<div class="col-lg-12">
-												<!-- Last Name Field -->
-												<div class="form-group">
-													{{ billing_address.city|as_crispy_field }}
-												</div>
-											</div>
-											<div class="col-lg-12">
-												<!-- Last Name Field -->
-												<div class="form-group">
-													{{ billing_address.address1|as_crispy_field }}
-												</div>
-											</div>
-											<div class="col-lg-12">
-												<!-- Last Name Field -->
-												<div class="form-group">
-													{{ billing_address.address2|as_crispy_field }}
-												</div>
-											</div>
-											<div class="col-sm-6">
-												<!-- Last Name Field -->
-												<div class="form-group">
-													{{ billing_address.zipcode|as_crispy_field }}
-												</div>
-											</div>
-											<div class="col-sm-6">
-												<!-- Last Name Field -->
-												<div class="form-group">
-													{{ billing_address.phone_number|as_crispy_field }}
-												</div>
-											</div>
+    <div class="page-content">
+        <div class="checkout">
+            <div class="container">              
+				
+                <form action="" method="POST" class="checkout-form">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <h2 class="checkout-title">Billing Details</h2>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ billing_address.first_name|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ billing_address.last_name|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        {{ billing_address.country_name|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        {{ billing_address.city|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group ">
+                                        {{ billing_address.address1|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group ">
+                                        {{ billing_address.address2|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ billing_address.zipcode|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ billing_address.phone_number|as_crispy_field }}
+                                    </div>
+                                </div>
+                               
+                            </div>
+                        </div>
 
-	            						 {% comment %} <p>{{billing_address|crispy}}</p> {% endcomment %}
-	            									
-	                					<label>Order notes (optional)</label>
-	        							<textarea class="form-control" cols="30" rows="4" placeholder="Notes about your order, e.g. special notes for delivery"></textarea> 
-										</div>
-										
-		                		</div><!-- End .col-lg-9 -->
-		                		<aside class="col-lg-3">
-		                			<div class="summary">
-		                				<h3 class="summary-title">Your Order</h3><!-- End .summary-title -->
+                        <aside class="col-lg-4">
+                            <div class="summary bg-light p-3 rounded">
+                                <h3 class="summary-title">Your Order</h3>
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in order_item %}
+                                        <tr>
+                                            <td>{{ item.item.name }}</td>
+                                            <td>&#2547; {{ item.variation_total|default:item.variation_single_price|default:item.get_total }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                        <tr class="summary-subtotal">
+                                            <td>Subtotal:</td>
+                                            <td>&#2547; {{ order_total }}</td>
+                                        </tr>
+                                       
+                                        <tr class="summary-total">
+                                            <td>Total:</td>
+                                            <td>&#2547; {{ order_total }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
 
-		                				<table class="table table-summary">
-		                					<thead>
-		                						<tr>
-		                							<th>Product</th>
-		                							<th>Total</th>
-		                						</tr>
-		                					</thead>
+                                <div id="accordion-payment" class="mt-3">
+                                    <div class="card">
+                                        {% if pay_meth %}
+                                        <div id="paypal-button-container"></div>
+                                        {% else %}
+                                        {{ payment_method.as_p }}
+                                        {% endif %}
+                                    </div>
+                                </div>
 
-		                					<tbody>
-		                					
-                                            {% for item in order_item %}
-		                						<tr>
-		                							<td><a href="#">{{item.item.name}}</a></td>
-													{% if item.variation_total %}
-													    <td>${{item.variation_total }}</td>
-													{% elif item.variation_single_price %}
-													    <td>${{item.variation_single_price }}</td>
-													{% elif item.get_total %}
-														<td>${{item.get_total}}</td> 
-													
-													{% endif %}
-		                						</tr>
-											{% endfor %}   
-		                						<tr class="summary-subtotal">
-		                							<td>Subtotal:</td>
-		                							<td>${{order_total}}</td>
-		                						</tr><!-- End .summary-subtotal -->
-		                						<tr>
-		                							<td>Shipping:</td>
-		                							<td>Free shipping</td>
-		                						</tr>
-		                						<tr class="summary-total">
-		                							<td>Total:</td>
-		                							<td>${{order_total}}</td>
-		                						</tr><!-- End .summary-total -->
-		                					</tbody>
-		                				</table><!-- End .table table-summary -->
+                                <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block mt-3">
+                                    <span class="btn-text">Place Order</span>
+                                    <span class="btn-hover-text">Proceed to Checkout</span>
+                                </button>
+                            </div>
+                        </aside>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
 
-		                				<div class="accordion-summary" id="accordion-payment">
-										    <div class="card">
-												{% if pay_meth %}
-												<div class="" id="paypal-button-container"></div>
-												{% else %}
-												{{ payment_method.as_p}}
-												{% endif %}
-												
-												<br>
-												
-											
-											
-											
-												
-											</div>
-										       <br> 
-											   
-											
-										</div><!-- End .accordion -->
-
-		                				<button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">
-		                					<span class="btn-text">Place Order</span>
-		                					<span class="btn-hover-text">Proceed to Checkout</span>
-		                				</button>
-		                			</div><!-- End .summary -->
-		                		</aside><!-- End .col-lg-3 -->
-		                	</div><!-- End .row -->
-            			</form>
-
-	                </div><!-- End .container -->
-                </div><!-- End .checkout -->
-            </div><!-- End .page-content -->
-        </main><!-- End .main -->
-
-     {% endblock body %}
-
-
-{% comment %} 
-{% block paypal %}
-
-<script
- src="https://www.paypal.com/sdk/js?client-id={{paypal_client_id}}"
-	data-sdk-integration-source="developer-studio">
-
-</script>
-
-
-
-<script>
-
-	function getCookie(name) {
-		let cookieValue = null;
-		if (document.cookie && document.cookie !== '') {
-			const cookies = document.cookie.split(';');
-			for (let i = 0; i < cookies.length; i++) {
-				const cookie = cookies[i].trim();
-				if (cookie.substring(0, name.length + 1) === (name + '=')) {
-					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-					break;
-				}
-			}
-		}
-		return cookieValue;
-	}
-	
-	const csrftoken = getCookie('csrftoken');
-
-	var url = {% url "payment:paypal_payment" %};
-
-	paypal.Buttons({
-		createOrder: function(data, actions) {
-			return actions.order.create({
-				purchase_units: [{
-					amount: {
-						value: '{{order_total}}' // Replace with the actual amount
-					}
-				}]
-			});
-		},
-		onApprove: function(data, actions) {
-			return actions.order.capture().then(function(details) {
-				//alert('Transaction completed by ' + details.payer.name.given_name);
-				 console.log(details)
-				 sendData()
-				 function sendData(){
-					fetch(url,{
-
-						method: "POST",
-						headers : {
-							'Content-type':"application/json",
-							'X-CSRFToken': csrftoken,
-						  },
-						body: JSON.stringify({
-								'order_id': details.id,
-								'payment_id': details.payer.payer_id,
-								'status': details.status,
-							}),
-						
-					})
-				 }
-				 window.location.href = {% url "store:index" %};
-					
-			});
-		}
-	}).render('#paypal-button-container');
-</script>
-
-
-{% endblock paypal %} {% endcomment %}
-
-{% comment %} 
-{% block paypal %}
-
-    <!-- PayPal SDK Script -->
-    <script
-        src="https://www.paypal.com/sdk/js?client-id={{paypal_client_id}}"
-        data-sdk-integration-source="developer-studio">
-    </script>
-
-    <script>
-        // Function to get CSRF token from the cookie
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-        
-        const csrftoken = getCookie('csrftoken');  // Fetch CSRF token from cookie
-        //const paymentUrl = "{% url 'payment:paypal_payment' %}";  // URL for backend handling of payment
-        const orderTotal = '{{ order_total }}';  // Dynamic order total
-
-        // PayPal Buttons integration
-        paypal.Buttons({
-            createOrder: function(data, actions) {
-                return actions.order.create({
-                    purchase_units: [{
-                        amount: {
-                            value: orderTotal  // Replace with the actual amount dynamically from template
-                        }
-                    }]
-                });
-            },
-            onApprove: function(data, actions) {
-                return actions.order.capture().then(function(details) {
-                    console.log('Transaction completed by:', details.payer.name.given_name);
-
-                    // Send payment details to the Django backend
-                    fetch(paymentUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': csrftoken  // Ensure CSRF token is sent for protection
-                        },
-                        body: JSON.stringify({
-                            'order_id': details.id,
-                            'payment_id': details.payer.payer_id,
-                            'status': details.status
-                        })
-                    })
-                    .then(response => {
-                        if (response.ok) {
-                            window.location.href = "{% url 'store:index' %}";  // Redirect after successful payment
-                        } else {
-                            return response.json().then(data => {
-                                console.error('Payment processing error:', data);
-                                alert('There was an error processing your payment.');
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Fetch error:', error);
-                        alert('Network or server error occurred.');
-                    });
-                });
-            },
-            onError: function(err) {
-                console.error('PayPal button error:', err);
-                alert('An error occurred during the PayPal transaction.');
-            }
-        }).render('#paypal-button-container');  // Render PayPal button
-    </script>
-
-{% endblock paypal %} {% endcomment %}
+{% endblock body %}

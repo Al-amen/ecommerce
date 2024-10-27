@@ -77,7 +77,7 @@ class ProductDetailView(DetailView):
         context["average_rating"] = average_rating if average_rating else 0 
         
 
-        print("size Variations: ", context["size_variations"])
+  
         return context
 
     

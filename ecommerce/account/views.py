@@ -126,7 +126,39 @@ def logout_view(request):
         return redirect('store:index')
     else:
         return redirect("account:login")
-    
+
+from django.urls import reverse_lazy
+from django.contrib.auth.views import  PasswordResetView
+from django.contrib.messages.views import SuccessMessageMixin
+
+class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
+    template_name = 'account/password_reset.html'
+    email_template_name = 'account/password_reset_email.html'
+    subject_template_name = 'account/password_reset_subject'
+    success_message = "We've emailed you instructions for setting your password, " \
+                      "if an account exists with the email you entered. You should receive them shortly." \
+                      " If you don't receive an email, " \
+                      "please make sure you've entered the address you registered with, and check your spam folder."
+    success_url = reverse_lazy('account:password_reset_done')
+    #success_url = reverse_lazy('account:password_reset_complete')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add protocol and domain for local testing
+        context['protocol'] =  'http'
+        context['domain'] =  '127.0.0.1:8000'
+        return context
+
+
+
+
+
+
+
+
+
+
+
 
 
 # class ProfileView(TemplateView):

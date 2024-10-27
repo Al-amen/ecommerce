@@ -26,6 +26,20 @@ class Category(models.Model):
         verbose_name_plural = 'Categories'
 
 
+    def get_total_stock(self):
+        """Calculate total stock for the category and its subcategories."""
+        products = Product.objects.filter(category__in=self.get_descendants(include_self=True))
+        total_stock = sum(product.stock for product in products)
+        return total_stock
+
+    def get_descendants(self, include_self=True):
+        """Helper method to get all subcategories including self."""
+        categories = [self]
+        for child in self.children.all():
+            categories.extend(child.get_descendants(include_self=True))
+        return categories if include_self else categories[1:]
+
+
 class Product(models.Model):
     name = models.CharField(max_length=250, blank=False, null=False)
     category = models.ForeignKey(
@@ -38,6 +52,7 @@ class Product(models.Model):
     price = models.FloatField()
     old_price = models.FloatField(default=0.00, blank=True, null=True)
     is_stock = models.BooleanField(default=True)
+    stock = models.PositiveIntegerField(default=0)  
     slug = models.SlugField(unique=True)
     created = models.DateTimeField(auto_now_add=True)
    
@@ -54,9 +69,21 @@ class Product(models.Model):
     
     
     def save(self, *args, **kwargs):
+        # Set stock status based on stock count
+        self.is_stock = self.stock > 0
         if not self.slug:
             self.slug = slugify(self.name)
         return super().save(*args, **kwargs)
+    
+
+    def decrease_stock(self, quantity=1):
+        """Decrease stock by specified quantity when product is sold."""
+        if self.stock >= quantity:
+            self.stock -= quantity
+            self.save()
+        else:
+            self.is_stock = False
+            raise ValueError("Insufficient stock for this product")
 
 
 class ProductImages(models.Model):
@@ -95,13 +122,22 @@ class VariationValue(models.Model):
     price = models.FloatField()
     image = models.ImageField(upload_to='variations',blank=True,null=True)
     created = models.DateTimeField(auto_now_add=True)
+    stock = models.PositiveIntegerField(default=0)  
+    is_stock = models.BooleanField(default=True)
 
     objects = VariationManger()
 
     def __str__(self):
         return self.name
     
-
+    def decrease_stock(self, quantity=1):
+        """Decrease stock by specified quantity for variation when sold."""
+        if self.stock >= quantity:
+            self.stock -= quantity
+            self.save()
+        else:
+            self.is_stock = False
+            raise ValueError("Insufficient stock for this variation")
 
 class Banner(models.Model):
     product = models.ForeignKey(Product,on_delete=models.CASCADE, related_name='banner')

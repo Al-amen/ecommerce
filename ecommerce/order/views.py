@@ -1,7 +1,7 @@
-from django.shortcuts import render,get_object_or_404,redirect
-
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages  # Import messages framework
 from store.models import Product
-from order.models import Cart,Order,WishList
+from order.models import Cart, Order, WishList
 from coupon.models import Coupon
 from coupon.forms import CouponCodeForm
 from django.utils import timezone
@@ -9,55 +9,46 @@ from notification.notific import SendNotification
 
 # Create your views here.
 
-
 def add_to_cart(request, pk):
     if request.user.is_authenticated:
         item = get_object_or_404(Product, pk=pk)
-        order_item, created = Cart.objects.get_or_create(item=item, user=request.user, purchased=False)
-        order_qs = Order.objects.filter(user=request.user, ordered=False)
+        try:
+            order_item, created = Cart.objects.get_or_create(item=item, user=request.user, purchased=False)
+            order_qs = Order.objects.filter(user=request.user, ordered=False)
 
-        if order_qs.exists():
-            order = order_qs[0]
-            if order.order_items.filter(item=item).exists():
-                color = request.POST.get('color')
-                size = request.POST.get('size')
-                quantity = request.POST.get('quantity')
-                
-                if quantity:
-                    order_item.quantity += int(quantity)
+            if order_qs.exists():
+                order = order_qs[0]
+                if order.order_items.filter(item=item).exists():
+                    color = request.POST.get('color')
+                    size = request.POST.get('size')
+                    quantity = request.POST.get('quantity')
+
+                    order_item.quantity += int(quantity) if quantity else 1
+                    order_item.color = color
+                    order_item.size = size
+                    order_item.save()
+                    messages.success(request, "Quantity updated successfully!")
+                    SendNotification(request.user, "Quantity updated")
                 else:
-                    order_item.quantity += 1
+                    order_item.color = request.POST.get('color')
+                    order_item.size = request.POST.get('size')
+                    order_item.save()
+                    order.order_items.add(order_item)
+                    messages.success(request, "Product added to your cart!")
 
-        
-                order_item.color = color
-                order_item.size = size
-                order_item.save()
-                message = f"Quantity updated"
-                SendNotification(request.user,message)
-                return redirect("store:index")
-            else:
-            
-                color = request.POST.get('color')
-                size = request.POST.get('size')
-                order_item.color = color
-                order_item.size = size
-                order_item.save()  
-                order.order_items.add(order_item)  
-
-                
                 return redirect('store:index')
-        else:
-        
-            new_order = Order.objects.create(user=request.user)
-            new_order.order_items.add(order_item)  
-            message = f"product added to your cart"
-            SendNotification(request.user,message)
+            else:
+                new_order = Order.objects.create(user=request.user)
+                new_order.order_items.add(order_item)
+                messages.success(request, "Product added to your cart!")
+                SendNotification(request.user, "Product added to your cart")
+                return redirect('store:index')
+        except Exception as e:
+            messages.error(request, "An error occurred while adding the item to your cart. Please try again.")
             return redirect('store:index')
     else:
+        messages.warning(request, "You need to log in to add items to your cart.")
         return redirect('account:login')
-
-
-
 
 
 def cart_view(request):
@@ -69,118 +60,147 @@ def cart_view(request):
         total_price_after_discount = None
         order = None  
         coupon_form = None 
-
+       
         if carts.exists() and orders.exists():
             order = orders[0]
             coupon_form = CouponCodeForm(request.POST or None)  
+           
+            # Calculate total and subtotal
+            subtotal = order.get_totals()  # This will get the total price of all items in the order
+         
 
             if coupon_form.is_valid():
                 current_time = timezone.now()
                 code = coupon_form.cleaned_data.get('code')
-
+                
+                print(f"Coupon code entered: {code}")  # Print the entered coupon code
+                
                 try:
                     coupon_obj = Coupon.objects.get(code=code, active=True)
-
+                    print(f"Coupon found: {coupon_obj.code}, Active: {coupon_obj.active}, Valid from: {coupon_obj.valid_from}, Valid to: {coupon_obj.valid_to}")
+                  
                     if coupon_obj.valid_from <= current_time <= coupon_obj.valid_to:
-                        
-                        get_discount = (coupon_obj.discount / 100) * order.get_totals()
-                        total_price_after_discount = order.get_totals() - get_discount
+                        get_discount = (coupon_obj.discount / 100) * subtotal  # Calculate discount
+                        total_price_after_discount = subtotal - get_discount  # Total after applying discount
+                        print(f"Discount applied: {get_discount}, New total: {total_price_after_discount}")  # Debugging output
                         request.session['discount_total'] = total_price_after_discount 
                         request.session['coupon_code'] = code
-
                         coupon_code = code  
+                       
+                        messages.success(request, f"Coupon '{code}' applied successfully!")
+                        print(f"Subtotal: {subtotal}, Discount: {coupon_obj.discount}, Total after discount: {total_price_after_discount}")
                     else:
-                    
                         coupon_obj.active = False
                         coupon_obj.save()
                         coupon_code = None  
+                        messages.warning(request, "This coupon is no longer valid.")
                 except Coupon.DoesNotExist:
-                
                     coupon_code = None
+                    messages.error(request, "Invalid coupon code.")
+               
 
-        if 'discount_total' in request.session:
-            total_price_after_discount = request.session['discount_total']
-            coupon_code = request.session.get('coupon_code')
+            if 'discount_total' in request.session:
+                total_price_after_discount = request.session['discount_total']
+                coupon_code = request.session.get('coupon_code')
+                print(f"session{total_price_after_discount}")
+            
+         
+            context = {
+                'carts': carts,
+                'order': order,  
+                'coupon_form': coupon_form,  
+                'coupon_code': coupon_code,
+                'subtotal': subtotal,  # Add subtotal to context
+                'total_price_after_discount': total_price_after_discount,
+            }
 
-        print("Current coupons in database:")
-        for coupon in Coupon.objects.all():
-            print(coupon.code, coupon.valid_from, coupon.valid_to, coupon.active)
-
-        
-        context = {
-            'carts': carts,
-            'order': order,  
-            'coupon_form': coupon_form,  
-            'coupon_code': coupon_code,
-            'total_price_after_discount': total_price_after_discount,
-        }
-
-        return render(request, 'store/cart.html', context) 
+            return render(request, 'store/cart.html', context) 
+        else:
+            messages.warning(request, "Your cart is empty.")
+            return redirect('store:index')
     else:
+        messages.warning(request, "You need to log in to view your cart.")
         return redirect('account:login')
 
 
 
-
-
-
-def remove_item_from_cart(request,pk):
-    item = get_object_or_404(Product,pk=pk)
+def remove_item_from_cart(request, pk):
+    item = get_object_or_404(Product, pk=pk)
     orders = Order.objects.filter(user=request.user, ordered=False)
-    if orders.exists():
-        order = orders[0]
-        if order.order_items.filter(item=item).exists():
-            order_item = Cart.objects.filter(item=item, user=request.user, purchased=False)[0]
-            order.order_items.remove(order_item)
-            order_item.delete()
-            return redirect('order:cart')
+    try:
+        if orders.exists():
+            order = orders[0]
+            if order.order_items.filter(item=item).exists():
+                order_item = Cart.objects.filter(item=item, user=request.user, purchased=False).first()
+                order.order_items.remove(order_item)
+                order_item.delete()
+                messages.success(request, "Item removed from your cart.")
+                return redirect('order:cart')
+            else:
+                messages.warning(request, "Item not found in your cart.")
+                return redirect('order:cart')
         else:
+            messages.warning(request, "No active order found.")
             return redirect('order:cart')
-    else:
+    except Exception as e:
+        messages.error(request, "An error occurred while removing the item from your cart. Please try again.")
         return redirect('order:cart')
 
 
-
-def increase_cart(request,pk):
-    item = get_object_or_404(Product,pk=pk)
+def increase_cart(request, pk):
+    item = get_object_or_404(Product, pk=pk)
     order_qs = Order.objects.filter(user=request.user, ordered=False)
 
-    if order_qs.exists():
-        order = order_qs[0]
-        if order.order_items.filter(item=item).exists():
-            order_item = Cart.objects.filter(item=item, user=request.user, purchased=False)[0]
-            if order_item.quantity >= 1:
-                order_item.quantity += 1
-                order_item.save()
-                return redirect('order:cart')
-        else:
-            return redirect('store:index')
-    else :
-        return redirect('store:index')
-    
-
-
-
-def decrease_cart(request,pk):
-    item = get_object_or_404(Product,pk=pk)
-    order_qs = Order.objects.filter(user=request.user, ordered=False)
-
-    if order_qs.exists():
-        order = order_qs[0]
-        if order.order_items.filter(item=item).exists():
-            order_item = Cart.objects.filter(item=item,user=request.user,purchased=False)[0]
-            if order_item.quantity > 1:
-                order_item.quantity -= 1
-                order_item.save()
+    try:
+        if order_qs.exists():
+            order = order_qs[0]
+            if order.order_items.filter(item=item).exists():
+                order_item = Cart.objects.filter(item=item, user=request.user, purchased=False).first()
+                if order_item:
+                    order_item.quantity += 1
+                    order_item.save()
+                    messages.success(request, "Item quantity increased.")
                 return redirect('order:cart')
             else:
-                order_item.order_items.remove(order_item)
-                order_item.delete()
+                messages.warning(request, "Item not found in your cart.")
                 return redirect('store:index')
         else:
+            messages.warning(request, "No active order found.")
             return redirect('store:index')
-    else:
+    except Exception as e:
+        messages.error(request, "An error occurred while increasing the item quantity. Please try again.")
         return redirect('store:index')
+
+
+def decrease_cart(request, pk):
+    item = get_object_or_404(Product, pk=pk)
+    order_qs = Order.objects.filter(user=request.user, ordered=False)
+
+    try:
+        if order_qs.exists():
+            order = order_qs[0]
+            if order.order_items.filter(item=item).exists():
+                order_item = Cart.objects.filter(item=item, user=request.user, purchased=False).first()
+                if order_item:
+                    if order_item.quantity > 1:
+                        order_item.quantity -= 1
+                        order_item.save()
+                        messages.success(request, "Item quantity decreased.")
+                    else:
+                        order.order_items.remove(order_item)
+                        order_item.delete()
+                        messages.success(request, "Item removed from your cart.")
+                return redirect('order:cart')
+            else:
+                messages.warning(request, "Item not found in your cart.")
+                return redirect('store:index')
+        else:
+            messages.warning(request, "No active order found.")
+            return redirect('store:index')
+    except Exception as e:
+        messages.error(request, "An error occurred while decreasing the item quantity. Please try again.")
+        return redirect('store:index')
+
 
 
 
