@@ -11,7 +11,7 @@
             <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
                 <div class="container d-flex align-items-center">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url "store:index" %}">Home</a></li>
                         <li class="breadcrumb-item"><a href="#">Products</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Default</li>
                     </ol>
@@ -168,10 +168,16 @@
                                             <span>Add to cart</span></button>
                                         
                                         <div class="details-action-wrapper">
-                                            {% if request.user.is_authenticated %}
+                                            {% if request.user.is_authenticated and item.is_stock  %}
                                                <a href="{% url 'order:add-to-wishlist' pk=item.pk  %}" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
-                                            {% else %}
+                                            {% elif item.is_stock %}
+                                             
                                             <a href="{% url "account:login" %}" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
+                                            {% endif %}
+                                            {% if item.is_stock %}
+                                                <h5 style="color:green;">In Stock</h5>
+                                            {% else %}
+                                                <h5 style="color:red;">Stock Out</h4>
                                             {% endif %}
 
                                            
@@ -189,13 +195,7 @@
                                             
                                         </div><!-- End .product-cat -->
 
-                                        <div class="social-icons social-icons-sm">
-                                            <span class="social-label">Share:</span>
-                                            <a href="#" class="social-icon" title="Facebook" target="_blank"><i class="icon-facebook-f"></i></a>
-                                            <a href="#" class="social-icon" title="Twitter" target="_blank"><i class="icon-twitter"></i></a>
-                                            <a href="#" class="social-icon" title="Instagram" target="_blank"><i class="icon-instagram"></i></a>
-                                            <a href="#" class="social-icon" title="Pinterest" target="_blank"><i class="icon-pinterest"></i></a>
-                                        </div>
+                                      
                                     </div><!-- End .product-details-footer -->
                                 </div><!-- End .product-details -->
                             </div><!-- End .col-md-6 -->
@@ -212,9 +212,7 @@
                             <li class="nav-item">
                                 <a class="nav-link" id="product-info-link" data-toggle="tab" href="#product-info-tab" role="tab" aria-controls="product-info-tab" aria-selected="false">Additional information</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="product-shipping-link" data-toggle="tab" href="#product-shipping-tab" role="tab" aria-controls="product-shipping-tab" aria-selected="false">Shipping & Returns</a>
-                            </li>
+                            
                             <li class="nav-item">
                                 <a class="nav-link" id="product-review-link" data-toggle="tab" href="#product-review-tab" role="tab" aria-controls="product-review-tab" aria-selected="false">Reviews ({{ reviews.count }})</a>
                             </li>
@@ -233,14 +231,7 @@
                                     {{item.preview_des}}
                                 </div><!-- End .product-desc-content -->
                             </div><!-- .End .tab-pane -->
-                            <div class="tab-pane fade" id="product-shipping-tab" role="tabpanel" aria-labelledby="product-shipping-link">
-                                <div class="product-desc-content">
-                                    <h3>Delivery & returns</h3>
-                                    <p>We deliver to over 100 countries around the world. For full details of the delivery options we offer, please view our <a href="#">Delivery information</a><br>
-                                    We hope you’ll love every purchase, but if you ever need to return an item you can do so within a month of receipt. For full details of how to make a return, please view our <a href="#">Returns information</a></p>
-                                </div><!-- End .product-desc-content -->
-                            </div><!-- .End .tab-pane -->
-
+                            
     
 
 

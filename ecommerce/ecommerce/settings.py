@@ -17,6 +17,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+
 AUTH_USER_MODEL ='account.User'
 # AUTHENTICATION_BACKENDS = ['account.backend.UsernameOrEmailBackend']
 AUTHENTICATION_BACKENDS = [
@@ -50,7 +51,7 @@ INSTALLED_APPS = [
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
-
+LOGIN_URL = 'account:login'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -64,6 +65,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'ecommerce.urls'
+LOGOUT_REDIRECT_URL = 'account:login'
+LOGIN_URL = 'account:login'
 
 TEMPLATES = [
     {

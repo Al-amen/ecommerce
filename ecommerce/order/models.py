@@ -22,56 +22,45 @@ class Cart(models.Model):
 
     def __str__(self):
         return f"{self.quantity} X {self.item.name}"
-    
 
     def get_total(self):
-        total = self.item.price * self.quantity
-        float_total = format(total,'0.2f')
+        return format(self.item.price * self.quantity, '0.2f')
 
-        return float_total
-    
     def variation_single_price(self):
         sizes = VariationValue.objects.filter(variation='size', product=self.item)
         colors = VariationValue.objects.filter(variation='color', product=self.item)
-        
-        for size in sizes:
-            if colors.exists():
-                for color in colors:
-                    if color.name == self.color:
-                        c_price = color.price
-                    
-                if size.name == self.size:
-                    total = size.price + c_price
-                    net_total = total
-                    float_total = format(net_total,'.2f')
-                    return float_total
-            else:
-                if size.name == self.size:
-                    total = size.price
-                    float_total = format(total,'.2f')
-                    return float_total
+
+        c_price = 0
+        if colors.exists() and self.color:
+            color_obj = colors.filter(name=self.color).first()
+            c_price = color_obj.price if color_obj else 0
+
+        if sizes.exists() and self.size:
+            size_obj = sizes.filter(name=self.size).first()
+            size_price = size_obj.price if size_obj else 0
+            total = size_price + c_price
+            return format(total, '.2f')
+
+        return format(self.item.price, '.2f')  # Fallback to base product price
 
     def variation_total(self):
         sizes = VariationValue.objects.filter(variation='size', product=self.item)
         colors = VariationValue.objects.filter(variation='color', product=self.item)
 
-        for size in sizes:
-           if colors.exists():
-               for color in colors:
-                   if color.name == self.color:
-                    c_price = color.price
-                    color_quantity_price = c_price * self.quantity
-                
-               if size.name == self.size:
-                   total = size.price * self.quantity
-                   net_total = total + color_quantity_price
-                   float_total = format(net_total,'0.2f')
-                   return float_total
-           else:
-               if size.name == self.size:
-                   total = size.price * self.quantity
-                   float_total = format(total,'0.2f')
-                   return float_total
+        total = 0
+        color_quantity_price = 0
+
+        if colors.exists() and self.color:
+            color_obj = colors.filter(name=self.color).first()
+            color_quantity_price = (color_obj.price * self.quantity) if color_obj else 0
+
+        if sizes.exists() and self.size:
+            size_obj = sizes.filter(name=self.size).first()
+            if size_obj:
+                total = (size_obj.price * self.quantity)
+
+        net_total = total + color_quantity_price
+        return format(net_total, '0.2f')
 
 
 

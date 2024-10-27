@@ -13,6 +13,14 @@
     
 <main class="main">
     <!-- Page Header -->
+    {% if messages %}
+    <ul>
+    {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+    </ul>
+{% endif %}
+
 
     <!-- Page Content -->
     <div class="page-content py-5">
@@ -36,72 +44,54 @@
                                 </thead>
 
                                 <tbody>
-                                    {% for cart in carts %}
-                                    <tr>
-                                        <!-- Product Column -->
-                                        <td class="product-col">
-                                            <div class="product d-flex align-items-center">
-                                                <figure class="product-media mr-3">
-                                                    <a href="#">
-                                                        <img src="{{ cart.item.image.url }}" alt="Product image" style="width: 100px; height: auto;">
-                                                    </a>
-                                                </figure>
-                                                <div>
-                                                    <h5 class="product-title mb-1">
-                                                        <a href="#" class="text-dark">{{ cart.item.name }}</a>
-                                                    </h5>
+                                    {% if carts %}
+                                        {% for cart in carts %}
+                                        <tr>
+                                            <td class="product-col">
+                                                <div class="product d-flex align-items-center">
+                                                    <figure class="product-media mr-3">
+                                                        <a href="#">
+                                                            <img src="{{ cart.item.image.url }}" alt="{{ cart.item.name }} image" style="width: 100px; height: auto;">
+                                                        </a>
+                                                    </figure>
+                                                    <div>
+                                                        <h5 class="product-title mb-1">
+                                                            <a href="#" class="text-dark">{{ cart.item.name }}</a>
+                                                        </h5>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-
-                                        <!-- Size -->
-                                        <td>{{ cart.size }}</td>
-
-                                        <!-- Color -->
-                                        <td>{{ cart.color }}</td>
-
-                                        <!-- Price -->
-                                        <td>
-                                            {% if cart.variation_single_price %}
-                                                ${{ cart.variation_single_price }}
-                                            {% else %}
-                                                ${{ cart.item.price }}
-                                            {% endif %}
-                                        </td>
-
-                                        <!-- Quantity -->
-                                        <td>
-                                            <div class="d-flex justify-content-center align-items-center">
-                                                <a href="{% url 'order:decrease' pk=cart.item.pk %}" class="mr-2 text-dark">
-                                                    <span class="badge badge-light"><i class="las la-minus"></i></span>
+                                            </td>
+                                            <td>{{ cart.size }}</td>
+                                            <td>{{ cart.color }}</td>
+                                            <td>${{ cart.variation_single_price|floatformat:2 }}</td>
+                                            <td>
+                                                <div class="d-flex justify-content-center align-items-center">
+                                                    <a href="{% url 'order:decrease' pk=cart.item.pk %}" class="mr-2 text-dark">
+                                                        <span class="badge badge-light"><i class="las la-minus"></i></span>
+                                                    </a>
+                                                    <span>{{ cart.quantity }}</span>
+                                                    <a href="{% url 'order:increase' pk=cart.item.pk %}" class="ml-2 text-dark">
+                                                        <span class="badge badge-light"><i class="las la-plus"></i></span>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                            <td>${{ cart.variation_total|floatformat:2 }}</td>
+                                            <td>
+                                                <a href="{% url 'order:remove-item' pk=cart.item.pk %}" class="text-danger">
+                                                    <button class="btn-remove bg-transparent border-0 p-0" aria-label="Remove item">
+                                                        <i class="icon-close"></i>
+                                                    </button>
                                                 </a>
-                                                <span>{{ cart.quantity }}</span>
-                                                <a href="{% url 'order:increase' pk=cart.item.pk %}" class="ml-2 text-dark">
-                                                    <span class="badge badge-light"><i class="las la-plus"></i></span>
-                                                </a>
-                                            </div>
-                                        </td>
-
-                                        <!-- Total -->
-                                        <td>
-                                            {% if cart.variation_total %}
-                                                ${{ cart.variation_total }}
-                                            {% else %}
-                                                ${{ cart.get_total }}
-                                            {% endif %}
-                                        </td>
-
-                                        <!-- Remove Button -->
-                                        <td>
-                                            <a href="{% url 'order:remove-item' pk=cart.item.pk %}" class="text-danger">
-                                                <button class="btn-remove bg-transparent border-0 p-0">
-                                                    <i class="icon-close"></i>
-                                                </button>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="7">Your cart is currently empty.</td>
+                                        </tr>
+                                    {% endif %}
                                 </tbody>
+                                
                             </table>
                         </div>
 
@@ -143,47 +133,17 @@
                                     <!-- Subtotal -->
                                     <tr class="summary-subtotal">
                                         <td>Subtotal:</td>
-                                        <td class="text-right">${{ order.get_totals }}</td>
+                                    
+                                        <td class="text-right">${{ order.get_totals }}</td> </td>
                                     </tr>
 
-                                    <!-- Shipping Options -->
-                                    <tr class="summary-shipping">
-                                        <td>Shipping:</td>
-                                        <td class="text-right">&nbsp;</td>
-                                    </tr>
+                                   
 
-                                    <tr class="summary-shipping-row">
-                                        <td>
-                                            <div class="custom-control custom-radio">
-                                                <input type="radio" id="free-shipping" name="shipping" class="custom-control-input">
-                                                <label class="custom-control-label" for="free-shipping">Free Shipping</label>
-                                            </div>
-                                        </td>
-                                        <td class="text-right">$0.00</td>
-                                    </tr>
 
-                                    <tr class="summary-shipping-row">
-                                        <td>
-                                            <div class="custom-control custom-radio">
-                                                <input type="radio" id="standard-shipping" name="shipping" class="custom-control-input">
-                                                <label class="custom-control-label" for="standard-shipping">Standard</label>
-                                            </div>
-                                        </td>
-                                        <td class="text-right">$10.00</td>
-                                    </tr>
 
-                                    <tr class="summary-shipping-row">
-                                        <td>
-                                            <div class="custom-control custom-radio">
-                                                <input type="radio" id="express-shipping" name="shipping" class="custom-control-input">
-                                                <label class="custom-control-label" for="express-shipping">Express</label>
-                                            </div>
-                                        </td>
-                                        <td class="text-right">$20.00</td>
-                                    </tr>
 
                                     <tr class="summary-shipping-estimate">
-                                        <td>Estimate for Your Country<br> <a href="dashboard.html">Change address</a></td>
+                                        <td>Estimate for Your Country<br> <a href="{% url 'account:profile'  %}">Change address</a></td>
                                         <td class="text-right">&nbsp;</td>
                                     </tr>
 
@@ -208,7 +168,7 @@
                         </div>
 
                         <!-- Continue Shopping Button -->
-                        <a href="#" class="btn btn-outline-secondary btn-block mt-3">
+                        <a href="{% url "store:index" %}" class="btn btn-outline-secondary btn-block mt-3">
                             CONTINUE SHOPPING
                         </a>
                     </aside>
