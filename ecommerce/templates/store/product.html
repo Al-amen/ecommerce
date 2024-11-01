@@ -8,7 +8,7 @@
 {% block body %}
 
         <main class="main">
-            <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
+            {% comment %} <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
                 <div class="container d-flex align-items-center">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url "store:index" %}">Home</a></li>
@@ -28,7 +28,7 @@
                         </a>
                     </nav><!-- End .pager-nav -->
                 </div><!-- End .container -->
-            </nav><!-- End .breadcrumb-nav -->
+            </nav><!-- End .breadcrumb-nav --> {% endcomment %}
 
             <div class="page-content">
                 <div class="container">
@@ -100,13 +100,13 @@
                                     </div><!-- End .rating-container -->
 
                                     <div class="product-price">
-                                        ${{item.price}}
+                                        &#2547;{{item.price}}
                                      
                                     </div>
                                     {% if item.old_price %}
                                     <div class="product-price">
                                               
-                                      <del> ${{item.old_price}}</del>
+                                      <del> &#2547;{{item.old_price}}</del>
                                      
                                     </div>
                              
@@ -118,75 +118,75 @@
                                     <div class="product-content">
                                         <p>{{item.preview_des}}</p>
                                     
-                                         
                                         <form action="{% url "order:add_to_cart" pk=item.pk %}" method="post">
                                             {% csrf_token %}
-                                          {% if color_variations %}      
-                                      
-                                            <div class="details-filter-row details-row-size">
-                                                <label for="size">Color:</label>
-                                                <div class="select-custom">
-                                                    <select name="color" id="color" class="form-control">
-                                                        <option value="#" selected="selected">Select a color</option>
-                                                        {% for variation in color_variations %}
-                                                            <option value="{{ variation.name }}">{{ variation.name }}</option>
-                                                           
-                                                        {% endfor %}
-                                                    </select>
-                                                </div><!-- End .select-custom -->
-
-                                                {% comment %} <a href="#" class="size-guide"><i class="icon-th-list"></i>size guide</a> {% endcomment %}
-                                            </div><!-- End .details-filter-row -->
-                                        {% endif %}
-
-                                        {% if size_variations %}      
-                                      
-                                        <div class="details-filter-row details-row-size">
-                                            <label for="size">Size:</label>
-                                            <div class="select-custom">
-                                                <select name="size" id="size" class="form-control">
-                                                    <option value="#" selected="selected">Select a size</option>
-                                                    {% for variation in size_variations %}
-                                                        <option value="{{ variation.name }}">{{ variation.name }}</option>
-                                                       
-                                                    {% endfor %}
-                                                </select>
-                                            </div><!-- End .select-custom -->
-
-                                            {% comment %} <a href="#" class="size-guide"><i class="icon-th-list"></i>size guide</a> {% endcomment %}
-                                        </div><!-- End .details-filter-row -->
-                                    {% endif %}
-                                    <div class="details-filter-row details-row-size">
-                                        <label for="qty">Qty:</label>
-                                        <div class="product-details-quantity">
-                                            <input type="number" id="qty" class="form-control" name="quantity" value="1" min="1" max="10" step="1" data-decimals="0" required>
-                                        </div><!-- End .product-details-quantity -->
-                                    </div><!-- End .details-filter-row -->
-
-                                    <div class="product-details-action">
-                                        <button type="submit"  class="btn-product btn-cart">
-                                            <span>Add to cart</span></button>
-                                        
-                                        <div class="details-action-wrapper">
-                                            {% if request.user.is_authenticated and item.is_stock  %}
-                                               <a href="{% url 'order:add-to-wishlist' pk=item.pk  %}" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
-                                            {% elif item.is_stock %}
-                                             
-                                            <a href="{% url "account:login" %}" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
-                                            {% endif %}
-                                            {% if item.is_stock %}
-                                                <h5 style="color:green;">In Stock</h5>
-                                            {% else %}
-                                                <h5 style="color:red;">Stock Out</h4>
-                                            {% endif %}
-
-                                           
-
                                             
-                                        </div><!-- End .details-action-wrapper -->
-                                    </div><!-- End .product-details-action -->
-                                    
-                                </form>
+                                            {% if color_variations %}
+                                                <div class="details-filter-row details-row-size">
+                                                    <label for="color">Color:</label>
+                                                    <div class="select-custom">
+                                                        <select name="color" id="color" class="form-control">
+                                                            <option value="" selected="selected">Select a color</option>
+                                                            {% for variation in color_variations %}
+                                                                <option value="{{ variation.name }}">{{ variation.name }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        
+                                            {% if size_variations %}
+                                                <div class="details-filter-row details-row-size">
+                                                    <label for="size">Size:</label>
+                                                    <div class="select-custom">
+                                                        <select name="size" id="size" class="form-control">
+                                                            <option value="" selected="selected">Select a size</option>
+                                                            {% for variation in size_variations %}
+                                                                <option value="{{ variation.name }}">{{ variation.name }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        
+                                            <!-- Quantity Field -->
+                                            <div class="details-filter-row details-row-size">
+                                                <label for="qty">Qty:</label>
+                                                <div class="product-details-quantity">
+                                                    <input type="number" id="qty" class="form-control" name="quantity" value="1" min="1" max="10" required>
+                                                </div>
+                                            </div>
+                                        
+                                            <!-- Add to Cart Button -->
+                                            <div class="product-details-action">
+                                                <button type="submit" class="btn-product btn-cart">
+                                                    <span>Add to cart</span>
+                                                </button>
+                                                
+                                                <!-- Wishlist Link -->
+                                                <div class="details-action-wrapper">
+                                                    {% if request.user.is_authenticated and item.is_stock %}
+                                                        <a href="{% url 'order:add-to-wishlist' pk=item.pk %}?next={{ request.path }}" class="btn-product btn-wishlist" title="Wishlist">
+                                                            <span>Add to Wishlist</span>
+                                                        </a>
+                                                    {% elif item.is_stock %}
+                                                        <a href="{% url "account:login" %}" class="btn-product btn-wishlist" title="Wishlist">
+                                                            <span>Add to Wishlist</span>
+                                                        </a>
+                                                    {% endif %}
+                                                    {% if item.is_stock %}
+                                                        <h5 style="color:green;">In Stock</h5>
+                                                    {% else %}
+                                                        <h5 style="color:red;">Stock Out</h5>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </form>
+                                            
+                                      
+
+
+
 
                                     <div class="product-details-footer">
                                         <div class="product-cat">

@@ -15,21 +15,28 @@ from store.models import VariationValue
 
 class CheckBillingAddressView(TemplateView):
     template_name = "store/checkout.html"
-
+    
     def get(self, request, *args, **kwargs):
         saved_address, _ = BillingAddress.objects.get_or_create(user=request.user)
         form = BillingAddressForm(instance=saved_address)
         order_qs = Order.objects.filter(user=request.user, ordered=False).first()
+        carts = Cart.objects.filter(user=request.user, purchased=False)
+        subtotal = 0
 
         if not order_qs:
             return redirect('order:cart')
-
+        else:
+            for cart in carts:
+               total = cart.get_total()
+               print(f"Total for {cart.item.name}: {total} (type: {type(total)})")  # Debugging output
+               subtotal += float(total)
         context = {
             'billing_address': form,
             'order_item': order_qs.order_items.all(),
-            'order_total': order_qs.get_totals(),
+            'order_total':   subtotal ,        #order_qs.get_totals(),   
             'payment_method': PaymentMethodForm(),
             'pay_meth': request.GET.get('pay_meth'),
+            'carts':carts
         }
         return render(request, self.template_name, context)
 
@@ -37,9 +44,15 @@ class CheckBillingAddressView(TemplateView):
         saved_address, _ = BillingAddress.objects.get_or_create(user=request.user)
         form = BillingAddressForm(request.POST, instance=saved_address)
         payment_obj = Order.objects.filter(user=request.user, ordered=False).first()
-
+        carts = Cart.objects.filter(user=request.user, purchased=False)
+        subtotal = 0
         if not payment_obj:
             return redirect('order:cart')
+        else :
+             for cart in carts:
+               total = cart.get_total()
+               print(f"Total for {cart.item.name}: {total} (type: {type(total)})")  # Debugging output
+               subtotal += float(total)
 
         pay_form = PaymentMethodForm(request.POST, instance=payment_obj)
         if form.is_valid() and pay_form.is_valid():
@@ -62,7 +75,7 @@ class CheckBillingAddressView(TemplateView):
         context = {
             'billing_address': form,
             'order_item': payment_obj.order_items.all(),
-            'order_total': payment_obj.get_totals(),
+            'order_total': subtotal,                                     #payment_obj.get_totals(),
             'payment_method': pay_form,
         }
         return render(request, self.template_name, context)

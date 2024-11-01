@@ -302,3 +302,25 @@ button:hover {
       padding: 15px;
   }
 }
+
+
+#profile-form, #billing-address-container {
+  max-width: 500px; /* Adjust this width as needed */
+  margin: 0 auto; /* Center horizontally */
+  padding: 20px; /* Add some padding */
+  border: 1px solid #ddd; /* Optional: Add a border */
+  border-radius: 8px; /* Optional: Add rounded corners */
+  background-color: #f9f9f9; /* Optional: Background color */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: Add shadow */
+  max-height: 600px; /* Limit max height */
+  overflow-y: auto; /* Scroll when content overflows */
+}
+
+.form-group {
+  margin-bottom: 15px; /* Space between form groups */
+}
+
+.error-message {
+  color: red; /* Red color for error messages */
+  font-size: 0.9em; /* Slightly smaller font for errors */
+}

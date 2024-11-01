@@ -84,7 +84,8 @@ class Product(models.Model):
         else:
             self.is_stock = False
             raise ValueError("Insufficient stock for this product")
-
+    
+    
 
 class ProductImages(models.Model):
     product = models.ForeignKey(Product,on_delete=models.CASCADE)

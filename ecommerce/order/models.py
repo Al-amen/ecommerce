@@ -43,9 +43,32 @@ class Cart(models.Model):
 
         return format(self.item.price, '.2f')  # Fallback to base product price
 
+    # def variation_total(self):
+    #     sizes = VariationValue.objects.filter(variation='size', product=self.item)
+    #     colors = VariationValue.objects.filter(variation='color', product=self.item)
+
+    #     total = 0
+    #     color_quantity_price = 0
+
+    #     if colors.exists() and self.color:
+    #         color_obj = colors.filter(name=self.color).first()
+    #         color_quantity_price = (color_obj.price * self.quantity) if color_obj else 0
+
+    #     if sizes.exists() and self.size:
+    #         size_obj = sizes.filter(name=self.size).first()
+    #         if size_obj:
+    #             total = (size_obj.price * self.quantity)
+
+    #     net_total = total + color_quantity_price
+    #     return format(net_total, '0.2f')
+
+
     def variation_total(self):
         sizes = VariationValue.objects.filter(variation='size', product=self.item)
         colors = VariationValue.objects.filter(variation='color', product=self.item)
+
+        if not (self.color or self.size):
+            return 0  # No variation selected, return None
 
         total = 0
         color_quantity_price = 0
@@ -61,8 +84,6 @@ class Cart(models.Model):
 
         net_total = total + color_quantity_price
         return format(net_total, '0.2f')
-
-
 
 
 
@@ -96,13 +117,21 @@ class Order(models.Model):
     def get_totals(self):
         total = 0
         for order_item in self.order_items.all():
-            if order_item.variation_total():
-                total += float(order_item.variation_total())
-            elif order_item.variation_single_price():
-                total += float(order_item.variation_single_price())
-            else:
-                total += float(order_item.get_total())
-        
+           
+      
+         if order_item.variation_total() and float(order_item.variation_total()) > 0:
+            item_total = float(order_item.variation_total())
+         elif order_item.variation_single_price() and float(order_item.variation_single_price()) > 0:
+            item_total = float(order_item.variation_single_price())
+         else:
+            
+            item_total = float(order_item.get_total())
+
+      
+        total += item_total
+    
+
+      
         return total
     
     def get_ordered_items(self):

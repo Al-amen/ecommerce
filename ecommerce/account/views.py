@@ -192,52 +192,52 @@ class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
 #                 return redirect('account:profile')
 
                
-# from django.shortcuts import get_object_or_404
+# # from django.shortcuts import get_object_or_404
 
 
-# class ProfileView(TemplateView):
-#     template_name = 'profile.html'
+# # class ProfileView(TemplateView):
+# #     template_name = 'profile.html'
 
-#     def get(self, request, *args, **kwargs):
-#         orders = Order.objects.filter(user=request.user, ordered=True).order_by('-created')
+# #     def get(self, request, *args, **kwargs):
+# #         orders = Order.objects.filter(user=request.user, ordered=True).order_by('-created')
         
-#         # Try to get the BillingAddress, or create a new one if it doesn't exist
-#         billingaddress, created = BillingAddress.objects.get_or_create(user=request.user)
-#         billingaddress_form = BillingAddressForm(instance=billingaddress)
+# #         # Try to get the BillingAddress, or create a new one if it doesn't exist
+# #         billingaddress, created = BillingAddress.objects.get_or_create(user=request.user)
+# #         billingaddress_form = BillingAddressForm(instance=billingaddress)
 
-#         # Get the user's profile
-#         profile_obj = get_object_or_404(Profile, user=request.user)
-#         profileForm = ProfileForm(instance=profile_obj)
+# #         # Get the user's profile
+# #         profile_obj = get_object_or_404(Profile, user=request.user)
+# #         profileForm = ProfileForm(instance=profile_obj)
 
-#         context = {
-#             'orders': orders,
-#             'billingaddress': billingaddress_form,
-#             'profileForm': profileForm,
-#         }
+# #         context = {
+# #             'orders': orders,
+# #             'billingaddress': billingaddress_form,
+# #             'profileForm': profileForm,
+# #         }
 
-#         return render(request, self.template_name, context=context)
+# #         return render(request, self.template_name, context=context)
 
-#     def post(self, request, *args, **kwargs):
-#         # Get or create BillingAddress
-#         billingaddress, created = BillingAddress.objects.get_or_create(user=request.user)
-#         billingaddress_form = BillingAddressForm(request.POST, instance=billingaddress)
+# #     def post(self, request, *args, **kwargs):
+# #         # Get or create BillingAddress
+# #         billingaddress, created = BillingAddress.objects.get_or_create(user=request.user)
+# #         billingaddress_form = BillingAddressForm(request.POST, instance=billingaddress)
 
-#         # Get the user's profile
-#         profile_obj = get_object_or_404(Profile, user=request.user)
-#         profileForm = ProfileForm(request.POST, instance=profile_obj)
+# #         # Get the user's profile
+# #         profile_obj = get_object_or_404(Profile, user=request.user)
+# #         profileForm = ProfileForm(request.POST, instance=profile_obj)
 
-#         if billingaddress_form.is_valid() and profileForm.is_valid():
-#             billingaddress_form.save()
-#             profileForm.save()
-#             return redirect('account:profile')
+# #         if billingaddress_form.is_valid() and profileForm.is_valid():
+# #             billingaddress_form.save()
+# #             profileForm.save()
+# #             return redirect('account:profile')
 
-#         # If the forms are not valid, re-render the profile page with the forms
-#         context = {
-#             'orders': Order.objects.filter(user=request.user, ordered=True).order_by('-created'),
-#             'billingaddress': billingaddress_form,
-#             'profileForm': profileForm,
-#         }
-#         return render(request, self.template_name, context=context)
+# #         # If the forms are not valid, re-render the profile page with the forms
+# #         context = {
+# #             'orders': Order.objects.filter(user=request.user, ordered=True).order_by('-created'),
+# #             'billingaddress': billingaddress_form,
+# #             'profileForm': profileForm,
+# #         }
+# #         return render(request, self.template_name, context=context)
 
 
 
@@ -253,16 +253,22 @@ class ProfileView(TemplateView):
         
         billingaddress, created = BillingAddress.objects.get_or_create(user=request.user)
         billingaddress_form = BillingAddressForm(instance=billingaddress)
-        
+        carts = Cart.objects.filter(user=request.user, purchased=False)
         profile_obj = get_object_or_404(Profile, user=request.user)
         
         profileForm = ProfileForm(instance=profile_obj)
-
+        subtotal = 0
+        print(carts)
+        for cart in carts:
+          total = cart.get_total()
+       #print(f"Total for {cart.item.name}: {total} (type: {type(total)})")  # Debugging output
+          subtotal += float(total)
         context = {
             'orders': orders,
             'billingaddress': billingaddress_form,
             'profileForm': profileForm,
             'profile_obj': profile_obj,  # Pass the profile object to the context
+            'subtotal':subtotal
         }
 
         return render(request, self.template_name, context=context)

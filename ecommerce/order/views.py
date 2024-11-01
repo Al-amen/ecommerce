@@ -36,91 +36,94 @@ def add_to_cart(request, pk):
                     order.order_items.add(order_item)
                     messages.success(request, "Product added to your cart!")
 
-                return redirect('store:index')
+                next_url = request.GET.get('next', 'store:index')
+                return redirect(next_url)
             else:
                 new_order = Order.objects.create(user=request.user)
                 new_order.order_items.add(order_item)
                 messages.success(request, "Product added to your cart!")
                 SendNotification(request.user, "Product added to your cart")
-                return redirect('store:index')
+                next_url = request.GET.get('next', 'store:index')
+                return redirect(next_url)
         except Exception as e:
             messages.error(request, "An error occurred while adding the item to your cart. Please try again.")
-            return redirect('store:index')
+            next_url = request.GET.get('next', 'store:index')
+            return redirect(next_url)
     else:
         messages.warning(request, "You need to log in to add items to your cart.")
         return redirect('account:login')
 
 
+
 def cart_view(request):
-    if request.user.is_authenticated:
-        carts = Cart.objects.filter(user=request.user, purchased=False)
-        orders = Order.objects.filter(user=request.user, ordered=False)
-
-        coupon_code = None
-        total_price_after_discount = None
-        order = None  
-        coupon_form = None 
-       
-        if carts.exists() and orders.exists():
-            order = orders[0]
-            coupon_form = CouponCodeForm(request.POST or None)  
-           
-            # Calculate total and subtotal
-            subtotal = order.get_totals()  # This will get the total price of all items in the order
-         
-
-            if coupon_form.is_valid():
-                current_time = timezone.now()
-                code = coupon_form.cleaned_data.get('code')
-                
-                print(f"Coupon code entered: {code}")  # Print the entered coupon code
-                
-                try:
-                    coupon_obj = Coupon.objects.get(code=code, active=True)
-                    print(f"Coupon found: {coupon_obj.code}, Active: {coupon_obj.active}, Valid from: {coupon_obj.valid_from}, Valid to: {coupon_obj.valid_to}")
-                  
-                    if coupon_obj.valid_from <= current_time <= coupon_obj.valid_to:
-                        get_discount = (coupon_obj.discount / 100) * subtotal  # Calculate discount
-                        total_price_after_discount = subtotal - get_discount  # Total after applying discount
-                        print(f"Discount applied: {get_discount}, New total: {total_price_after_discount}")  # Debugging output
-                        request.session['discount_total'] = total_price_after_discount 
-                        request.session['coupon_code'] = code
-                        coupon_code = code  
-                       
-                        messages.success(request, f"Coupon '{code}' applied successfully!")
-                        print(f"Subtotal: {subtotal}, Discount: {coupon_obj.discount}, Total after discount: {total_price_after_discount}")
-                    else:
-                        coupon_obj.active = False
-                        coupon_obj.save()
-                        coupon_code = None  
-                        messages.warning(request, "This coupon is no longer valid.")
-                except Coupon.DoesNotExist:
-                    coupon_code = None
-                    messages.error(request, "Invalid coupon code.")
-               
-
-            if 'discount_total' in request.session:
-                total_price_after_discount = request.session['discount_total']
-                coupon_code = request.session.get('coupon_code')
-                print(f"session{total_price_after_discount}")
-            
-         
-            context = {
-                'carts': carts,
-                'order': order,  
-                'coupon_form': coupon_form,  
-                'coupon_code': coupon_code,
-                'subtotal': subtotal,  # Add subtotal to context
-                'total_price_after_discount': total_price_after_discount,
-            }
-
-            return render(request, 'store/cart.html', context) 
-        else:
-            messages.warning(request, "Your cart is empty.")
-            return redirect('store:index')
-    else:
+    if not request.user.is_authenticated:
         messages.warning(request, "You need to log in to view your cart.")
         return redirect('account:login')
+
+    # Get user's cart and pending order
+    carts = Cart.objects.filter(user=request.user, purchased=False)
+    orders = Order.objects.filter(user=request.user, ordered=False)
+
+    if not carts.exists() or not orders.exists():
+        messages.warning(request, "Your cart is empty.")
+        return redirect('store:index')
+
+    # Initialize coupon, total discount, and subtotal
+    order = orders[0]
+    coupon_form = CouponCodeForm(request.POST or None)
+    coupon_code = None
+    total_price_after_discount = None
+    subtotal = 0
+    print(carts)
+    for cart in carts:
+       total = cart.get_total()
+       #print(f"Total for {cart.item.name}: {total} (type: {type(total)})")  # Debugging output
+       subtotal += float(total)
+    # Apply coupon if form is submitted and valid
+    if coupon_form.is_valid():
+        code = coupon_form.cleaned_data.get('code')
+        current_time = timezone.now()
+
+        try:
+            coupon_obj = Coupon.objects.get(code=code, active=True)
+            
+            # Check if the coupon is valid in the current time window
+            if coupon_obj.valid_from <= current_time <= coupon_obj.valid_to:
+                discount = (coupon_obj.discount / 100) * subtotal  # Calculate discount
+                total_price_after_discount = subtotal - discount  # Calculate total after discount
+                coupon_code = code
+
+                # Store the discount total and coupon code in the session
+                request.session['discount_total'] = total_price_after_discount
+                request.session['coupon_code'] = code
+
+                messages.success(request, f"Coupon '{code}' applied successfully!")
+            else:
+                # Deactivate expired coupon
+                coupon_obj.active = False
+                coupon_obj.save()
+                messages.warning(request, "This coupon is no longer valid.")
+        except Coupon.DoesNotExist:
+            messages.error(request, "Invalid coupon code.")
+
+    # Retrieve session data if available
+    if 'discount_total' in request.session:
+        total_price_after_discount = request.session['discount_total']
+        coupon_code = request.session.get('coupon_code')
+    print(f"after-subtotal{subtotal}")
+    # Render cart template with context
+    context = {
+        'carts': carts,
+        'order': order,
+        'coupon_form': coupon_form,
+        'coupon_code': coupon_code,
+        'subtotal': subtotal,
+        'total_price_after_discount': total_price_after_discount,
+    }
+    return render(request, 'store/cart.html', context)
+
+
+
 
 
 
@@ -159,6 +162,9 @@ def increase_cart(request, pk):
                 if order_item:
                     order_item.quantity += 1
                     order_item.save()
+                    print(f"orderitemQ {order_item.quantity}")
+                    
+                    print(f"Order Total after update (increase): {order.get_totals()}")
                     messages.success(request, "Item quantity increased.")
                 return redirect('order:cart')
             else:
@@ -185,11 +191,13 @@ def decrease_cart(request, pk):
                     if order_item.quantity > 1:
                         order_item.quantity -= 1
                         order_item.save()
+                        
                         messages.success(request, "Item quantity decreased.")
                     else:
                         order.order_items.remove(order_item)
                         order_item.delete()
-                        messages.success(request, "Item removed from your cart.")
+                    
+                    messages.success(request, "Item removed from your cart.")
                 return redirect('order:cart')
             else:
                 messages.warning(request, "Item not found in your cart.")
@@ -209,14 +217,12 @@ def add_to_wishlist(request,pk):
     wishlist_item, created = WishList.objects.get_or_create(user=request.user, product=product)
     
     if created:
-        # If the product was added to the wishlist
-        message = "Product added to wishlist."
+        messages.success(request, "Product added to wishlist.")
     else:
-        # If the product was already in the wishlist
-        message = "Product is already in your wishlist."
-    print(message)
-
-    return redirect('order:view_wishlist')
+        messages.info(request, "Product is already in your wishlist.")
+    
+    next_url = request.GET.get('next', 'store:index')
+    return redirect(next_url)
 
 
 def view_wishlist(request):
@@ -255,22 +261,18 @@ def generate_invoice(request, order_id):
         return redirect('login')
 
     try:
-        # Get the order details
+       
         order = get_object_or_404(Order, user=request.user, order_id=order_id)
 
-        # Create a byte stream buffer to hold the PDF data
         buffer = BytesIO()
-
-        # Create a PDF object and add content
+       
         p = canvas.Canvas(buffer, pagesize=letter)
         width, height = letter
 
-        # Invoice Header
         p.drawString(100, height - 50, "Invoice")
         p.drawString(100, height - 70, f"Order ID: {order.order_id}")
         p.drawString(100, height - 90, f"Date: {timezone.now().date()}")
 
-        # Add Product Details
         y_position = height - 130
         p.drawString(100, y_position, "Ordered Products:")
         y_position -= 20
@@ -280,18 +282,16 @@ def generate_invoice(request, order_id):
             p.drawString(300, y_position, f"${item['total_price']}")
             y_position -= 20
 
-        # Add Total
+
         p.drawString(100, y_position - 20, f"Total: ${order.get_totals()}")
 
-        # Finalize the PDF
         p.showPage()
         p.save()
 
-        # Get the PDF from the buffer
         pdf_data = buffer.getvalue()
         buffer.close()
 
-        # Save the PDF to the media folder
+
         invoice_dir = os.path.join(settings.MEDIA_ROOT, 'invoices')
         if not os.path.exists(invoice_dir):
             os.makedirs(invoice_dir)
@@ -313,7 +313,6 @@ def generate_invoice(request, order_id):
 
         logger.info(f"Invoice for Order {order_id} has been generated and sent to {request.user.email}.")
 
-        # Redirect to the index page
         return redirect(reverse('store:index'))
 
     except Exception as e:

@@ -24,7 +24,7 @@
 <body>
 <div id="sidebar">
     <h2>User Dashboard</h2>
-    <a id="profile-link" href="#">Profile</a><br>
+    <a id="profile-link" href="#" onclick="toggleProfileForm(event)">Profile</a><br>
     <a id="orders-link" href="#">Orders</a><br>
     <a id="shipping-status-content-link" href="#">Shipping Status</a><br>
     <a id="billing-address-form" href="#" onclick="toggleBillingAddressForm(event)">Billing Address</a>
@@ -38,7 +38,75 @@
     <p>This is your Dashboard where you can manage your account, orders, settings, and more.</p>
 </div>
 
-<!-- Orders Content -->
+    <!-- Profile Form -->
+    <div id="profile-form" style="display:none; max-height: 600px; overflow-y: auto;">
+        <h2>Edit Profile</h2>
+        <form method="POST" enctype="multipart/form-data" action="{% url 'account:profile' %}">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="id_full_name">Full Name</label>
+                {{ profileForm.full_name|add_class:"form-control" }}
+                {% if profileForm.full_name.errors %}
+                    <div class="error-message">{{ profileForm.full_name.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_email">Email</label>
+                {{ profileForm.email|add_class:"form-control" }}
+                {% if profileForm.email.errors %}
+                    <div class="error-message">{{ profileForm.email.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_address">Address</label>
+                {{ profileForm.address|add_class:"form-control" }}
+                {% if profileForm.address.errors %}
+                    <div class="error-message">{{ profileForm.address.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_country">Country</label>
+                {{ profileForm.country|add_class:"form-control" }}
+                {% if profileForm.country.errors %}
+                    <div class="error-message">{{ profileForm.country.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_city">City</label>
+                {{ profileForm.city|add_class:"form-control" }}
+                {% if profileForm.city.errors %}
+                    <div class="error-message">{{ profileForm.city.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_zipcode">Zip Code</label>
+                {{ profileForm.zipcode|add_class:"form-control" }}
+                {% if profileForm.zipcode.errors %}
+                    <div class="error-message">{{ profileForm.zipcode.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_phone">Phone Number</label>
+                {{ profileForm.phone|add_class:"form-control" }}
+                {% if profileForm.phone.errors %}
+                    <div class="error-message">{{ profileForm.phone.errors }}</div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
+    </div>
+
+
+
+
 <!-- Orders Content -->
 <div id="orders-content" class="container-fluid" style="display: none;">
     <h1>Your Orders</h1>
@@ -62,12 +130,13 @@
                     <td>{% for order_item in order.order_items.all %} {{ order_item }} {% endfor %}</td>
                     <td>{{ order.payment_id }}</td>
                     <td>{{ order.order_id }}</td>
-                    <td>&#x9F3; {{ order.get_totals }}</td>
+                    {% comment %} {% endcomment %}
+                    <td>&#x9F3; {{order.get_totals }}</td>   
                     <td>
                         <form action="{% url 'account:delete_order' order.id %}" method="post" style="display:inline;">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-danger">Delete</button>
-                        </form>
+                        </form> 
                     </td>
                     <td>
                         {% if order.shipping_status == "Delivered" %}
@@ -89,7 +158,7 @@
 
 <!-- Shipping Status Content -->
 <!-- Shipping Status Content -->
-<div id="shipping-status-content" style="display: none;">
+<div id="shipping-status-content" style="display: none; ">
     <div class="container">
         <header class="card-header text-center">Shipping Status</header>
         {% if orders %}
@@ -155,7 +224,84 @@
     </form>
 </div> {% endcomment %}
 
-<div id="billing-address-container" style="display: none;">
+{% comment %} <div id="billing-address-container" style="display: none;">
+    <form method="post" action="{% url 'account:profile' %}">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="id_first_name">First Name</label>
+            {{ billingaddress.first_name|add_class:"form-control" }}
+            {% if billingaddress.first_name.errors %}
+                <div class="error-message">{{ billingaddress.first_name.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_last_name">Last Name</label>
+            {{ billingaddress.last_name|add_class:"form-control" }}
+            {% if billingaddress.last_name.errors %}
+                <div class="error-message">{{ billingaddress.last_name.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_country_name">Country</label>
+            {{ billingaddress.country_name|add_class:"form-control" }}
+            {% if billingaddress.country_name.errors %}
+                <div class="error-message">{{ billingaddress.country_name.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_city">City</label>
+            {{ billingaddress.city|add_class:"form-control" }}
+            {% if billingaddress.city.errors %}
+                <div class="error-message">{{ billingaddress.city.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_address1">Address Line 1</label>
+            {{ billingaddress.address1|add_class:"form-control" }}
+            {% if billingaddress.address1.errors %}
+                <div class="error-message">{{ billingaddress.address1.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_address2">Address Line 2</label>
+            {{ billingaddress.address2|add_class:"form-control" }}
+            {% if billingaddress.address2.errors %}
+                <div class="error-message">{{ billingaddress.address2.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_zipcode">Zip Code</label>
+            {{ billingaddress.zipcode|add_class:"form-control" }}
+            {% if billingaddress.zipcode.errors %}
+                <div class="error-message">{{ billingaddress.zipcode.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_phone_number">Phone Number</label>
+            {{ billingaddress.phone_number|add_class:"form-control" }}
+            {% if billingaddress.phone_number.errors %}
+                <div class="error-message">{{ billingaddress.phone_number.errors }}</div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Billing Address</button>
+    </form>
+</div> {% endcomment %}
+
+
+
+
+
+<!-- Billing Address Container -->
+<div id="billing-address-container" style="display: none; max-height: 600px; overflow-y: auto;">
     <form method="post" action="{% url 'account:profile' %}">
         {% csrf_token %}
 
@@ -245,16 +391,30 @@
 
 
 
-
-
-
-
-
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 
+
 <script>
-    const userProfile = {
+
+    function toggleProfileForm(event) {
+        event.preventDefault(); // Prevent the default anchor behavior
+        const profileForm = document.getElementById('profile-form');
+        const dashboardContent = document.getElementById('content'); // Reference to the content div
+    
+        // Toggle visibility of the profile form
+        if (profileForm.style.display === 'none' || profileForm.style.display === '') {
+            profileForm.style.display = 'block'; // Show profile form
+            dashboardContent.style.display = 'none'; // Hide dashboard content
+        } else {
+            profileForm.style.display = 'none'; // Hide profile form
+            dashboardContent.style.display = 'block'; // Show dashboard content
+        }
+    }
+
+
+
+    {% comment %} const userProfile = {
         fullName: "{{ profile_obj.full_name }}",
         email: "{{ request.user.email }}",
         phone: "{{ profile_obj.phone }}",
@@ -335,51 +495,57 @@
             alert("Profile updated!");
             loadProfile(); // Reload profile information after saving
         };
-    }
+    } {% endcomment %}
 
-    // Toggle Shipping Status Content
     document.getElementById("shipping-status-content-link").onclick = function(event) {
         event.preventDefault();
-        document.getElementById("content").style.display = 'none';
-        document.getElementById("orders-content").style.display = 'none';
-        document.getElementById("billing-address-container").style.display = 'none';
-        document.getElementById("shipping-status-content").style.display = 'block';
+        hideAllSections(); // Hide all other sections
+        document.getElementById("shipping-status-content").style.display = 'block'; // Show shipping status content
     };
-
+    
     // Toggle Orders Content
     document.getElementById("orders-link").onclick = function(event) {
         event.preventDefault();
-        document.getElementById("content").style.display = 'none';
-        document.getElementById("shipping-status-content").style.display = 'none';
-        document.getElementById("billing-address-container").style.display = 'none';
-        document.getElementById("orders-content").style.display = 'block';
+        hideAllSections(); // Hide all other sections
+        document.getElementById("orders-content").style.display = 'block'; // Show orders content
     };
-
+    
     // Toggle Billing Address Form
     function toggleBillingAddressForm(event) {
         event.preventDefault();
+        hideAllSections(); // Hide all other sections
         const billingContainer = document.getElementById("billing-address-container");
-        if (billingContainer.style.display === "none" || billingContainer.style.display === "") {
-            billingContainer.style.display = "block";
-        } else {
-            billingContainer.style.display = "none";
-        }
-        document.getElementById("content").style.display = 'none';
-        document.getElementById("orders-content").style.display = 'none';
-        document.getElementById("shipping-status-content").style.display = 'none';
+        billingContainer.style.display = billingContainer.style.display === "none" || billingContainer.style.display === "" 
+                                          ? "block" : "none";
     }
+    
+    // Utility function to hide all sections
+    function hideAllSections() {
+        document.getElementById("content").style.display = 'none';
+        document.getElementById("profile-form").style.display = 'none';
+        document.getElementById("shipping-status-content").style.display = 'none';
+        document.getElementById("orders-content").style.display = 'none';
+        document.getElementById("billing-address-container").style.display = 'none';
+    }
+    
+    // Toggle Profile Form
+    document.getElementById("profile-link").onclick = function(event) {
+        event.preventDefault();
+        hideAllSections(); // Hide all other sections
+        document.getElementById("profile-form").style.display = 'block'; // Show profile form
+    };
 
     // Event listener for the profile link
-    document.getElementById("profile-link").onclick = function(event) {
+    {% comment %} document.getElementById("profile-link").onclick = function(event) {
         event.preventDefault();
         loadProfile();
         document.getElementById("orders-content").style.display = 'none';
         document.getElementById("shipping-status-content").style.display = 'none';
         document.getElementById("billing-address-container").style.display = 'none';
-    };
+    }; {% endcomment %}
 
     // Initial load
-    loadProfile(); // Load the profile by default when the page first loads
+   // loadProfile(); // Load the profile by default when the page first loads
 </script>
 </body>
 </html>

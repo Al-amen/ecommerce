@@ -33,7 +33,10 @@ def cart_total(user):
     if order.exists():
         return order[0].get_totals()
     
-    return 0  # Return 0 if no order exists
+    return 0  
+
+
+
 
 # @register.filter
 # def cart_count(user):

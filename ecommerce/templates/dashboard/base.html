@@ -112,7 +112,7 @@
                                         </div>
                                         <div class="media-body">
                                             <div class="">
-                                                <h5 class="usr-name">Kara Young</h5>
+                                                <h5 class="usr-name">Admin</h5>
                                                 <p class="msg-title">ACCOUNT UPDATE</p>
                                             </div>
                                         </div>
@@ -128,7 +128,7 @@
                                         </div>
                                         <div class="media-body">
                                             <div class="">
-                                                <h5 class="usr-name">Daisy Anderson</h5>
+                                                <h5 class="usr-name">Admin</h5>
                                                 <p class="msg-title">ACCOUNT UPDATE</p>
                                             </div>
                                         </div>
@@ -146,7 +146,7 @@
                                         </div>
                                         <div class="media-body">
                                             <div class="">
-                                                <h5 class="usr-name">Oscar Garner</h5>
+                                                <h5 class="usr-name">Admin</h5>
                                                 <p class="msg-title">ACCOUNT UPDATE</p>
                                             </div>
                                         </div>
@@ -214,7 +214,10 @@
                     <div class="dropdown-menu position-absolute" aria-labelledby="userProfileDropdown">
                         <div class="user-profile-section">
                             <div class="media mx-auto">
-                                <img src="{{ request.user.profile.image.url }}" class="img-fluid mr-2" alt="avatar">
+                                {% if  request.user.profile.image %}
+                                
+                                    <img src="{{ request.user.profile.image.url }}" class="img-fluid mr-2" alt="avatar">
+                                {% endif %}
                                 <div class="media-body">
                                     <h5>{{ request.user.username }}</h5>
                                     

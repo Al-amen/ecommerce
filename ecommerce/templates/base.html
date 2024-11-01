@@ -76,7 +76,7 @@
                     <div class="header-search d-none d-lg-block mx-auto">
                         <form action="{% url 'store:search_results' %}" method="GET" class="form-inline">
                             <input type="search" class="form-control form-control-lg" name="search_product" placeholder="Search for products..." required>
-                            <button class="btn btn-outline-light ml-2" type="submit"><i class="icon-search"></i></button>
+                            <button class="btn btn-outline-light ml-2" type="submit"></button>
                         </form>
                     </div>
         
@@ -158,12 +158,16 @@
                             <div class="dropdown mx-3">
                                 <a href="#" class="text-white dropdown-toggle" data-toggle="dropdown">
                                     <i class="fas fa-user fa-lg"></i>
+                                   
                                 </a>
+                               
                                 <div class="dropdown-menu dropdown-menu-right">
                                     <a href="{% url 'account:profile' %}" class="dropdown-item">Profile</a>
+                                     
                                     <a href="{% url 'account:logout' %}" class="dropdown-item">Logout</a>
                                 </div>
                             </div>
+                            <p style= "color:black;">{{request.user.user_name}}</p>
                         {% else %}
                             <a href="{% url 'account:login' %}" class="text-white mx-3">
                                 <i class="fas fa-user fa-lg"></i>
@@ -210,9 +214,9 @@
             <nav class="main-nav">
                 <ul class="list-unstyled d-flex">
                     <li><a href="{% url 'store:index' %}" class="nav-link px-3 text-white">Home</a></li>
-                    <li><a href="#" class="nav-link px-3 text-white">Shop</a></li>
+                    {% comment %} <li><a href="#" class="nav-link px-3 text-white">Shop</a></li>
                     <li><a href="#" class="nav-link px-3 text-white">Offers</a></li>
-                    <li><a href="#" class="nav-link px-3 text-white">Contact</a></li>
+                    <li><a href="#" class="nav-link px-3 text-white">Contact</a></li> {% endcomment %}
                 </ul>
             </nav>
         </div>
@@ -262,12 +266,12 @@
             <div class="row">
                 <div class="col-sm-6 col-lg-3">
                     <div class="widget widget-about">
-                        <img src="{% static 'assets/images/demos/demo-4/logo-footer.png' %}" class="footer-logo" alt="Footer Logo" width="105" height="25">
+                        
                         <p>Quality products and great customer service.</p>
                         <div class="widget-call">
                             <i class="icon-phone" style="color: #007bff;"></i>
                             Got Questions? Call us 24/7
-                            <a href="tel:#" style="color: #007bff;">+0123 456 789</a>
+                            <a href="tel:#" style="color: #007bff;">01756135846</a>
                         </div>
                     </div>
                 </div>
@@ -304,10 +308,10 @@
                         <h4 class="widget-title" style="color: #007bff;">My Account</h4>
                         <ul class="widget-list">
                             <li><a href="#" style="color: #333;">Sign In</a></li>
-                            <li><a href="cart.html" style="color: #333;">View Cart</a></li>
-                            <li><a href="#" style="color: #333;">My Wishlist</a></li>
-                            <li><a href="#" style="color: #333;">Track My Order</a></li>
-                            <li><a href="#" style="color: #333;">Help</a></li>
+                            <li><a href="order:cart" style="color: #333;">View Cart</a></li>
+                            <li><a href="order:view_wishlist" style="color: #333;">My Wishlist</a></li>
+                            <li><a href="account:profile" style="color: #333;">Track My Order</a></li>
+                            
                         </ul>
                     </div>
                 </div>
@@ -330,9 +334,7 @@
     <div class="footer-bottom" style="background-color: #343a40; color: #ffffff; padding: 15px 0;">
         <div class="container d-flex justify-content-between align-items-center">
             <p class="footer-copyright mb-0">Copyright © 2024 E-SHOP. All Rights Reserved.</p>
-            <figure class="footer-payments">
-                <img src="{% static 'assets/images/payments.png' %}" alt="Payment methods" width="272" height="20">
-            </figure>
+            
         </div>
     </div>
 </footer>
@@ -367,7 +369,7 @@
             <nav class="mobile-nav">
                 <ul class="mobile-menu">
                     <li class="active">
-                        <a href="index.html">Home</a>
+                        <a href="store:index">Home</a>
 
                     </li>
                  

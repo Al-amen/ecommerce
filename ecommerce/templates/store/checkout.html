@@ -75,10 +75,13 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for item in order_item %}
+                                        {% for cart in carts %}
+                                           
                                         <tr>
-                                            <td>{{ item.item.name }}</td>
-                                            <td>&#2547; {{ item.variation_total|default:item.variation_single_price|default:item.get_total }}</td>
+                                            <td>{{cart.item.name }} X {{cart.quantity}} </td>
+                                             {% comment %} {{ item.variation_total|default:item.variation_single_price|default:item.get_total }}</td>  {% endcomment %}
+                                             
+                                              <td> {{cart.get_total}}</td>
                                         </tr>
                                         {% endfor %}
                                         <tr class="summary-subtotal">

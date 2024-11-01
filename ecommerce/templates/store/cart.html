@@ -75,7 +75,12 @@
                                                     </a>
                                                 </div>
                                             </td>
+                                            {% if cart.variation_total %}
                                             <td>${{ cart.variation_total|floatformat:2 }}</td>
+                                            {% else %}
+                                            <td>${{cart.get_total}}</td>
+                                                
+                                            {% endif %}
                                             <td>
                                                 <a href="{% url 'order:remove-item' pk=cart.item.pk %}" class="text-danger">
                                                     <button class="btn-remove bg-transparent border-0 p-0" aria-label="Remove item">
@@ -118,8 +123,7 @@
                                 </form>
                             </div>
 
-                            <!-- Update Cart Button -->
-                            <a href="#" class="btn btn-outline-dark-2"><span>UPDATE CART</span><i class="icon-refresh"></i></a>
+                            
                         </div>
                     </div>
 
@@ -134,13 +138,8 @@
                                     <tr class="summary-subtotal">
                                         <td>Subtotal:</td>
                                     
-                                        <td class="text-right">${{ order.get_totals }}</td> </td>
+                                        <td class="text-right">${{ subtotal }}</td>
                                     </tr>
-
-                                   
-
-
-
 
                                     <tr class="summary-shipping-estimate">
                                         <td>Estimate for Your Country<br> <a href="{% url 'account:profile'  %}">Change address</a></td>
@@ -154,7 +153,7 @@
                                             {% if total_price_after_discount %}
                                                 ${{ total_price_after_discount }}
                                             {% else %}
-                                                ${{ order.get_totals }}
+                                                ${{ subtotal }}
                                             {% endif %}
                                         </td>
                                     </tr>
@@ -177,6 +176,8 @@
         </div>
     </div>
 </main>
+
+
 
 
 
